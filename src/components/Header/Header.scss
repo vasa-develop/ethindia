@@ -1,0 +1,49 @@
+.HeaderWrapper {
+  .Banner {
+    height: 70px;
+    background: white;
+
+    .Inner {
+      line-height: 70px;
+      padding: 0 20px;
+
+      img {
+        height: 41px;
+        width: 26.03px;
+        padding: 3px;
+      }
+    }
+  }
+
+  .Header {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 20px 20px;
+
+    .Info {
+      display: flex;
+
+      .Label {
+        text-transform: uppercase;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 17px;
+        color: #AAB2C0;
+      }
+
+      .Value {
+        margin-left: 15px;
+        font-size: 11px;
+        line-height: 15px;
+        color: #97A3B4;
+
+        span {
+          text-transform: uppercase;
+          font-size: 12px;
+          font-weight: 600;
+          line-height: 17px;
+        }
+      }
+    }
+  }
+}

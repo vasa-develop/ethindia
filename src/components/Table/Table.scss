@@ -1,0 +1,136 @@
+.TableWrapper {
+  display: block;
+
+  .Title {
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    color: #002257;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: .1px;
+    line-height: 20px;
+    text-align: center;
+  }
+
+  table {
+    table-layout: fixed;
+    width: 100%;
+    text-align: center;
+
+    thead {
+      th {
+        text-transform: uppercase;
+        color: #AAB2C0;
+        font-size: 10px;
+        font-weight: 600;
+        line-height: 22px;
+        text-align: center;
+      }
+    }
+
+    tbody {
+      color: #002257;
+      font-size: 10px;
+      font-weight: 300;
+
+      button {
+        text-transform: uppercase;
+        height: 15px;
+        width: 85.73px;
+        color: #A6B2C4;
+        font-size: 8px;
+        font-weight: 600;
+        line-height: 11px;
+        text-align: center;
+        border: .5px solid #A6B2C4;
+        border-radius: 10.5px;
+        background-color: white;
+        padding: 0;
+
+        &.three-dot {
+          height: 21px;
+          width: 28px;
+          border: .5px solid #A6B2C4;
+          border-radius: 3.2px;
+
+          .dot {
+            background: #97a3b4;
+            width: 3px;
+            height: 3px;
+            border-radius: 2px;
+            display: inline-block;
+            margin: 0 1px 1px;
+          }
+        }
+      }
+    }
+
+    tr {
+      line-height: 27px;
+      border-bottom: 1px solid #E8E9EA;
+
+      .HealthBar {
+        position: relative;
+
+        .BarBase {
+          height: 4.62px;
+          border-radius: 2px;
+          background-color: #DFE4EE;
+          position: relative;
+
+          .Fill {
+            height: 4.62px;
+            border-radius: 2px;
+            width: 100%;
+            background-color: #00D983;
+          }
+        }
+
+        .BarMarks {
+          width: 0;
+          height: 0;
+          border-left: 1.5px solid transparent;
+          border-right: 1.5px solid transparent;
+          border-bottom: 3.46px solid #a6b2c4;
+          margin: 1.15px auto 0;
+
+          &:after,
+          &:before {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 1px solid transparent;
+            border-right: 1px solid transparent;
+            border-bottom: 2.31px solid #a6b2c4;
+            position: absolute;
+            right: 1px;
+          }
+
+          &:after {
+            left: 1px;
+          }
+        }
+
+        .BarPercent {
+          color: #AAB2C0;
+          font-size: 5px;
+          font-weight: 600;
+          line-height: 6px;
+          text-align: left;
+          margin-top: 1.5px;
+        }
+      }
+    }
+  }
+
+  .tbl-content {
+    max-height: 162px;
+    overflow-x: auto;
+
+    &.first {
+      table tr {
+        line-height: 22px;
+      }
+    }
+  }
+}

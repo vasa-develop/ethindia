@@ -1,0 +1,43 @@
+body {
+  background: #f7f8f9;
+}
+
+body * {
+  font-family: "Open Sans";
+  font-weight: normal;
+  outline: none;
+}
+
+.AppWrapper > div:not(.HeaderWrapper) {
+  max-width: 1042px;
+  margin: 0 auto 50px;
+}
+
+.HeaderWrapper {
+  .Banner .Inner,
+  .Header {
+    max-width: 1042px;
+    margin: 0 auto 50px;
+  }
+}
+
+.HeaderWrapper .Header {
+  margin-bottom: 0;
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+
+  &-track {
+    background: transparent;
+  }
+
+  &-thumb {
+    border-radius: 3px;
+    background-color: rgba(0,0,0,0.25);
+
+    &:hover {
+      background: #555;
+    }
+  }
+}

@@ -1,0 +1,115 @@
+.TabWrapper {
+  margin-bottom: 40px;
+
+  .react-tabs__tab-list {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0;
+    border-color: #CBD3DB;
+    text-transform: uppercase;
+
+    .react-tabs__tab {
+      color: #002257;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: .1px;
+      line-height: 32px;
+      text-align: center;
+      width: calc(50% - 20px);
+
+      box-sizing: border-box;
+      border: 1px solid #CBD3DB;
+      border-radius: 3.4px 3.4px 0 0;
+      background-color: white;
+      box-shadow: 0 5px 16px 0 rgba(0,0,0,0.05);
+
+      &--selected {
+        border-bottom: 0;
+        box-shadow: none;
+      }
+
+      &:first-child {
+        background-color: #DDDEDF;
+      }
+
+      &:focus:after {
+        background: transparent;
+      }
+    }
+  }
+
+  .react-tabs__tab-panel {
+    box-sizing: border-box;
+    height: 114px;
+    border: 1px solid #CBD3DB;
+    border-top: 0;
+    border-radius: 0 0 3.4px 3.4px;
+    background-color: white;
+    box-shadow: 0 5px 16px 0 rgba(0,0,0,0.05);
+    padding: 20px 38px 16px;
+
+    &#react-tabs-1 {
+      background-color: #DDDEDF;
+    }
+
+    &#react-tabs-3 {
+      table {
+        tbody {
+          .FormInput {
+            input {
+              background-color: #f7f8f9;
+            }
+          }
+        }
+      }
+    }
+
+    table {
+      width: 100%;
+
+      thead {
+        th {
+          height: 22px;
+          color: #97A3B4;
+          font-size: 13px;
+          line-height: 22px;
+        }
+      }
+
+      tbody {
+        td {
+          padding-right: 15px;
+          padding-top: 16px;
+          line-height: 22px;
+          font-size: 13px;
+          color: #002257;
+
+          &:last-child {
+            padding-right: 0;
+          }
+
+          input {
+            width: 100%;
+
+            &.Button {
+              border: 0;
+              padding: 10px;
+              text-decoration: none;
+              text-transform: uppercase;
+              display: inline-block;
+              color: #FFFFFF;
+              background-color: #7acaf1;
+              background-image: -webkit-gradient(linear, right top, left bottom, from(#7acaf1), to(#5b91ed));
+              background-image: -webkit-linear-gradient(left, #7acaf1, #5b91ed);
+              background-image: -moz-linear-gradient(left, #7acaf1, #5b91ed);
+              background-image: -ms-linear-gradient(left, #7acaf1, #5b91ed);
+              background-image: -o-linear-gradient(left, #7acaf1, #5b91ed);
+              background-image: linear-gradient(to right, #7acaf1, #5b91ed);
+              filter:progid:DXImageTransform.Microsoft.gradient(GradientType=3,startColorstr=#7acaf1, endColorstr=#5b91ed);
+            }
+          }
+        }
+      }
+    }
+  }
+}
