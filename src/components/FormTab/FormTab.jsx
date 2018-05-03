@@ -14,7 +14,7 @@ const FormInputs = [
     output: (val) => (val.toString()),
     inputs: [{
       precision: 3,
-      suffix: 'ETH',
+      suffix: 'DAI',
       unit: 1
     }]
   }, {
