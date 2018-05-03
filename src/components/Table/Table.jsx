@@ -51,7 +51,7 @@ class Table extends Component {
 
   render() {
     const { data, classes } = this.props
-    const filterdData = this.getData(data)
+    const filteredData = this.getData(data)
 
     return (
       <div className="TableWrapper">
@@ -74,7 +74,7 @@ class Table extends Component {
           <table cellpadding="0" cellspacing="0" border="0">
             <tbody>
               {
-                filterdData.map(d => (
+                filteredData.map(d => (
                   <tr>
                     {
                       data.headers.map(h => (
@@ -110,7 +110,7 @@ class Table extends Component {
                 ))
               }
               {
-                filterdData.length === 0 && <tr><td colSpan={data.headers.length}>No Data</td></tr>
+                filteredData.length === 0 && <tr><td colSpan={data.headers.length}>No Data</td></tr>
               }
             </tbody>
           </table>
