@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
+import moment from 'moment'
 
 import FormInput from '../FormInput/FormInput';
 
@@ -7,7 +8,7 @@ import './FormTab.scss'
 
 const FormInputs = [
   {
-    key: 'amount',
+    key: 'loanAmountOffered',
     label: 'Amount',
     width: 110,
     inputs: [{
@@ -16,7 +17,7 @@ const FormInputs = [
       unit: 1
     }]
   }, {
-    key: 'rate',
+    key: 'interestRatePerDay',
     label: 'Rate %',
     width: 88,
     inputs: [{
@@ -26,7 +27,7 @@ const FormInputs = [
       unit: 1
     }]
   }, {
-    key: 'collateral',
+    key: 'collateralAmount',
     label: 'Collateral',
     width: 110,
     inputs: [{
@@ -35,9 +36,10 @@ const FormInputs = [
       unit: 1
     }]
   }, {
-    key: 'length',
+    key: 'loanDuration',
     label: 'Length',
     width: 131,
+    output: (val) => (val + ' hours'),
     inputs: [{
       precision: 0,
       arrow: true,
@@ -53,9 +55,14 @@ const FormInputs = [
       unit: 1
     }]
   }, {
-    key: 'orderExpiration',
+    key: 'offerExpiry',
     label: 'Order Expiration',
     width: 131,
+    output: (val) => {
+      let ret = new moment()
+      ret.add(val, 'm')
+      return ret.format()
+    },
     inputs: [{
       precision: 0,
       arrow: true,
@@ -92,12 +99,12 @@ class FormTab extends Component {
 
     this.state = {
       formData: {
-        amount: 4.123,
-        rate: 0.008,
-        collateral: 2326.74,
-        length: 300,
-        orderExpiration: 72,
-        wrangler: 'Name',
+        loanAmountOffered: 4.123,
+        interestRatePerDay: 0.008,
+        collateralAmount: 2326.74,
+        loanDuration: 300,
+        offerExpiry: 72,
+        wrangler: '0xf31c52b569b6cfcd70e30f380c18608c8627d930',
         allowance: 5.123
       }
     }
@@ -107,6 +114,25 @@ class FormTab extends Component {
     const { formData } = this.state
     formData[key] = value
     this.setState(formData)
+  }
+
+  onSubmit(isLend) {
+    return (
+      () => {
+        const { formData } = this.state
+        const { address, methods } = this.props
+        let postData = {}
+        FormInputs.forEach(item => {
+          postData[item.key] = item.output ? item.output(formData[item.key]) : formData[item.key]
+        })
+        postData.lender = isLend ? address : null
+        postData.borrower = !isLend ? address : null
+        
+        methods.apiPost('offers', postData, (result) => {
+          console.log(result)
+        })
+      }
+    ).bind(this)
   }
 
   render() {
@@ -139,7 +165,7 @@ class FormTab extends Component {
                       <td width={item.width}>
                         {
                           item.key === 'wrangler' ?
-                            <div>{formData['wrangler']}</div>
+                            <div>Name</div>
                             :
                             <FormInput data={item} onChange={this.onChange.bind(this)} val={formData[item.key]} />
                         }
@@ -148,7 +174,7 @@ class FormTab extends Component {
                   }
                   <td width="88">
                     <div className="FormInput">
-                      <input type="Button" className="Button" value="Order" />
+                      <input type="Button" className="Button" value="Order" onClick={this.onSubmit(true)} />
                     </div>
                   </td>
                 </tr>
@@ -174,7 +200,7 @@ class FormTab extends Component {
                       <td width={item.width}>
                         {
                           item.key === 'wrangler' ?
-                            <div>{formData['wrangler']}</div>
+                            <div>Name</div>
                             :
                             <FormInput data={item} onChange={this.onChange.bind(this)} val={formData[item.key]} />
                         }
@@ -183,7 +209,7 @@ class FormTab extends Component {
                   }
                   <td width="88">
                     <div className="FormInput">
-                      <input type="Button" className="Button" value="Order" />
+                      <input type="Button" className="Button" value="Order" onClick={this.onSubmit(false)} />
                     </div>
                   </td>
                 </tr>

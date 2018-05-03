@@ -5,15 +5,20 @@ import {
   Route,
   Switch
 } from 'react-router-dom'
-import './index.scss'
+import { Web3Provider } from 'react-web3'
+
 import App from './App'
+
+import './index.scss'
 
 ReactDOM.render((
   <div>
-    <HashRouter>
-      <Switch>
-        <Route path="/" component={App} />
-      </Switch>
-    </HashRouter>
+    <Web3Provider>
+      <HashRouter>
+        <Switch>
+          <Route path="/" component={App} />
+        </Switch>
+      </HashRouter>
+    </Web3Provider>
   </div>
 ), document.getElementById('root'))
