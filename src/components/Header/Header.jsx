@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import axios from 'axios'
 import { BigNumber } from 'bignumber.js'
 
 import logo from '../../assets/images/Logo.png'
@@ -13,12 +14,13 @@ class Header extends Component {
       balance: {
         c: [0]
       },
-      ethToDai: 674.6797480772808
+      ethToDai: 0
     }
   }
 
   componentDidMount() {
     this.getBalance(this.props.address)
+    this.getETD()
   }
 
   componentWillReceiveProps(newProps) {
@@ -27,6 +29,17 @@ class Header extends Component {
     if (newProps.address != address) {
       this.getBalance(newProps.address)
     }
+  }
+
+  getETD() {
+    const url = 'https://api.coinmarketcap.com/v1/ticker/dai//?convert=ETH'
+    axios.get(url)
+      .then(res => {
+        const result = res.data[0]
+        this.setState({
+          ethToDai: 1 / result.price_eth
+        })
+      })
   }
 
   getBalance(address) {
