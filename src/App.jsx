@@ -17,9 +17,21 @@ import './App.scss'
 class App extends Component {
   constructor(props, context) {
     super(props)
+
+    this.state = {
+      offers: []
+    }
+
+    this.apiGet = this.apiGet.bind(this)
+    this.apiPost = this.apiPost.bind(this)
+    this.getOffers = this.getOffers.bind(this)
   }
 
   componentDidMount() {
+    this.getOffers()
+  }
+
+  getOffers() {
     this.apiGet('offers', (result) => {
       this.setState({
         offers: result.offers || []
@@ -51,13 +63,14 @@ class App extends Component {
 
   render() {
     const { web3 } = this.context
-    const methods = { apiGet: this.apiGet, apiPost: this.apiPost }
+    const { offers } = this.state
+    const methods = { apiGet: this.apiGet, apiPost: this.apiPost, getOffers: this.getOffers }
 
     return (
       <FadeIn>
         <div className="AppWrapper">
           <Header address={web3.selectedAccount} />
-          <TableGroup data={{ left: Tables[0], right: Tables[1], classes: "first" }} />
+          <TableGroup data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }} />
           <FormTab methods={methods} address={web3.selectedAccount} />
           <TableGroup data={{ left: Tables[2], right: Tables[3] }} style={{ marginBottom: 29 }} />
           <TableGroup data={{ left: Tables[4], right: Tables[5] }} />

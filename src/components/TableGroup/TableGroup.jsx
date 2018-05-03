@@ -11,10 +11,13 @@ class TableGroup extends Component {
 
   render() {
     const { style, data } = this.props
+    const left = Object.assign(data.left, data.data)
+    const right = Object.assign(data.right, data.data)
+
     return (
       <div className="TableGroup" style={style}>
-        <Table data={data.left} classes={data.classes ? data.classes : ''} />
-        <Table data={data.right} classes={data.classes ? data.classes : ''} />
+        <Table data={left} classes={data.classes ? data.classes : ''} />
+        <Table data={right} classes={data.classes ? data.classes : ''} />
       </div>
     )
   }

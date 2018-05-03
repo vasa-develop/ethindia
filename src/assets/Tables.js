@@ -4,29 +4,24 @@ const Tables = [
     headers: [
       {
         label: 'Amount',
-        key: 'amount',
+        key: 'loanAmountOffered',
         precision: 3,
         style: { textAlign: 'right' }
       }, {
         label: 'Term',
-        key: 'term',
+        key: 'loanDuration',
         filter: 'calcTerm'
       }, {
         label: 'Rate',
-        key: 'rate',
+        key: 'interestRatePerDay',
         precision: 3,
         suffix: '%'
       }
     ],
-    data: [
-      { amount: 100000.458, term: 156, rate: 0.009 },
-      { amount: 350.254, term: 156, rate: 0.009 },
-      { amount: 4523.458, term: 156, rate: 0.009 },
-      { amount: 131000.000, term: 156, rate: 0.009 },
-      { amount: 2000.120, term: 156, rate: 0.009 },
-      { amount: 1200.5, term: 156, rate: 0.009 },
-      { amount: 2400, term: 156, rate: 0.009 },
-    ],
+    data: {
+      key: 'offers',
+      filter: (d) => (d.filter(item => (item.lender && item.lender.length > 0)))
+    },
     action: {
       label: 'Fill',
     }
@@ -35,31 +30,24 @@ const Tables = [
     headers: [
       {
         label: 'Rate',
-        key: 'rate',
+        key: 'interestRatePerDay',
         precision: 3,
         suffix: '%'
       }, {
         label: 'Term',
-        key: 'term',
+        key: 'loanDuration',
         filter: 'calcTerm'
       }, {
         label: 'Amount',
-        key: 'amount',
+        key: 'loanAmountOffered',
         precision: 3,
         style: { textAlign: 'right' }
       }
     ],
-    data: [
-      { amount: 100000.458, term: 156, rate: 0.009 },
-      { amount: 2400, term: 156, rate: 0.009 },
-      { amount: 1200.5, term: 156, rate: 0.009 },
-      { amount: 2000.120, term: 156, rate: 0.009 },
-      { amount: 131000.000, term: 156, rate: 0.009 },
-      { amount: 4523.458, term: 156, rate: 0.009 },
-      { amount: 350.254, term: 156, rate: 0.009 },
-      { amount: 131000.000, term: 156, rate: 0.009 },
-      { amount: 1200.5, term: 156, rate: 0.009 },
-    ],
+    data: {
+      key: 'offers',
+      filter: (d) => (d.filter(item => (item.borrower && item.borrower.length > 0)))
+    },
     action: {
       label: 'Select',
       style: { backgroundColor: '#f7f8f9' }

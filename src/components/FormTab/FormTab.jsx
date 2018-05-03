@@ -11,6 +11,7 @@ const FormInputs = [
     key: 'loanAmountOffered',
     label: 'Amount',
     width: 110,
+    output: (val) => (val.toString()),
     inputs: [{
       precision: 3,
       suffix: 'ETH',
@@ -20,6 +21,7 @@ const FormInputs = [
     key: 'interestRatePerDay',
     label: 'Rate %',
     width: 88,
+    output: (val) => (val.toString()),
     inputs: [{
       precision: 3,
       arrow: true,
@@ -30,6 +32,7 @@ const FormInputs = [
     key: 'collateralAmount',
     label: 'Collateral',
     width: 110,
+    output: (val) => (val.toString()),
     inputs: [{
       precision: 2,
       suffix: 'ETH',
@@ -85,6 +88,7 @@ const FormInputs = [
     key: 'allowance',
     label: 'Allowance',
     width: 110,
+    output: (val) => (val.toString()),
     inputs: [{
       precision: 3,
       suffix: 'ETH',
@@ -125,11 +129,28 @@ class FormTab extends Component {
         FormInputs.forEach(item => {
           postData[item.key] = item.output ? item.output(formData[item.key]) : formData[item.key]
         })
-        postData.lender = isLend ? address : null
-        postData.borrower = !isLend ? address : null
-        
+        postData.lender = isLend ? address : ''
+        postData.borrower = !isLend ? address : ''
+
+        const keys = [
+          'relayerFeeLST',
+          'monitoringFeeLST',
+          'relayer',
+          'closureFeeLST',
+          'vCreator',
+          'sCreator',
+          'rolloverFeeLST',
+          'rCreator',
+          'collateralToken',
+          'creatorSalt',
+          'loanToken'
+        ]
+        keys.forEach(key => (postData[key] = ''))
+
+        delete postData.allowance
+
         methods.apiPost('offers', postData, (result) => {
-          console.log(result)
+          setTimeout(methods.getOffers, 1000)
         })
       }
     ).bind(this)

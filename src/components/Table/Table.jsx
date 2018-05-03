@@ -8,6 +8,16 @@ class Table extends Component {
     super(props)
   }
 
+  getData(data) {
+    const { key, filter } = data.data
+    if (key) {
+      const ret = this.props.data[key] || []
+      if (filter) return filter(ret)
+      return ret
+    }
+    return data.data
+  }
+
   addCommas(value) {
     return (value + '').replace(/(\d)(?=(\d{3})+$)/g, '$1,')
   }
@@ -28,6 +38,11 @@ class Table extends Component {
 
   getDisplayData(data, header) {
     let ret = data[header.key]
+
+    if (header.key === 'loanDuration') {
+      ret = ret.split(' ')[0]
+    }
+
     if (header.precision) ret = this.setPrecision(ret, header.precision)
     if (header.filter) ret = this[header.filter](ret)
     if (header.suffix) ret += header.suffix
@@ -36,6 +51,7 @@ class Table extends Component {
 
   render() {
     const { data, classes } = this.props
+    const filterdData = this.getData(data)
 
     return (
       <div className="TableWrapper">
@@ -58,7 +74,7 @@ class Table extends Component {
           <table cellpadding="0" cellspacing="0" border="0">
             <tbody>
               {
-                data.data.map(d => (
+                filterdData.map(d => (
                   <tr>
                     {
                       data.headers.map(h => (
@@ -71,7 +87,7 @@ class Table extends Component {
                                     <div className="Fill" style={{ width: `${d[h.key] * 0.5}%` }} />
                                   </div>
                                   <div className="BarMarks" />
-                                  <div className="BarPercent" style={{marginLeft: `calc(${d[h.key] * 0.5}% - 13px)`}}>{this.getDisplayData(d, h)}</div>
+                                  <div className="BarPercent" style={{ marginLeft: `calc(${d[h.key] * 0.5}% - 13px)` }}>{this.getDisplayData(d, h)}</div>
                                 </div>
                                 : null
                               : this.getDisplayData(d, h)
@@ -92,6 +108,9 @@ class Table extends Component {
                     </td>
                   </tr>
                 ))
+              }
+              {
+                filterdData.length === 0 && <tr><td colSpan={data.headers.length}>No Data</td></tr>
               }
             </tbody>
           </table>
