@@ -58,6 +58,18 @@
           .FormInput {
             input {
               background-color: #f7f8f9;
+
+              &.Button {
+                &:hover {
+                  transform: translate(-.5px, -.5px);
+                  text-shadow: 1px 1px 1px #7acaf1;
+                  box-shadow: 1px 1px 3px #5b91ed;
+                }
+
+                &:active {
+                  transform: translate(.5px, .5px);
+                }
+              }
             }
           }
         }
@@ -92,6 +104,7 @@
             width: 100%;
 
             &.Button {
+              cursor: pointer;
               border: 0;
               padding: 10px;
               text-decoration: none;
@@ -106,6 +119,16 @@
               background-image: -o-linear-gradient(left, #7acaf1, #5b91ed);
               background-image: linear-gradient(to right, #7acaf1, #5b91ed);
               filter:progid:DXImageTransform.Microsoft.gradient(GradientType=3,startColorstr=#7acaf1, endColorstr=#5b91ed);
+
+              &:hover {
+                transform: translate(-.5px, -.5px);
+                text-shadow: 1px 1px 1px #5b91ed;
+                box-shadow: 1px 1px 3px #7acaf1;
+              }
+
+              &:active {
+                transform: translate(.5px, .5px);
+              }
             }
           }
         }

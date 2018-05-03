@@ -20,7 +20,11 @@ const Tables = [
     ],
     data: {
       key: 'offers',
-      filter: (d) => (d.filter(item => (item.lender && item.lender.length > 0)))
+      filter: (d) => (
+        d
+          .filter(item => (item.lender && item.lender.length > 0))
+          .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
+      )
     },
     action: {
       label: 'Fill',
@@ -46,7 +50,11 @@ const Tables = [
     ],
     data: {
       key: 'offers',
-      filter: (d) => (d.filter(item => (item.borrower && item.borrower.length > 0)))
+      filter: (d) => (
+        d
+          .filter(item => (item.borrower && item.borrower.length > 0))
+          .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
+      )
     },
     action: {
       label: 'Select',
