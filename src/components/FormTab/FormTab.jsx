@@ -3,6 +3,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import moment from 'moment'
 
 import FormInput from '../FormInput/FormInput';
+import API from '../../assets/API'
 
 import './FormTab.scss'
 
@@ -137,10 +138,7 @@ class FormTab extends Component {
           'monitoringFeeLST',
           'relayer',
           'closureFeeLST',
-          'vCreator',
-          'sCreator',
           'rolloverFeeLST',
-          'rCreator',
           'collateralToken',
           'creatorSalt',
           'loanToken'
@@ -149,8 +147,17 @@ class FormTab extends Component {
 
         delete postData.allowance
 
-        methods.apiPost('offers', postData, (result) => {
-          setTimeout(methods.getOffers, 1000)
+        const { web3 } = window
+        web3.eth.sign(address, web3.sha3(API.APIKey), (err, result) => {
+          if (err) return
+          postData.rCreator = result.substr(2, 64)
+          postData.sCreator = result.substr(66, 64)
+          postData.vCreator = result.substr(130, 2)
+          postData.ecSignatureCreator = result
+
+          methods.apiPost('offers', postData, (result) => {
+            setTimeout(methods.getOffers, 1000)
+          })
         })
       }
     ).bind(this)

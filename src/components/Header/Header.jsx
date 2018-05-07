@@ -92,8 +92,8 @@ class Header extends Component {
     const { address } = this.props
 
     if (!DAIAddresses[network]) return
-
-    axios.get(`http://api-${network === 42 ? 'kovan' : ''}.etherscan.io/api?module=contract&action=getabi&address=${DAIAddresses[network]}`)
+    
+    axios.get(`http://api${network === 42 ? '-kovan' : ''}.etherscan.io/api?module=contract&action=getabi&address=${DAIAddresses[network]}`)
       .then(res => {
         const data = res.data;
         if (data.status == 0) {
@@ -106,7 +106,7 @@ class Header extends Component {
         if (contractABI != '') {
           const MyContract = web3.eth.contract(contractABI)
           const DAIContractInstance = MyContract.at(DAIAddresses[network])
-          console.log(DAIContractInstance)
+          // console.log(DAIContractInstance)
           DAIContractInstance.balanceOf(address, (err, result) => {
             if (err) {
               this.setState({
