@@ -19,7 +19,6 @@ class Header extends Component {
       balance: {
         c: [0]
       },
-      ethToDai: 0,
       balanceDAI: {
         c: [0]
       }
@@ -30,7 +29,6 @@ class Header extends Component {
 
   componentDidMount() {
     this.getBalance(this.props.address)
-    this.getETD()
   }
 
   componentWillReceiveProps(newProps) {
@@ -74,17 +72,6 @@ class Header extends Component {
 
       this.setState(newState, next)
     })
-  }
-
-  getETD() {
-    const url = 'https://api.coinmarketcap.com/v1/ticker/dai//?convert=ETH'
-    axios.get(url)
-      .then(res => {
-        const result = res.data[0]
-        this.setState({
-          ethToDai: 1 / result.price_eth
-        })
-      })
   }
 
   getABI() {

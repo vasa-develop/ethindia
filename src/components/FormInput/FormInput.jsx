@@ -12,7 +12,7 @@ class FormInput extends Component {
       const { data, val, onChange } = this.props
       const values = this.getValues(data, val)
       values[index + 1] = this.doubleDot(e.target.value)
-      onChange(data.key, this.getValue(values))
+      onChange(data.key, this.getValue(values), data.affection)
     }).bind(this)
   }
 
@@ -31,7 +31,7 @@ class FormInput extends Component {
       let value = values[index + 1].toString()
       if (data.inputs[index].arrow && data.inputs[index].suffix) value = Number(value.split(data.inputs[index].suffix).join(''))
       values[index + 1] = value * 1.0 + (isIncreate ? 1 : -1) * (data.inputs[index].step || 1)
-      onChange(data.key, this.getValue(values))
+      onChange(data.key, this.getValue(values), data.affection)
     }).bind(this)
   }
 
@@ -76,7 +76,7 @@ class FormInput extends Component {
         {
           data.inputs.map((item, index) => (
             <div className={`FormInput ${item.arrow ? 'Arrow' : ''}`} style={{ width: `${100 / inputCount}%` }}>
-              <input value={values[index + 1]} onChange={this.onChange(index)} min="0" max={item.max} />
+              <input value={values[index + 1]} onChange={this.onChange(index)} min="0" max={item.max} readOnly={data.readOnly}/>
               {
                 item.arrow || !item.suffix ? null
                   : <div class="Suffix">{item.suffix}</div>

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import axios from 'axios'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import moment from 'moment'
 
@@ -17,7 +18,8 @@ const FormInputs = [
       precision: 3,
       suffix: 'DAI',
       unit: 1
-    }]
+    }],
+    affection: 'allowance'
   }, {
     key: 'interestRatePerDay',
     label: 'Rate %',
@@ -94,7 +96,8 @@ const FormInputs = [
       precision: 3,
       suffix: 'ETH',
       unit: 1
-    }]
+    }],
+    readOnly: true
   },
 ]
 
@@ -110,15 +113,37 @@ class FormTab extends Component {
         loanDuration: 300,
         offerExpiry: 72,
         wrangler: '0xf31c52b569b6cfcd70e30f380c18608c8627d930',
-        allowance: 5.123
+        allowance: 5.123,
+        ethToDai: 0,
       }
     }
   }
 
-  onChange(key, value) {
-    const { formData } = this.state
+  componentDidMount() {
+    this.getETD()
+  }
+
+  getETD() {
+    const url = 'https://api.coinmarketcap.com/v1/ticker/dai//?convert=ETH'
+    axios.get(url)
+      .then(res => {
+        const result = res.data[0]
+        this.setState({
+          ethToDai: 1 / result.price_eth
+        })
+      })
+  }
+
+  onChange(key, value, affection = null) {
+    const { formData, ethToDai } = this.state
     formData[key] = value
-    this.setState(formData)
+
+    if (affection === 'allowance') {
+      console.log(value, ethToDai)
+      formData.allowance = value / ethToDai
+    }
+
+    this.setState({ formData })
   }
 
   onSubmit(isLend) {
