@@ -19,7 +19,7 @@ const FormInputs = [
       suffix: 'DAI',
       unit: 1
     }],
-    affection: 'allowance'
+    affection: 'collateralAmount'
   }, {
     key: 'interestRatePerDay',
     label: 'Rate %',
@@ -37,10 +37,11 @@ const FormInputs = [
     width: 110,
     output: (val) => (val.toString()),
     inputs: [{
-      precision: 2,
+      precision: 3,
       suffix: 'ETH',
       unit: 1
-    }]
+    }],
+    affection: 'loanAmountOffered'
   }, {
     key: 'loanDuration',
     label: 'Length',
@@ -96,9 +97,52 @@ const FormInputs = [
       precision: 3,
       suffix: 'ETH',
       unit: 1
-    }],
-    readOnly: true
+    }]
   },
+]
+
+const FeeFormInputs = [
+  {
+    key: 'relayerFeeLST',
+    label: 'Relayer Fee',
+    width: 110,
+    output: (val) => (val.toString()),
+    inputs: [{
+      precision: 3,
+      suffix: 'LST',
+      unit: 1
+    }]
+  }, {
+    key: 'monitoringFeeLST',
+    label: 'Monitoring Fee',
+    width: 110,
+    output: (val) => (val.toString()),
+    inputs: [{
+      precision: 3,
+      suffix: 'LST',
+      unit: 1
+    }]
+  }, {
+    key: 'rolloverFeeLST',
+    label: 'RollOver Fee',
+    width: 110,
+    output: (val) => (val.toString()),
+    inputs: [{
+      precision: 3,
+      suffix: 'LST',
+      unit: 1
+    }]
+  }, {
+    key: 'closureFeeLST',
+    label: 'Closure Fee',
+    width: 110,
+    output: (val) => (val.toString()),
+    inputs: [{
+      precision: 3,
+      suffix: 'LST',
+      unit: 1
+    }]
+  }
 ]
 
 class FormTab extends Component {
@@ -115,6 +159,10 @@ class FormTab extends Component {
         wrangler: '0xf31c52b569b6cfcd70e30f380c18608c8627d930',
         allowance: 5.123,
         ethToDai: 0,
+        relayerFeeLST: 0.01,
+        monitoringFeeLST: 0.01,
+        rolloverFeeLST: 0.01,
+        closureFeeLST: 0.01,
       }
     }
   }
@@ -138,9 +186,11 @@ class FormTab extends Component {
     const { formData, ethToDai } = this.state
     formData[key] = value
 
-    if (affection === 'allowance') {
-      console.log(value, ethToDai)
-      formData.allowance = value / ethToDai
+    if (affection === 'collateralAmount') {
+      formData[affection] = value / ethToDai
+    }
+    if (affection === 'loanAmountOffered') {
+      formData[affection] = value * ethToDai
     }
 
     this.setState({ formData })
@@ -155,15 +205,14 @@ class FormTab extends Component {
         FormInputs.forEach(item => {
           postData[item.key] = item.output ? item.output(formData[item.key]) : formData[item.key]
         })
+        FeeFormInputs.forEach(item => {
+          postData[item.key] = item.output ? item.output(formData[item.key]) : formData[item.key]
+        })
         postData.lender = isLend ? address : ''
         postData.borrower = !isLend ? address : ''
 
         const keys = [
-          'relayerFeeLST',
-          'monitoringFeeLST',
           'relayer',
-          'closureFeeLST',
-          'rolloverFeeLST',
           'collateralToken',
           'creatorSalt',
           'loanToken'
@@ -223,7 +272,7 @@ class FormTab extends Component {
                 <tr>
                   {
                     FormInputs.map(item => (
-                      <td width={item.width}>
+                      <td>
                         {
                           item.key === 'wrangler' ?
                             <div>Name</div>
@@ -233,11 +282,35 @@ class FormTab extends Component {
                       </td>
                     ))
                   }
-                  <td width="88">
+                  <td>
                     <div className="FormInput">
                       <input type="Button" className="Button" value="Order" onClick={this.onSubmit(true)} />
                     </div>
                   </td>
+                </tr>
+              </tbody>
+            </table>
+            <table cellspacing="15">
+              <thead>
+                <tr>
+                  {
+                    FeeFormInputs.map(item => (
+                      <th width={item.width}>{item.label}</th>
+                    ))
+                  }
+                  <th width="430"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  {
+                    FeeFormInputs.map(item => (
+                      <td>
+                        <FormInput data={item} onChange={this.onChange.bind(this)} val={formData[item.key]} />
+                      </td>
+                    ))
+                  }
+                  <td></td>
                 </tr>
               </tbody>
             </table>
@@ -258,7 +331,7 @@ class FormTab extends Component {
                 <tr>
                   {
                     FormInputs.map(item => (
-                      <td width={item.width}>
+                      <td>
                         {
                           item.key === 'wrangler' ?
                             <div>Name</div>
@@ -268,11 +341,35 @@ class FormTab extends Component {
                       </td>
                     ))
                   }
-                  <td width="88">
+                  <td>
                     <div className="FormInput">
                       <input type="Button" className="Button" value="Order" onClick={this.onSubmit(false)} />
                     </div>
                   </td>
+                </tr>
+              </tbody>
+            </table>
+            <table cellspacing="15">
+              <thead>
+                <tr>
+                  {
+                    FeeFormInputs.map(item => (
+                      <th width={item.width}>{item.label}</th>
+                    ))
+                  }
+                  <th width="430"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  {
+                    FeeFormInputs.map(item => (
+                      <td>
+                        <FormInput data={item} onChange={this.onChange.bind(this)} val={formData[item.key]} />
+                      </td>
+                    ))
+                  }
+                  <td></td>
                 </tr>
               </tbody>
             </table>

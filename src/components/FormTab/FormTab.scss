@@ -40,7 +40,6 @@
 
   .react-tabs__tab-panel {
     box-sizing: border-box;
-    height: 114px;
     border: 1px solid #CBD3DB;
     border-top: 0;
     border-radius: 0 0 3.4px 3.4px;
@@ -78,6 +77,11 @@
 
     table {
       width: 100%;
+      margin-top: 15px;
+
+      &:first-child {
+        margin-top: 0px;
+      }
 
       thead {
         th {

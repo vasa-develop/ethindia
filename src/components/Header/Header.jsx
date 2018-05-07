@@ -8,7 +8,6 @@ import './Header.scss'
 
 const DAIAddresses = {
   1: '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359',
-  // 42: '0xc4375b7de8af5a38a93548eb8453a498222c4ff2'
   42: '0xC4375B7De8af5a38a93548eb8453a498222C4fF2'
 }
 
