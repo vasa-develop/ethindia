@@ -173,12 +173,20 @@ class FormTab extends Component {
         delete postData.allowance
 
         const { web3 } = window
-        web3.eth.sign(address, web3.sha3(API.APIKey), (err, result) => {
+        web3.eth.sign(address, web3.sha3(JSON.stringify(postData)), (err, result) => {
           if (err) return
-          postData.rCreator = result.substr(2, 64)
-          postData.sCreator = result.substr(66, 64)
-          postData.vCreator = result.substr(130, 2)
+
           postData.ecSignatureCreator = result
+          result = result.substr(2); //remove 0x
+
+          postData.rCreator = '0x' + result.slice(0, 64)
+          postData.sCreator = '0x' + result.slice(64, 128)
+          postData.vCreator = web3.toDecimal('0x' + result.slice(128, 130))
+
+          console.log(postData.rCreator);
+          console.log(postData.sCreator);
+          console.log(postData.vCreator);
+          console.log(postData.ecSignatureCreator);
 
           methods.apiPost('offers', postData, (result) => {
             setTimeout(methods.getOffers, 1000)
