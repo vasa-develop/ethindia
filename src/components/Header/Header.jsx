@@ -28,7 +28,7 @@ class Header extends Component {
   }
 
   componentDidMount() {
-    this.getBalance(this.props.address)
+    if (this.props.address) this.getBalance(this.props.address)
   }
 
   componentWillReceiveProps(newProps) {
