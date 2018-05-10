@@ -1,6 +1,6 @@
 const Tables = [
   {
-    title: 'Live Lend Orders',
+    title: 'Lend Order Book',
     headers: [
       {
         label: 'Amount',
@@ -30,7 +30,7 @@ const Tables = [
       label: 'Fill',
     }
   }, {
-    title: 'Live Borrow Orders',
+    title: 'Borrow Order Book',
     headers: [
       {
         label: 'Rate',
@@ -61,7 +61,7 @@ const Tables = [
       style: { backgroundColor: '#f7f8f9' }
     }
   }, {
-    title: 'LEND PENDING',
+    title: 'MY LEND ORDERS',
     headers: [
       {
         label: 'Loan Number',
@@ -90,7 +90,7 @@ const Tables = [
       label: 'Cancel',
     }
   }, {
-    title: 'BORROW PENDING',
+    title: 'MY BORROW ORDERS',
     headers: [
       {
         label: 'Loan Number',
@@ -120,7 +120,7 @@ const Tables = [
       style: { backgroundColor: '#f7f8f9' }
     }
   }, {
-    title: 'LEND ACTIVE',
+    title: 'MY LEND POSITIONS',
     headers: [
       {
         label: 'Loan Number',
@@ -153,7 +153,7 @@ const Tables = [
       label: '3-dot',
     }
   }, {
-    title: 'BORROW ACTIVE',
+    title: 'MY BORROW POSITIONS',
     headers: [
       {
         label: 'Loan Number',

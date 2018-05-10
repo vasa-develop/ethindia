@@ -253,8 +253,8 @@ class FormTab extends Component {
       <div className="TabWrapper">
         <Tabs>
           <TabList>
-            <Tab>Lend Order</Tab>
-            <Tab>Borrow Order</Tab>
+            <Tab>Lend Order Form</Tab>
+            <Tab>Borrow Order Form</Tab>
           </TabList>
           <TabPanel>
             <table cellspacing="15">
