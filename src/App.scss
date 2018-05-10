@@ -8,23 +8,6 @@ body * {
   outline: none;
 }
 
-.AppWrapper > div:not(.HeaderWrapper) {
-  max-width: 1042px;
-  margin: 0 auto 50px;
-}
-
-.HeaderWrapper {
-  .Banner .Inner,
-  .Header {
-    max-width: 1042px;
-    margin: 0 auto 50px;
-  }
-}
-
-.HeaderWrapper .Header {
-  margin-bottom: 0;
-}
-
 *::-webkit-scrollbar {
   width: 4px;
 
