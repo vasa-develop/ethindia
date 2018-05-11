@@ -58,15 +58,21 @@
             input {
               background-color: #f7f8f9;
 
-              &.Button {
-                &:hover {
-                  transform: translate(-.5px, -.5px);
-                  text-shadow: 1px 1px 1px #7acaf1;
-                  box-shadow: 1px 1px 3px #5b91ed;
-                }
+              &.Disabled {
+                background: #bfbfbf;
+              }
 
-                &:active {
-                  transform: translate(.5px, .5px);
+              &.Button {
+                &:not(.Disabled) {
+                  &:hover {
+                    transform: translate(-.5px, -.5px);
+                    text-shadow: 1px 1px 1px #7acaf1;
+                    box-shadow: 1px 1px 3px #5b91ed;
+                  }
+
+                  &:active {
+                    transform: translate(.5px, .5px);
+                  }
                 }
               }
             }
@@ -80,7 +86,7 @@
       margin-top: 15px;
 
       &:first-child {
-        margin-top: 0px;
+        margin-top: 0;
       }
 
       thead {
@@ -124,14 +130,20 @@
               background-image: linear-gradient(to right, #7acaf1, #5b91ed);
               filter:progid:DXImageTransform.Microsoft.gradient(GradientType=3,startColorstr=#7acaf1, endColorstr=#5b91ed);
 
-              &:hover {
-                transform: translate(-.5px, -.5px);
-                text-shadow: 1px 1px 1px #5b91ed;
-                box-shadow: 1px 1px 3px #7acaf1;
+              &.Disabled {
+                background: #bfbfbf;
               }
 
-              &:active {
-                transform: translate(.5px, .5px);
+              &:not(.Disabled) {
+                &:hover {
+                  transform: translate(-.5px, -.5px);
+                  text-shadow: 1px 1px 1px #5b91ed;
+                  box-shadow: 1px 1px 3px #7acaf1;
+                }
+
+                &:active {
+                  transform: translate(.5px, .5px);
+                }
               }
             }
           }

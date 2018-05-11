@@ -18,7 +18,8 @@ const FormInputs = [
       precision: 3,
       suffix: 'DAI',
       unit: 1
-    }]
+    }],
+    required: true
   }, {
     key: 'interestRatePerDay',
     label: 'Rate %',
@@ -29,7 +30,8 @@ const FormInputs = [
       arrow: true,
       step: 0.1,
       unit: 1
-    }]
+    }],
+    required: true
   }, {
     key: 'loanDuration',
     label: 'Length',
@@ -48,7 +50,8 @@ const FormInputs = [
       suffix: 'h',
       max: 23,
       unit: 1
-    }]
+    }],
+    required: true
   }, {
     key: 'offerExpiry',
     label: 'Order Expiration',
@@ -138,19 +141,17 @@ class FormTab extends Component {
     super(props)
 
     this.state = {
-      formData: {
-        loanAmountOffered: 4.123,
-        interestRatePerDay: 0.008,
-        loanDuration: 300,
-        offerExpiry: 72,
-        wrangler: '0xf31c52b569b6cfcd70e30f380c18608c8627d930',
-        allowance: 5.123,
-        ethToDai: 0,
-        relayerFeeLST: 0.01,
-        monitoringFeeLST: 0.01,
-        rolloverFeeLST: 0.01,
-        closureFeeLST: 0.01,
-      }
+      loanAmountOffered: 4.123,
+      interestRatePerDay: 0.008,
+      loanDuration: 300,
+      offerExpiry: 72,
+      wrangler: '0xf31c52b569b6cfcd70e30f380c18608c8627d930',
+      allowance: 5.123,
+      ethToDai: 0,
+      relayerFeeLST: 0.01,
+      monitoringFeeLST: 0.01,
+      rolloverFeeLST: 0.01,
+      closureFeeLST: 0.01,
     }
   }
 
@@ -170,15 +171,24 @@ class FormTab extends Component {
   }
 
   onChange(key, value, affection = null) {
-    const { formData, ethToDai } = this.state
+    const formData = this.state
     formData[key] = value
-    this.setState({ formData })
+    this.setState(formData)
+  }
+
+  isValid() {
+    const formData = this.state
+    let valid = true
+    FormInputs.forEach(item => {
+      if (item.required && Number(formData[item.key]) == 0) valid = false
+    })
+    return valid
   }
 
   onSubmit(isLend) {
     return (
       () => {
-        const { formData } = this.state
+        const formData = this.state
         const { address, methods } = this.props
         let postData = {}
         FormInputs.forEach(item => {
@@ -222,7 +232,10 @@ class FormTab extends Component {
 
   render() {
     const { title = 'Table', data = [] } = this.props
-    const { formData } = this.state
+    const formData = this.state
+
+    const isValid = this.isValid()
+    console.log(isValid)
 
     return (
       <div className="TabWrapper">
@@ -259,7 +272,7 @@ class FormTab extends Component {
                   }
                   <td>
                     <div className="FormInput">
-                      <input type="Button" className="Button" value="Order" onClick={this.onSubmit(true)} />
+                      <input type="Button" className={`Button ${isValid ? '' : 'Disabled'}`} value="Order" onClick={this.onSubmit(true)} disabled={!isValid} />
                     </div>
                   </td>
                 </tr>
@@ -318,7 +331,7 @@ class FormTab extends Component {
                   }
                   <td>
                     <div className="FormInput">
-                      <input type="Button" className="Button" value="Order" onClick={this.onSubmit(false)} />
+                      <input type="Button" className={`Button ${isValid ? '' : 'Disabled'}`} value="Order" onClick={this.onSubmit(false)} disabled={!isValid} />
                     </div>
                   </td>
                 </tr>
