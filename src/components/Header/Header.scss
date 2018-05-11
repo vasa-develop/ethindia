@@ -1,51 +1,68 @@
 .HeaderWrapper {
   .Banner {
-    height: 70px;
     background: white;
 
     .Inner {
-      line-height: 70px;
       padding: 0 20px;
       max-width: 1042px;
-      margin: 0 auto 50px;
-
-      img {
-        height: 41px;
-        width: 26.03px;
-        padding: 3px;
-      }
-    }
-  }
-
-  .Header {
-    display: flex;
-    justify-content: space-between;
-    padding: 15px 20px 20px;
-    max-width: 1042px;
-    margin: 0 auto;
-
-    .Info {
+      margin: 0 auto;
       display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
 
-      .Label {
-        text-transform: uppercase;
-        font-size: 12px;
-        font-weight: 600;
-        line-height: 17px;
-        color: #AAB2C0;
+      .Logo {
+        width: 30px;
+        height: 30px;
+        background: #a6b2c4;
+        border-radius: 50%;
+        padding: 6px;
+        display: flex;
+
+        img {
+          height: 100%;
+          width: 100%;
+          filter: invert(1);
+        }
+
+        .Title {
+          line-height: 18px;
+          margin-left: 20px;
+          font-size: 18px;
+          font-weight: 600;
+          color: #a6b2c4;
+        }
       }
 
-      .Value {
-        margin-left: 15px;
-        font-size: 11px;
-        line-height: 15px;
-        color: #97A3B4;
+      .Header {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
 
-        span {
-          text-transform: uppercase;
-          font-size: 12px;
-          font-weight: 600;
-          line-height: 17px;
+        .Info {
+          display: flex;
+
+          .Label {
+            text-transform: uppercase;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 17px;
+            color: #AAB2C0;
+          }
+
+          .Value {
+            margin-left: 15px;
+            font-size: 11px;
+            line-height: 15px;
+            color: #97A3B4;
+
+            span {
+              text-transform: uppercase;
+              font-size: 12px;
+              font-weight: 600;
+              line-height: 17px;
+            }
+          }
         }
       }
     }

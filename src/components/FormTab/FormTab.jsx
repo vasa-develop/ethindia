@@ -18,8 +18,7 @@ const FormInputs = [
       precision: 3,
       suffix: 'DAI',
       unit: 1
-    }],
-    affection: 'collateralAmount'
+    }]
   }, {
     key: 'interestRatePerDay',
     label: 'Rate %',
@@ -31,17 +30,6 @@ const FormInputs = [
       step: 0.1,
       unit: 1
     }]
-  }, {
-    key: 'collateralAmount',
-    label: 'Collateral',
-    width: 110,
-    output: (val) => (val.toString()),
-    inputs: [{
-      precision: 3,
-      suffix: 'ETH',
-      unit: 1
-    }],
-    affection: 'loanAmountOffered'
   }, {
     key: 'loanDuration',
     label: 'Length',
@@ -153,7 +141,6 @@ class FormTab extends Component {
       formData: {
         loanAmountOffered: 4.123,
         interestRatePerDay: 0.008,
-        collateralAmount: 2326.74,
         loanDuration: 300,
         offerExpiry: 72,
         wrangler: '0xf31c52b569b6cfcd70e30f380c18608c8627d930',
@@ -185,14 +172,6 @@ class FormTab extends Component {
   onChange(key, value, affection = null) {
     const { formData, ethToDai } = this.state
     formData[key] = value
-
-    if (affection === 'collateralAmount') {
-      formData[affection] = value / ethToDai
-    }
-    if (affection === 'loanAmountOffered') {
-      formData[affection] = value * ethToDai
-    }
-
     this.setState({ formData })
   }
 
@@ -213,6 +192,7 @@ class FormTab extends Component {
 
         const keys = [
           'relayer',
+          'collateralAmount',
           'collateralToken',
           'creatorSalt',
           'loanToken'
@@ -298,7 +278,7 @@ class FormTab extends Component {
                       <th width={item.width}>{item.label}</th>
                     ))
                   }
-                  <th width="430"></th>
+                  <th width="360"></th>
                 </tr>
               </thead>
               <tbody>
