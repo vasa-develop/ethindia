@@ -18,7 +18,9 @@ class Orders extends Component {
     super(props)
 
     this.state = {
-      offers: []
+      offers: [],
+      myLendOffers: [],
+      myBorrowOffers: []
     }
 
     this.apiGet = this.apiGet.bind(this)
@@ -32,9 +34,11 @@ class Orders extends Component {
 
   getOffers() {
     this.apiGet('offers', (result) => {
-      this.setState({
-        offers: result.offers || []
-      })
+      const address = this.context.web3.selectedAccount
+      const offers = result.offers || []
+      const myLendOffers = offers.filter(item => (item.lender === address))
+      const myBorrowOffers = offers.filter(item => (item.borrower === address))
+      this.setState({ offers, myLendOffers, myBorrowOffers })
     })
   }
 
@@ -62,7 +66,7 @@ class Orders extends Component {
 
   render() {
     const { web3 } = this.context
-    const { offers } = this.state
+    const { offers, myLendOffers, myBorrowOffers } = this.state
     const methods = { apiGet: this.apiGet, apiPost: this.apiPost, getOffers: this.getOffers }
 
     return (
@@ -70,7 +74,7 @@ class Orders extends Component {
         <Header address={web3.selectedAccount} />
         <TableGroup data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }} />
         <FormTab methods={methods} address={web3.selectedAccount} />
-        <TableGroup data={{ left: Tables[2], right: Tables[3] }} style={{ marginBottom: 29 }} />
+        <TableGroup data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }} style={{ marginBottom: 29 }} />
         <TableGroup data={{ left: Tables[4], right: Tables[5] }} />
       </div>
     )

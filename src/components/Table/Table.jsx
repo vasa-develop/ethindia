@@ -23,6 +23,7 @@ class Table extends Component {
   }
 
   calcTerm(value) {
+    const val = value.toString().split(' ')[0]
     return `${parseInt(value / 24)}d` + (value % 24 != 0 ? ` ${value % 24}h` : '')
   }
 

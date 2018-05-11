@@ -65,27 +65,34 @@ const Tables = [
     headers: [
       {
         label: 'Loan Number',
-        key: 'loanNumber',
+        key: 'lender',
         filter: 'shortAddress',
         style: { fontFamily: "Space Mono" }
       }, {
         label: 'Amount',
-        key: 'amount',
+        key: 'loanAmountOffered',
         precision: 2,
       }, {
         label: 'Total Interest ',
         key: 'totalInterest',
+        precision: 5,
       }, {
         label: 'Term',
-        key: 'term',
+        key: 'loanDuration',
         filter: 'calcTerm'
       }
     ],
-    data: [
-      { loanNumber: '0x27...1A9Z', amount: 13.83, totalInterest: 0.11064, term: 156 },
-      { loanNumber: '0x32...136B', amount: 64.4, totalInterest: 0.5796, term: 216 },
-      { loanNumber: '0x18...4567', amount: 13.85, totalInterest: 0.11064, term: 156 },
-    ],
+    data: {
+      key: 'myLendOffers',
+      filter: (d) => (
+        d
+          .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
+          .map(item => {
+            item.totalInterest = item.loanAmountOffered * item.interestRatePerDay
+            return item
+          })
+      )
+    },
     action: {
       label: 'Cancel',
     }
@@ -94,27 +101,34 @@ const Tables = [
     headers: [
       {
         label: 'Loan Number',
-        key: 'loanNumber',
+        key: 'borrower',
         filter: 'shortAddress',
         style: { fontFamily: "Space Mono" }
       }, {
         label: 'Amount',
-        key: 'amount',
+        key: 'loanAmountOffered',
         precision: 2,
       }, {
         label: 'Total Interest ',
         key: 'totalInterest',
+        precision: 5,
       }, {
         label: 'Term',
-        key: 'term',
+        key: 'loanDuration',
         filter: 'calcTerm'
       }
     ],
-    data: [
-      { loanNumber: '0x27...1A9Z', amount: 13.83, totalInterest: 0.11064, term: 156 },
-      { loanNumber: '0x32...136B', amount: 64.4, totalInterest: 0.5796, term: 216 },
-      { loanNumber: '0x18...4567', amount: 13.85, totalInterest: 0.11064, term: 156 },
-    ],
+    data: {
+      key: 'myBorrowOffers',
+      filter: (d) => (
+        d
+          .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
+          .map(item => {
+            item.totalInterest = item.loanAmountOffered * item.interestRatePerDay
+            return item
+          })
+      )
+    },
     action: {
       label: 'Cancel',
       style: { backgroundColor: '#f7f8f9' }

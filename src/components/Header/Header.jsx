@@ -48,26 +48,26 @@ class Header extends Component {
       switch (netId) {
         case "1":
           newState.network = 1
-          console.log('This is mainnet')
+          // console.log('This is mainnet')
           break
         case "2":
           newState.network = 2
-          console.log('This is the deprecated Morden test network.')
+          // console.log('This is the deprecated Morden test network.')
           break
         case "3":
           newState.network = 3
-          console.log('This is the ropsten test network.')
+          // console.log('This is the ropsten test network.')
           break
         case "4":
           newState.network = 4
-          console.log('This is the rinkeby test network.')
+          // console.log('This is the rinkeby test network.')
           break
         case "42":
           newState.network = 42
-          console.log('This is the kovan test network.')
+          // console.log('This is the kovan test network.')
           break
         default:
-          console.log('This is an unknown network.')
+          // console.log('This is an unknown network.')
       }
 
       this.setState(newState, next)

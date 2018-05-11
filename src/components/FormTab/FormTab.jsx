@@ -212,11 +212,6 @@ class FormTab extends Component {
           postData.sCreator = '0x' + result.slice(64, 128)
           postData.vCreator = web3.toDecimal('0x' + result.slice(128, 130))
 
-          console.log(postData.rCreator);
-          console.log(postData.sCreator);
-          console.log(postData.vCreator);
-          console.log(postData.ecSignatureCreator);
-
           methods.apiPost('offers', postData, (result) => {
             setTimeout(methods.getOffers, 1000)
           })
