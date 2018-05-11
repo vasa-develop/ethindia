@@ -36,6 +36,7 @@ class Header extends Component {
 
     if (newProps.address != address) {
       this.getBalance(newProps.address)
+      this.props.onAddressChange()
     }
   }
 

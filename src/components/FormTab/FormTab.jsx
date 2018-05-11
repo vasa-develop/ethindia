@@ -235,7 +235,6 @@ class FormTab extends Component {
     const formData = this.state
 
     const isValid = this.isValid()
-    console.log(isValid)
 
     return (
       <div className="TabWrapper">
