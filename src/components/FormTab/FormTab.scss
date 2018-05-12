@@ -1,8 +1,6 @@
 .TabWrapper {
-  max-width: 1180px;
-  margin: -50px auto 50px;
-  background: white;
-  border-radius: 8px;
+  margin-top: -50px;
+  margin-bottom: 25px;
   padding: 62px 30px 50px;
 
   .Title {
@@ -24,6 +22,7 @@
     border: 1px solid rgba(0, 0, 0, 0.11);
     margin-top: 47px;
     position: relative;
+    cursor: pointer;
 
     .Handle {
       text-transform: uppercase;
@@ -118,22 +117,8 @@
 
         .FormInput {
           position: relative;
-
-          .left {
-            content: '';
-            width: 0;
-            height: 0;
-            border-right: 6px solid #8155e9;
-            border-bottom: 5px solid transparent;
-            border-top: 5px solid transparent;
-            position: absolute;
-            left: -6px;
-            top: 17px;
-          }
-        }
-
-        input {
           width: 100%;
+          text-align: center;
 
           &.Button {
             cursor: pointer;
@@ -167,7 +152,23 @@
                 transform: translate(.5px, .5px);
               }
             }
+
+            .left {
+              content: '';
+              width: 0;
+              height: 0;
+              border-right: 6px solid #8155e9;
+              border-bottom: 5px solid transparent;
+              border-top: 5px solid transparent;
+              position: absolute;
+              left: -6px;
+              top: 17px;
+            }
           }
+        }
+
+        input {
+          width: 100%;
         }
       }
     }

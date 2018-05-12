@@ -1,3 +1,12 @@
 .OrdersWrapper {
-  > div:not(.HeaderWrapper) {}
+  background: rgba(246, 246, 246, 1.0);
+
+  > div:not(.HeaderWrapper) {
+    max-width: 1180px;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    margin-left: auto;
+    margin-right: auto;
+  }
 }

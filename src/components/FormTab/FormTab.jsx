@@ -271,9 +271,9 @@ class FormTab extends Component {
                 ))
               }
               <td>
-                <div className="FormInput">
+                <div className={`FormInput Button ${isValid ? '' : 'Disabled'}`} onClick={this.onSubmit.bind(this)}>
                   <div className="left" />
-                  <input type="Button" className={`Button ${isValid ? '' : 'Disabled'}`} value="Order" onClick={this.onSubmit.bind(this)  } disabled={!isValid} />
+                  Order
                 </div>
               </td>
             </tr>
