@@ -1,4 +1,4 @@
-.TableWrapper {
+.ListWrapper {
   display: block;
   position: relative;
 
@@ -13,6 +13,59 @@
     text-align: left;
     letter-spacing: .17px;
     line-height: 29px;
+    padding: 0 40px 0 50px;
+  }
+
+  .Lists {
+    max-height: 461px;
+    min-height: 461px;
+    overflow: auto;
+    background: transparent;
+  }
+
+  .List {
+    border: 1px solid #E6EAEE;
+    border-radius: 3.4px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    padding: 23px 40px 23px 50px;
+    margin-bottom: 10px;
+    position: relative;
+    text-align: center;
+
+    .ListField {
+      display: inline-block;
+      text-align: left;
+
+      &:not(:first-child) {
+        margin-top: 15px;
+      }
+
+      .Label {
+        text-transform: uppercase;
+        font-size: 12px;
+        color: rgba(0, 0, 0, .3);
+        line-height: 14px;
+      }
+
+      .Data {
+        margin-top: 5px;
+        font-size: 14px;
+        color: black;
+        line-height: 22px;
+      }
+    }
+
+    .Actions {
+      .close {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        background-image: url('../../assets/images/Close.png');
+        right: 22px;
+        top: 20px;
+      }
+    }
   }
 
   table {

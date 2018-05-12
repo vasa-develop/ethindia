@@ -4,18 +4,12 @@
   margin-bottom: 43px;
 
   .TableWrapper {
-    width: calc(50% - 20px);
-    padding: 15px 0 19px;
+    width: calc(50% - 10px);
+    padding: 30px 40px 25px 50px;
     box-sizing: border-box;
     border: 1px solid #E6EAEE;
     border-radius: 3.4px;
-    background-color: #FFFFFF;
-
-    &:first-child {
-      box-sizing: border-box;
-      border-color: #CBD3DB;
-      background-color: #DDDEDF;
-      box-shadow: 0 5px 16px 0 rgba(0,0,0,0.05);
-    }
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    background-color: white;
   }
 }

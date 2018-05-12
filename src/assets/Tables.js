@@ -6,7 +6,7 @@ const Tables = [
         label: 'Amount',
         key: 'loanAmountOffered',
         precision: 3,
-        style: { textAlign: 'right' }
+        style: { textAlign: 'center' }
       }, {
         label: 'Term',
         key: 'loanDuration',
@@ -45,7 +45,7 @@ const Tables = [
         label: 'Amount',
         key: 'loanAmountOffered',
         precision: 3,
-        style: { textAlign: 'right' }
+        style: { textAlign: 'center' }
       }
     ],
     data: {
@@ -57,8 +57,7 @@ const Tables = [
       )
     },
     action: {
-      label: 'Select',
-      style: { backgroundColor: '#f7f8f9' }
+      label: 'Select'
     }
   }, {
     title: 'MY LEND ORDERS',
@@ -66,20 +65,22 @@ const Tables = [
       {
         label: 'Loan Number',
         key: 'lender',
-        filter: 'shortAddress',
-        style: { fontFamily: "Space Mono" }
+        style: { fontFamily: 'Space Mono', width: '100%' }
       }, {
         label: 'Amount',
         key: 'loanAmountOffered',
         precision: 2,
+        style: { fontFamily: 'Space Mono', width: '33%' }
       }, {
         label: 'Total Interest ',
         key: 'totalInterest',
         precision: 5,
+        style: { fontFamily: 'Space Mono', width: '40%' }
       }, {
         label: 'Term',
         key: 'loanDuration',
-        filter: 'calcTerm'
+        filter: 'calcTerm',
+        style: { fontFamily: 'Space Mono', width: '27%' }
       }
     ],
     data: {
@@ -94,7 +95,7 @@ const Tables = [
       )
     },
     action: {
-      label: 'Cancel',
+      key: 'close',
     }
   }, {
     title: 'MY BORROW ORDERS',
@@ -102,20 +103,22 @@ const Tables = [
       {
         label: 'Loan Number',
         key: 'borrower',
-        filter: 'shortAddress',
-        style: { fontFamily: "Space Mono" }
+        style: { fontFamily: 'Space Mono', width: '100%' }
       }, {
         label: 'Amount',
         key: 'loanAmountOffered',
         precision: 2,
+        style: { fontFamily: 'Space Mono', width: '33%' }
       }, {
         label: 'Total Interest ',
         key: 'totalInterest',
         precision: 5,
+        style: { fontFamily: 'Space Mono', width: '40%' }
       }, {
         label: 'Term',
         key: 'loanDuration',
-        filter: 'calcTerm'
+        filter: 'calcTerm',
+        style: { fontFamily: 'Space Mono', width: '27%' }
       }
     ],
     data: {
@@ -130,8 +133,7 @@ const Tables = [
       )
     },
     action: {
-      label: 'Cancel',
-      style: { backgroundColor: '#f7f8f9' }
+      key: 'close',
     }
   }, {
     title: 'MY LEND POSITIONS',
@@ -140,7 +142,7 @@ const Tables = [
         label: 'Loan Number',
         key: 'loanNumber',
         filter: 'shortAddress',
-        style: { fontFamily: "Space Mono", textAlign: 'right' }
+        style: { fontFamily: 'Space Mono', textAlign: 'center' }
       }, {
         label: 'Amount',
         key: 'amount',
@@ -173,7 +175,7 @@ const Tables = [
         label: 'Loan Number',
         key: 'loanNumber',
         filter: 'shortAddress',
-        style: { fontFamily: "Space Mono", textAlign: 'right' }
+        style: { fontFamily: 'Space Mono', textAlign: 'center' }
       }, {
         label: 'Amount',
         key: 'amount',
@@ -197,8 +199,7 @@ const Tables = [
       { loanNumber: '0x18...4567', amount: 13.85, totalInterest: 0.11064, term: 156, health: 100 },
     ],
     action: {
-      label: '3-dot',
-      style: { backgroundColor: '#f7f8f9' }
+      label: '3-dot'
     }
   },
 ]

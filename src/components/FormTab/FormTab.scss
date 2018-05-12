@@ -2,6 +2,8 @@
   margin-top: -50px;
   margin-bottom: 25px;
   padding: 62px 30px 50px;
+  background: white;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 
   .Title {
     opacity: .8;
@@ -67,10 +69,10 @@
 
   .Wrangler {
     .Label {
-      font-size: 12.0px;
+      font-size: 12px;
       color: rgba(0, 0, 0, 0.3);
       text-align: left;
-      line-height: 14.0px;
+      line-height: 14px;
       text-transform: uppercase;
     }
 
@@ -78,7 +80,7 @@
       border: 1px solid transparent;
       -webkit-appearance: none;
       font-family: "SFProText-Medium", Helvetica, Arial, serif;
-      font-size: 14.0px;
+      font-size: 14px;
       color: rgba(145, 102, 237, 1.0);
       padding: 10px 0;
     }
@@ -95,10 +97,10 @@
 
     thead {
       th {
-        font-size: 12.0px;
+        font-size: 12px;
         color: rgba(0, 0, 0, 0.3);
         text-align: left;
-        line-height: 14.0px;
+        line-height: 14px;
         text-transform: uppercase;
       }
     }
@@ -139,6 +141,10 @@
 
             &.Disabled {
               background: #bfbfbf;
+
+              .left {
+                display: none;
+              }
             }
 
             &:not(.Disabled) {

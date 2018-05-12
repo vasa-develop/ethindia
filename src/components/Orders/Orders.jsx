@@ -3,6 +3,7 @@ import axios from 'axios'
 import PropTypes from 'prop-types'
 
 import TableGroup from '../TableGroup/TableGroup'
+import ListGroup from '../ListGroup/ListGroup'
 import Table from '../Table/Table'
 import FormTab from '../FormTab/FormTab'
 import Header from '../Header/Header'
@@ -78,7 +79,7 @@ class Orders extends Component {
         <Header address={web3.selectedAccount} onAddressChange={this.onAddressChange.bind(this)}/>
         <FormTab methods={methods} address={web3.selectedAccount} />
         <TableGroup data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }} />
-        <TableGroup data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }} style={{ marginBottom: 29 }} />
+        <ListGroup data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }} style={{ marginBottom: 29 }} />
         <TableGroup data={{ left: Tables[4], right: Tables[5] }} />
       </div>
     )

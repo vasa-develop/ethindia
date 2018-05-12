@@ -72,49 +72,51 @@ class Table extends Component {
           </table>
         </div>
         <div class={`tbl-content ${classes}`}>
-          <table cellpadding="0" cellspacing="0" border="0">
-            <tbody>
-              {
-                filteredData.map(d => (
-                  <tr>
-                    {
-                      data.headers.map(h => (
-                        <td style={h.style}>
-                          {
-                            h.key === 'health' ?
-                              d[h.key] ?
-                                <div className="HealthBar">
-                                  <div className="BarBase">
-                                    <div className="Fill" style={{ width: `${d[h.key] * 0.5}%` }} />
-                                  </div>
-                                  <div className="BarMarks" />
-                                  <div className="BarPercent" style={{ marginLeft: `calc(${d[h.key] * 0.5}% - 13px)` }}>{this.getDisplayData(d, h)}</div>
-                                </div>
-                                : null
-                              : this.getDisplayData(d, h)
-                          }
-                        </td>
-                      ))
-                    }
-                    <td>
+          <div>
+            <table cellpadding="0" cellspacing="0" border="0">
+              <tbody>
+                {
+                  filteredData.map(d => (
+                    <tr>
                       {
-                        data.action.label === '3-dot' ?
-                          <button style={data.action.style} className="three-dot">
-                            <div className="dot" />
-                            <div className="dot" />
-                            <div className="dot" />
-                          </button>
-                          : <button style={data.action.style}>{data.action.label}</button>
+                        data.headers.map(h => (
+                          <td style={h.style}>
+                            {
+                              h.key === 'health' ?
+                                d[h.key] ?
+                                  <div className="HealthBar">
+                                    <div className="BarBase">
+                                      <div className="Fill" style={{ width: `${d[h.key] * 0.5}%` }} />
+                                    </div>
+                                    <div className="BarMarks" />
+                                    <div className="BarPercent" style={{ marginLeft: `calc(${d[h.key] * 0.5}% - 13px)` }}>{this.getDisplayData(d, h)}</div>
+                                  </div>
+                                  : null
+                                : this.getDisplayData(d, h)
+                            }
+                          </td>
+                        ))
                       }
-                    </td>
-                  </tr>
-                ))
-              }
-              {
-                filteredData.length === 0 && <tr><td colSpan={data.headers.length}>No Data</td></tr>
-              }
-            </tbody>
-          </table>
+                      <td>
+                        {
+                          data.action.label === '3-dot' ?
+                            <button style={data.action.style} className="three-dot">
+                              <div className="dot" />
+                              <div className="dot" />
+                              <div className="dot" />
+                            </button>
+                            : <button style={data.action.style}>{data.action.label}</button>
+                        }
+                      </td>
+                    </tr>
+                  ))
+                }
+                {
+                  filteredData.length === 0 && <tr><td colSpan={data.headers.length}>No Data</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     )
