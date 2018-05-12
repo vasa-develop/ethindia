@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import axios from 'axios'
 import { BigNumber } from 'bignumber.js'
 
-import logo from '../../assets/images/Logo.png'
+import logo from '../../assets/images/Logo.svg'
 
 import './Header.scss'
 
@@ -68,7 +68,7 @@ class Header extends Component {
           // console.log('This is the kovan test network.')
           break
         default:
-          // console.log('This is an unknown network.')
+        // console.log('This is an unknown network.')
       }
 
       this.setState(newState, next)
@@ -124,29 +124,37 @@ class Header extends Component {
     return up + '.' + down
   }
 
+  toUpper(value) {
+    return `0x${value.substr(2).toUpperCase()}`
+  }
+
   render() {
     const { address } = this.props
     const { balance, balanceDAI, ethToDai } = this.state
 
     return (
       <div className="HeaderWrapper">
-        <div className="Banner">
-          <div className="Inner">
-            <div className="Logo">
-              <img src={logo} />
-              <div className="Title">LENDAI</div>
+        <div className="Inner">
+          <div className="Logo">
+            <img src={logo} />
+          </div>
+          <div className="Header">
+            <div className="Info Address">
+              <div className="Label">Address</div>
+              <div className="Value">{this.toUpper(address)}</div>
             </div>
-            <div className="Header">
-              <div className="Info">
-                <div className="Label">Balance:</div>
+            <div className="Info">
+              <div className="SubInfo">
+                <div className="Label">Balance</div>
                 <div className="Value">{this.setPrecision(balance.c[0] / 10000, 3)} <span>ETH</span></div>
-                <div className="Value Second">{this.setPrecision(balanceDAI.c[0] / 10000, 3)} <span>DAI</span></div>
-                <div className="Label" style={{ marginLeft: 20 }}>Allowance:</div>
-                <div className="Value">-45 <span>ETH</span></div>
               </div>
-              <div className="Info">
-                <div className="Label">Address:</div>
-                <div className="Value">{address}</div>
+              <div className="SubInfo">
+                <div className="Label"></div>
+                <div className="Value">{this.setPrecision(balanceDAI.c[0] / 10000, 3)} <span>DAI</span></div>
+              </div>
+              <div className="SubInfo">
+                <div className="Label">Allowance</div>
+                <div className="Value">-45 <span>ETH</span></div>
               </div>
             </div>
           </div>
