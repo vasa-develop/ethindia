@@ -141,29 +141,32 @@ const Tables = [
       {
         label: 'Loan Number',
         key: 'loanNumber',
-        filter: 'shortAddress',
-        style: { fontFamily: 'Space Mono', textAlign: 'center' }
+        style: { fontFamily: 'Space Mono', width: '100%' }
       }, {
         label: 'Amount',
         key: 'amount',
         precision: 2,
+        style: { fontFamily: 'Space Mono', width: '25%' }
       }, {
         label: 'Total Interest ',
         key: 'totalInterest',
+        style: { fontFamily: 'Space Mono', width: '30%' }
       }, {
         label: 'Term',
         key: 'term',
-        filter: 'calcTerm'
+        filter: 'calcTerm',
+        style: { fontFamily: 'Space Mono', width: '25%' }
       }, {
-        label: 'Health',
+        label: 'Loan Health',
         key: 'health',
-        suffix: '%'
+        suffix: '%',
+        style: { fontFamily: 'Space Mono', width: '20%' }
       }
     ],
     data: [
-      { loanNumber: '0x27...1A9Z', amount: 13.83, totalInterest: 0.11064, term: 156, health: 200 },
-      { loanNumber: '0x32...136B', amount: 64.4, totalInterest: 0.5796, term: 216 },
-      { loanNumber: '0x18...4567', amount: 13.85, totalInterest: 0.11064, term: 156, health: 100 },
+      { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 13.83, totalInterest: 0.11064, term: 156, health: 80 },
+      { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 64.4, totalInterest: 0.5796, term: 216, health: 45 },
+      { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 13.85, totalInterest: 0.11064, term: 156, health: 90 },
     ],
     action: {
       label: '3-dot',
@@ -174,29 +177,32 @@ const Tables = [
       {
         label: 'Loan Number',
         key: 'loanNumber',
-        filter: 'shortAddress',
-        style: { fontFamily: 'Space Mono', textAlign: 'center' }
+        style: { fontFamily: 'Space Mono', width: '100%' }
       }, {
         label: 'Amount',
         key: 'amount',
         precision: 2,
+        style: { fontFamily: 'Space Mono', width: '25%' }
       }, {
         label: 'Total Interest ',
         key: 'totalInterest',
+        style: { fontFamily: 'Space Mono', width: '30%' }
       }, {
         label: 'Term',
         key: 'term',
-        filter: 'calcTerm'
+        filter: 'calcTerm',
+        style: { fontFamily: 'Space Mono', width: '25%' }
       }, {
-        label: 'Health',
+        label: 'Loan Health',
         key: 'health',
-        suffix: '%'
+        suffix: '%',
+        style: { fontFamily: 'Space Mono', width: '20%' }
       }
     ],
     data: [
-      { loanNumber: '0x27...1A9Z', amount: 13.83, totalInterest: 0.11064, term: 156, health: 200 },
-      { loanNumber: '0x32...136B', amount: 64.4, totalInterest: 0.5796, term: 216 },
-      { loanNumber: '0x18...4567', amount: 13.85, totalInterest: 0.11064, term: 156, health: 100 },
+      { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 13.83, totalInterest: 0.11064, term: 156, health: 84 },
+      { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 64.4, totalInterest: 0.5796, term: 216, health: 45 },
+      { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 13.85, totalInterest: 0.11064, term: 156, health: 65 },
     ],
     action: {
       label: '3-dot'

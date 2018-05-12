@@ -13,6 +13,7 @@
     text-align: left;
     letter-spacing: .17px;
     line-height: 29px;
+    padding: 0 40px 0 50px;
   }
 
   table {
@@ -49,77 +50,30 @@
         font-size: 14;
         color: rgba(0, 0, 0, 0.8);
         text-align: center;
-
-        &.three-dot {
-          height: 21px;
-          width: 28px;
-          border: .5px solid #A6B2C4;
-          border-radius: 3.2px;
-
-          .dot {
-            background: #97a3b4;
-            width: 3px;
-            height: 3px;
-            border-radius: 2px;
-            display: inline-block;
-            margin: 0 1px 1px;
-          }
-        }
-      }
-    }
-
-    tr {
-      line-height: 46px;
-
-      .HealthBar {
         position: relative;
 
-        .BarBase {
-          height: 4.62px;
-          border-radius: 2px;
-          background-color: #DFE4EE;
-          position: relative;
+        &:hover {
+          background: -moz-linear-gradient(0deg, #865aeb 0%, #a479f2 100%);
+          background: -webkit-gradient(linear, left top, right top, color-stop(0%, #865aeb), color-stop(100%, #a479f2));
+          background: -webkit-linear-gradient(0deg, #865aeb 0%, #a479f2 100%);
+          background: -o-linear-gradient(0deg, #865aeb 0%, #a479f2 100%);
+          background: -ms-linear-gradient(0deg, #865aeb 0%, #a479f2 100%);
+          background: linear-gradient(90deg, #865aeb 0%, #a479f2 100%);
+          filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=  '#865aeb', endColorstr='#a479f2',GradientType=1 );
+          font-size: 14px;
+          color: white;
 
-          .Fill {
-            height: 4.62px;
-            border-radius: 2px;
-            width: 100%;
-            background-color: #00D983;
-          }
-        }
-
-        .BarMarks {
-          width: 0;
-          height: 0;
-          border-left: 1.5px solid transparent;
-          border-right: 1.5px solid transparent;
-          border-bottom: 3.46px solid #a6b2c4;
-          margin: 1.15px auto 0;
-
-          &:after,
           &:before {
             content: '';
             width: 0;
             height: 0;
-            border-left: 1px solid transparent;
-            border-right: 1px solid transparent;
-            border-bottom: 2.31px solid #a6b2c4;
+            border-right: 6px solid #865aeb;
+            border-bottom: 5px solid transparent;
+            border-top: 5px solid transparent;
             position: absolute;
-            right: 1px;
+            left: -6px;
+            top: 14px;
           }
-
-          &:after {
-            left: 1px;
-          }
-        }
-
-        .BarPercent {
-          color: #AAB2C0;
-          font-size: 5px;
-          font-weight: 600;
-          line-height: 6px;
-          text-align: left;
-          margin-top: 1.5px;
         }
       }
     }
@@ -146,6 +100,10 @@
       background: -ms-linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.8) 51%, rgba(0,0,0,0) 100%);
       background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.8) 51%, rgba(0,0,0,0) 100%);
       filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=  '#000000', endColorstr='#FFFFFF',GradientType=0 );
+    }
+
+    tr {
+      line-height: 46px;
     }
   }
 }

@@ -80,7 +80,7 @@ class Orders extends Component {
         <FormTab methods={methods} address={web3.selectedAccount} />
         <TableGroup data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }} />
         <ListGroup data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }} style={{ marginBottom: 29 }} />
-        <TableGroup data={{ left: Tables[4], right: Tables[5] }} />
+        <ListGroup data={{ left: Tables[4], right: Tables[5] }} />
       </div>
     )
   }

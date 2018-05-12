@@ -80,21 +80,7 @@ class Table extends Component {
                     <tr>
                       {
                         data.headers.map(h => (
-                          <td style={h.style}>
-                            {
-                              h.key === 'health' ?
-                                d[h.key] ?
-                                  <div className="HealthBar">
-                                    <div className="BarBase">
-                                      <div className="Fill" style={{ width: `${d[h.key] * 0.5}%` }} />
-                                    </div>
-                                    <div className="BarMarks" />
-                                    <div className="BarPercent" style={{ marginLeft: `calc(${d[h.key] * 0.5}% - 13px)` }}>{this.getDisplayData(d, h)}</div>
-                                  </div>
-                                  : null
-                                : this.getDisplayData(d, h)
-                            }
-                          </td>
+                          <td style={h.style}>{this.getDisplayData(d, h)}</td>
                         ))
                       }
                       <td>

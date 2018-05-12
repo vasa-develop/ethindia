@@ -50,6 +50,13 @@ class List extends Component {
     return ret
   }
 
+  getFill(percent) {
+    if (percent > 80) return '#84d74d'
+    if (percent > 60) return '#eeab35'
+    if (percent > 40) return '#fd458a'
+    return 'red'
+  }
+
   render() {
     const { data, classes } = this.props
     const filteredData = this.getData(data)
@@ -70,11 +77,10 @@ class List extends Component {
                           h.key === 'health' ?
                             d[h.key] ?
                               <div className="HealthBar">
+                                <div className="BarPercent">{this.getDisplayData(d, h)}</div>
                                 <div className="BarBase">
-                                  <div className="Fill" style={{ width: `${d[h.key] * 0.5}%` }} />
+                                  <div className="Fill" style={{ width: `${d[h.key]}%`, backgroundColor: this.getFill(d[h.key]) }} />
                                 </div>
-                                <div className="BarMarks" />
-                                <div className="BarPercent" style={{ marginLeft: `calc(${d[h.key] * 0.5}% - 13px)` }}>{this.getDisplayData(d, h)}</div>
                               </div>
                               : null
                             : this.getDisplayData(d, h)
@@ -86,11 +92,7 @@ class List extends Component {
                 <div className="Actions">
                   {
                     data.action.label === '3-dot' ?
-                      <button style={data.action.style} className="three-dot">
-                        <div className="dot" />
-                        <div className="dot" />
-                        <div className="dot" />
-                      </button>
+                      <button style={data.action.style} className="close three-dot"></button>
                       : <button style={data.action.style} className={data.action.key}>{data.action.label}</button>
                   }
                 </div>
