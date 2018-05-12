@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import moment from 'moment'
 
-import FormInput from '../FormInput/FormInput';
+import FormInput from '../FormInput/FormInput'
 import API from '../../assets/API'
 
 import './FormTab.scss'
@@ -12,7 +11,7 @@ const FormInputs = [
   {
     key: 'loanAmountOffered',
     label: 'Amount',
-    width: 110,
+    width: 150,
     output: (val) => (val.toString()),
     inputs: [{
       precision: 3,
@@ -23,7 +22,7 @@ const FormInputs = [
   }, {
     key: 'interestRatePerDay',
     label: 'Rate %',
-    width: 88,
+    width: 150,
     output: (val) => (val.toString()),
     inputs: [{
       precision: 3,
@@ -35,7 +34,7 @@ const FormInputs = [
   }, {
     key: 'loanDuration',
     label: 'Length',
-    width: 131,
+    width: 150,
     output: (val) => (val + ' hours'),
     inputs: [{
       precision: 0,
@@ -55,7 +54,7 @@ const FormInputs = [
   }, {
     key: 'offerExpiry',
     label: 'Order Expiration',
-    width: 131,
+    width: 150,
     output: (val) => {
       let ret = new moment()
       ret.add(val, 'm')
@@ -76,13 +75,9 @@ const FormInputs = [
       unit: 1
     }]
   }, {
-    key: 'wrangler',
-    label: 'Wrangler',
-    width: 96
-  }, {
     key: 'allowance',
     label: 'Allowance',
-    width: 110,
+    width: 150,
     output: (val) => (val.toString()),
     inputs: [{
       precision: 3,
@@ -96,7 +91,7 @@ const FeeFormInputs = [
   {
     key: 'relayerFeeLST',
     label: 'Relayer Fee',
-    width: 110,
+    width: 150,
     output: (val) => (val.toString()),
     inputs: [{
       precision: 3,
@@ -106,7 +101,7 @@ const FeeFormInputs = [
   }, {
     key: 'monitoringFeeLST',
     label: 'Monitoring Fee',
-    width: 110,
+    width: 150,
     output: (val) => (val.toString()),
     inputs: [{
       precision: 3,
@@ -116,7 +111,7 @@ const FeeFormInputs = [
   }, {
     key: 'rolloverFeeLST',
     label: 'RollOver Fee',
-    width: 110,
+    width: 150,
     output: (val) => (val.toString()),
     inputs: [{
       precision: 3,
@@ -126,7 +121,7 @@ const FeeFormInputs = [
   }, {
     key: 'closureFeeLST',
     label: 'Closure Fee',
-    width: 110,
+    width: 150,
     output: (val) => (val.toString()),
     inputs: [{
       precision: 3,
@@ -145,13 +140,14 @@ class FormTab extends Component {
       interestRatePerDay: 0.008,
       loanDuration: 300,
       offerExpiry: 72,
-      wrangler: '0xf31c52b569b6cfcd70e30f380c18608c8627d930',
+      wrangler: 'Lendroid',
       allowance: 5.123,
       ethToDai: 0,
       relayerFeeLST: 0.01,
       monitoringFeeLST: 0.01,
       rolloverFeeLST: 0.01,
       closureFeeLST: 0.01,
+      isLend: true,
     }
   }
 
@@ -185,49 +181,53 @@ class FormTab extends Component {
     return valid
   }
 
-  onSubmit(isLend) {
-    return (
-      () => {
-        const formData = this.state
-        const { address, methods } = this.props
-        let postData = {}
-        FormInputs.forEach(item => {
-          postData[item.key] = item.output ? item.output(formData[item.key]) : formData[item.key]
-        })
-        FeeFormInputs.forEach(item => {
-          postData[item.key] = item.output ? item.output(formData[item.key]) : formData[item.key]
-        })
-        postData.lender = isLend ? address : ''
-        postData.borrower = !isLend ? address : ''
+  onSubmit() {
+    const { isLend } = this.state
+    const formData = this.state
+    const { address, methods } = this.props
+    let postData = {}
+    FormInputs.forEach(item => {
+      postData[item.key] = item.output ? item.output(formData[item.key]) : formData[item.key]
+    })
+    FeeFormInputs.forEach(item => {
+      postData[item.key] = item.output ? item.output(formData[item.key]) : formData[item.key]
+    })
+    postData.wrangler = formData.wrangler
+    postData.lender = isLend ? address : ''
+    postData.borrower = !isLend ? address : ''
 
-        const keys = [
-          'relayer',
-          'collateralAmount',
-          'collateralToken',
-          'creatorSalt',
-          'loanToken'
-        ]
-        keys.forEach(key => (postData[key] = ''))
+    const keys = [
+      'relayer',
+      'collateralAmount',
+      'collateralToken',
+      'creatorSalt',
+      'loanToken'
+    ]
+    keys.forEach(key => (postData[key] = ''))
 
-        delete postData.allowance
+    delete postData.allowance
 
-        const { web3 } = window
-        web3.eth.sign(address, web3.sha3(JSON.stringify(postData)), (err, result) => {
-          if (err) return
+    const { web3 } = window
+    web3.eth.sign(address, web3.sha3(JSON.stringify(postData)), (err, result) => {
+      if (err) return
 
-          postData.ecSignatureCreator = result
-          result = result.substr(2); //remove 0x
+      postData.ecSignatureCreator = result
+      result = result.substr(2)
 
-          postData.rCreator = '0x' + result.slice(0, 64)
-          postData.sCreator = '0x' + result.slice(64, 128)
-          postData.vCreator = web3.toDecimal('0x' + result.slice(128, 130))
+      postData.rCreator = '0x' + result.slice(0, 64)
+      postData.sCreator = '0x' + result.slice(64, 128)
+      postData.vCreator = web3.toDecimal('0x' + result.slice(128, 130))
 
-          methods.apiPost('offers', postData, (result) => {
-            setTimeout(methods.getOffers, 1000)
-          })
-        })
-      }
-    ).bind(this)
+      methods.apiPost('offers', postData, (result) => {
+        setTimeout(methods.getOffers, 1000)
+      })
+    })
+  }
+
+  onToggle() {
+    this.setState({
+      isLend: !this.state.isLend
+    })
   }
 
   render() {
@@ -238,130 +238,71 @@ class FormTab extends Component {
 
     return (
       <div className="TabWrapper">
-        <Tabs>
-          <TabList>
-            <Tab>Lend Order Form</Tab>
-            <Tab>Borrow Order Form</Tab>
-          </TabList>
-          <TabPanel>
-            <table cellspacing="15">
-              <thead>
-                <tr>
-                  {
-                    FormInputs.map(item => (
-                      <th width={item.width}>{item.label}</th>
-                    ))
-                  }
-                  <th width="88"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  {
-                    FormInputs.map(item => (
-                      <td>
-                        {
-                          item.key === 'wrangler' ?
-                            <div>Name</div>
-                            :
-                            <FormInput data={item} onChange={this.onChange.bind(this)} val={formData[item.key]} />
-                        }
-                      </td>
-                    ))
-                  }
+        <div className="Title">WHAT ARE YOU UP TO TODAY?</div>
+        <div className={`Toggle ${formData.isLend ? 'Lend' : 'Borrow'}`}>
+          <div className="Handle" onClick={this.onToggle.bind(this)}>{!formData.isLend ? 'Lend' : 'Borrow'}</div>
+          <div className="Handle Bar">{formData.isLend ? 'Lend' : 'Borrow'}</div>
+        </div>
+        <div className="Wrangler">
+          <div className="Label">Wrangler</div>
+          <select>
+            <option disabled>Wrangler Name</option>
+            <option default>Lendroid</option>
+          </select>
+        </div>
+        <table cellspacing="15">
+          <thead>
+            <tr>
+              {
+                FormInputs.map(item => (
+                  <th width={item.width}>{item.label}</th>
+                ))
+              }
+              <th width="100"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              {
+                FormInputs.map(item => (
                   <td>
-                    <div className="FormInput">
-                      <input type="Button" className={`Button ${isValid ? '' : 'Disabled'}`} value="Order" onClick={this.onSubmit(true)} disabled={!isValid} />
-                    </div>
+                    <FormInput data={item} onChange={this.onChange.bind(this)} val={formData[item.key]} />
                   </td>
-                </tr>
-              </tbody>
-            </table>
-            <table cellspacing="15">
-              <thead>
-                <tr>
-                  {
-                    FeeFormInputs.map(item => (
-                      <th width={item.width}>{item.label}</th>
-                    ))
-                  }
-                  <th width="360"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  {
-                    FeeFormInputs.map(item => (
-                      <td>
-                        <FormInput data={item} onChange={this.onChange.bind(this)} val={formData[item.key]} />
-                      </td>
-                    ))
-                  }
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-          </TabPanel>
-          <TabPanel>
-            <table cellspacing="15">
-              <thead>
-                <tr>
-                  {
-                    FormInputs.map(item => (
-                      <th width={item.width}>{item.label}</th>
-                    ))
-                  }
-                  <th width="88"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  {
-                    FormInputs.map(item => (
-                      <td>
-                        {
-                          item.key === 'wrangler' ?
-                            <div>Name</div>
-                            :
-                            <FormInput data={item} onChange={this.onChange.bind(this)} val={formData[item.key]} />
-                        }
-                      </td>
-                    ))
-                  }
+                ))
+              }
+              <td>
+                <div className="FormInput">
+                  <div className="left" />
+                  <input type="Button" className={`Button ${isValid ? '' : 'Disabled'}`} value="Order" onClick={this.onSubmit.bind(this)  } disabled={!isValid} />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table cellspacing="15">
+          <thead>
+            <tr>
+              {
+                FeeFormInputs.map(item => (
+                  <th width={item.width}>{item.label}</th>
+                ))
+              }
+              <th width="250" colspan="2"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              {
+                FeeFormInputs.map(item => (
                   <td>
-                    <div className="FormInput">
-                      <input type="Button" className={`Button ${isValid ? '' : 'Disabled'}`} value="Order" onClick={this.onSubmit(false)} disabled={!isValid} />
-                    </div>
+                    <FormInput data={item} onChange={this.onChange.bind(this)} val={formData[item.key]} />
                   </td>
-                </tr>
-              </tbody>
-            </table>
-            <table cellspacing="15">
-              <thead>
-                <tr>
-                  {
-                    FeeFormInputs.map(item => (
-                      <th width={item.width}>{item.label}</th>
-                    ))
-                  }
-                  <th width="430"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  {
-                    FeeFormInputs.map(item => (
-                      <td>
-                        <FormInput data={item} onChange={this.onChange.bind(this)} val={formData[item.key]} />
-                      </td>
-                    ))
-                  }
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-          </TabPanel>
-        </Tabs>
+                ))
+              }
+              <td colspan="2"></td>
+            </tr>
+          </tbody>
+        </table>
       </div >
     )
   }

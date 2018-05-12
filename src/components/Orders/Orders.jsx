@@ -76,8 +76,8 @@ class Orders extends Component {
     return (
       <div className="OrdersWrapper">
         <Header address={web3.selectedAccount} onAddressChange={this.onAddressChange.bind(this)}/>
-        <TableGroup data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }} />
         <FormTab methods={methods} address={web3.selectedAccount} />
+        <TableGroup data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }} />
         <TableGroup data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }} style={{ marginBottom: 29 }} />
         <TableGroup data={{ left: Tables[4], right: Tables[5] }} />
       </div>

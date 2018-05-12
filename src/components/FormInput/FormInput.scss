@@ -1,19 +1,17 @@
 .FormInputWrapper {
   border: 1px solid #DEDEDE;
-  border-radius: 2px;
+  border-radius: 4px;
 
   .FormInput {
     position: relative;
     display: inline-flex;
 
     input {
-      font-size: 13px;
-      color: #002257;
       width: 100%;
-      height: 40px;
       border: 0;
-      background-color: #FFFFFF;
       padding: 9px 40px 9px 15px;
+      font-size: 14.0px;
+      color: rgba(0, 0, 0, 1.0);
     }
 
     &.Arrow {
@@ -44,7 +42,8 @@
       position: absolute;
       right: 13px;
       top: 9px;
-      color: #a6b0bf;
+      font-size: 14.0px;
+      color: rgba(0, 0, 0, .4);
     }
 
     &:first-child {
