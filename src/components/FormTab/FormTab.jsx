@@ -21,7 +21,7 @@ const FormInputs = [
     required: true
   }, {
     key: 'interestRatePerDay',
-    label: 'Rate %',
+    label: 'Daily Rate',
     width: 150,
     output: (val) => (val.toString()),
     inputs: [{
@@ -53,7 +53,7 @@ const FormInputs = [
     required: true
   }, {
     key: 'offerExpiry',
-    label: 'Order Expiration',
+    label: 'Order Expires',
     width: 150,
     output: (val) => {
       let ret = new moment()
@@ -83,7 +83,8 @@ const FormInputs = [
       precision: 3,
       suffix: 'ETH',
       unit: 1
-    }]
+    }],
+    style: { paddingRight: 8 }
   },
 ]
 
@@ -265,7 +266,7 @@ class FormTab extends Component {
             <tr>
               {
                 FormInputs.map(item => (
-                  <td>
+                  <td style={item.style}>
                     <FormInput data={item} onChange={this.onChange.bind(this)} val={formData[item.key]} />
                   </td>
                 ))

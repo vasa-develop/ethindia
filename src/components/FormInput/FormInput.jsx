@@ -75,7 +75,7 @@ class FormInput extends Component {
       <div className="FormInputWrapper">
         {
           data.inputs.map((item, index) => (
-            <div className={`FormInput ${item.arrow ? 'Arrow' : ''}`} style={{ width: `${100 / inputCount}%` }}>
+            <div className={`FormInput ${item.arrow ? 'Arrow' : ''}`} style={{ width: `calc(${100 / inputCount}% - ${inputCount > 0 ? '5px' : '0px'})` }}>
               <input value={values[index + 1]} onChange={this.onChange(index)} min="0" max={item.max} readOnly={data.readOnly}/>
               {
                 item.arrow || !item.suffix ? null
