@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 export const FormInputs = [
   {
     key: 'loanAmountOffered',

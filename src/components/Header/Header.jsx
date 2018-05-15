@@ -31,12 +31,10 @@ class Header extends Component {
     const { address, network, isSync } = this.props
 
     if (newProps.address != address || newProps.network != network) {
-      this.getBalance(newProps.address)
+      this.getBalance(newProps.address, newProps.syncData, null)
       this.getABI(newProps.network)
       this.props.onAddressChange()
-    }
-
-    if (newProps.isSync && !isSync) this.getBalance(newProps.address, () => this.props.onSynced('header'))
+    } else if (newProps.isSync && !isSync) this.getBalance(newProps.address, newProps.syncData, () => this.props.onSynced('header'))
   }
 
   getABI(network) {
@@ -61,7 +59,7 @@ class Header extends Component {
     })
   }
 
-  getBalance(address, next) {
+  getBalance(address, syncData = null, next = null) {
     const { web3 } = window
 
     web3 && web3.eth && web3.eth.getBalance(address, (err, result) => {
@@ -70,9 +68,14 @@ class Header extends Component {
           web3Error: err
         })
       } else {
-        this.setState({
-          balance: this.fromBigToNumber(result),
-        }, next)
+        const value = this.fromBigToNumber(result)
+        if (!syncData || !syncData.origin || (syncData.compare ? (value > syncData.origin) : (value < syncData.origin))) {
+          this.setState({
+            balance: value,
+          }, next)
+        } else {
+          setTimeout(() => this.getBalance(address, syncData, next), 1000)
+        }
       }
     })
   }

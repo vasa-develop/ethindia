@@ -23,6 +23,7 @@ class Orders extends Component {
       myLendOffers: [],
       myBorrowOffers: [],
       headerSync: false,
+      syncData: {},
     }
 
     this.apiGet = this.apiGet.bind(this)
@@ -70,8 +71,8 @@ class Orders extends Component {
     this.getOffers()
   }
 
-  onSync() {
-    this.setState({ headerSync: true })
+  onSync(origin = null, compare = true) {
+    this.setState({ headerSync: true, syncData: {origin, compare} })
   }
 
   onSynced(title) {
@@ -80,12 +81,12 @@ class Orders extends Component {
 
   render() {
     const { web3 } = this.context
-    const { offers, myLendOffers, myBorrowOffers, headerSync } = this.state
+    const { offers, myLendOffers, myBorrowOffers, headerSync, syncData } = this.state
     const methods = { apiGet: this.apiGet, apiPost: this.apiPost, getOffers: this.getOffers }
 
     return (
       <div className="OrdersWrapper">
-        <Header address={web3.selectedAccount} network={web3.networkId} isSync={headerSync} onSynced={this.onSynced.bind(this)} onAddressChange={this.onAddressChange.bind(this)} />
+        <Header address={web3.selectedAccount} network={web3.networkId} isSync={headerSync} syncData={syncData} onSynced={this.onSynced.bind(this)} onAddressChange={this.onAddressChange.bind(this)} />
         <FormTab methods={methods} address={web3.selectedAccount} network={web3.networkId} onSync={this.onSync.bind(this)} />
         <TableGroup data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }} />
         <ListGroup data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }} style={{ marginBottom: 29 }} />
