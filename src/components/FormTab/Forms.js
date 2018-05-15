@@ -197,7 +197,6 @@ export const AllowanceFormInputs = [
     output: (val) => (val.toString()),
     inputs: [{
       precision: 3,
-      suffix: 'ETH',
       unit: 1
     }],
     required: true
