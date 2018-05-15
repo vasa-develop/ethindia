@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import { BigNumber } from 'bignumber.js'
 
 import logo from '../../assets/images/Logo.svg'
 
@@ -16,67 +15,31 @@ class Header extends Component {
     super(props)
 
     this.state = {
-      balance: {
-        c: [0]
-      },
-      balanceDAI: {
-        c: [0]
-      }
+      balance: 0,
+      balanceDAI: 0,
     }
 
     this.getABI = this.getABI.bind(this)
   }
 
   componentDidMount() {
-    if (this.props.address) this.getBalance(this.props.address)
+    this.getBalance(this.props.address)
+    this.getABI(this.props.network)
   }
 
   componentWillReceiveProps(newProps) {
-    const { address } = this.props
+    const { address, network, isSync } = this.props
 
-    if (newProps.address != address) {
+    if (newProps.address != address || newProps.network != network) {
       this.getBalance(newProps.address)
+      this.getABI(newProps.network)
       this.props.onAddressChange()
     }
+
+    if (newProps.isSync && !isSync) this.getBalance(newProps.address, () => this.props.onSynced('header'))
   }
 
-  getNetwork(next) {
-    const { web3 } = window
-
-    web3.version.getNetwork((err, netId) => {
-      let newState = { network: -1 }
-
-      switch (netId) {
-        case "1":
-          newState.network = 1
-          // console.log('This is mainnet')
-          break
-        case "2":
-          newState.network = 2
-          // console.log('This is the deprecated Morden test network.')
-          break
-        case "3":
-          newState.network = 3
-          // console.log('This is the ropsten test network.')
-          break
-        case "4":
-          newState.network = 4
-          // console.log('This is the rinkeby test network.')
-          break
-        case "42":
-          newState.network = 42
-          // console.log('This is the kovan test network.')
-          break
-        default:
-        // console.log('This is an unknown network.')
-      }
-
-      this.setState(newState, next)
-    })
-  }
-
-  getABI() {
-    const { network } = this.state
+  getABI(network) {
     const { address } = this.props
 
     if (!DAIAddresses[network]) return
@@ -92,17 +55,14 @@ class Header extends Component {
         })
       } else {
         this.setState({
-          balanceDAI: result,
+          balanceDAI: this.fromBigToNumber(result),
         })
       }
     })
-
   }
 
-  getBalance(address) {
+  getBalance(address, next) {
     const { web3 } = window
-
-    this.getNetwork(this.getABI)
 
     web3 && web3.eth && web3.eth.getBalance(address, (err, result) => {
       if (err) {
@@ -111,10 +71,14 @@ class Header extends Component {
         })
       } else {
         this.setState({
-          balance: result,
-        })
+          balance: this.fromBigToNumber(result),
+        }, next)
       }
     })
+  }
+
+  fromBigToNumber(big) {
+    return Number((big.c[0] / 10000).toString() + (big.c[1] || '').toString())
   }
 
   setPrecision(value, prec) {
@@ -146,11 +110,11 @@ class Header extends Component {
             <div className="Info">
               <div className="SubInfo">
                 <div className="Label">Balance</div>
-                <div className="Value">{this.setPrecision(balance.c[0] / 10000, 3)} <span>ETH</span></div>
+                <div className="Value">{this.setPrecision(balance, 3)} <span>ETH</span></div>
               </div>
               <div className="SubInfo">
                 <div className="Label"></div>
-                <div className="Value">{this.setPrecision(balanceDAI.c[0] / 10000, 3)} <span>DAI</span></div>
+                <div className="Value">{this.setPrecision(balanceDAI, 3)} <span>DAI</span></div>
               </div>
               <div className="SubInfo">
                 <div className="Label">Allowance</div>

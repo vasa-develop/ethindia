@@ -1,7 +1,7 @@
 .TabWrapper {
   margin-top: -50px;
   margin-bottom: 25px;
-  padding: 62px 30px 50px;
+  padding: 62px 30px 30px;
   background: white;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 
@@ -175,6 +175,18 @@
 
         input {
           width: 100%;
+        }
+
+        select {
+          -webkit-appearance: none;
+          font-family: "SFProText-Medium", Helvetica, Arial, serif;
+          font-size: 14px;
+          color: #9166ed;
+          width: 100%;
+          height: 42px;
+          border: 1px solid rgba(0, 0, 0, 0.1);
+          padding: 0 20px;
+          border-radius: 4px;
         }
       }
     }
