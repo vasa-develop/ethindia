@@ -166,34 +166,33 @@ export const WrapETHFormInputs = [
 
 export const AllowanceFormInputs = [
   {
-    key: 'ETHBalance',
-    label: 'ETH Balance',
+    key: 'token',
+    label: 'Token',
+    callback: 'getTokenContract',
+    width: 150,
+  }, {
+    key: 'tokenBalance',
+    label: 'Token Balance',
     width: 150,
     output: (val) => (val.toString()),
     inputs: [{
-      precision: 5,
-      suffix: 'ETH',
+      precision: 3,
       unit: 1
     }],
     readOnly: true
   }, {
-    key: 'wETHBalance',
-    label: 'WETH Balance',
+    key: 'tokenAllowance',
+    label: 'Token Allowance',
     width: 150,
     output: (val) => (val.toString()),
     inputs: [{
-      precision: 5,
-      suffix: 'ETH',
+      precision: 3,
       unit: 1
     }],
     readOnly: true
   }, {
-    key: 'operation',
-    label: 'Operation',
-    width: 150,
-  }, {
-    key: 'amount',
-    label: 'Amount',
+    key: 'newAllowance',
+    label: 'New Allowance',
     width: 150,
     output: (val) => (val.toString()),
     inputs: [{

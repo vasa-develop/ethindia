@@ -17,6 +17,22 @@ const WETHAddresses = {
   42: '0xd0a1e359811322d97991e03f863a0c30c2cf029c'
 }
 
+const ContractAddresses = {
+  WETH: {
+    1: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+    42: '0xd0a1e359811322d97991e03f863a0c30c2cf029c'
+  },
+  LST: {
+    1: '0x4de2573e27E648607B50e1Cfff921A33E4A34405',
+    42: '0x13a68a7cc8564C23390870FF33504F38289ff87e'
+  },
+  DAI: {
+    1: '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359',
+    42: '0xC4375B7De8af5a38a93548eb8453a498222C4fF2',
+    def: [{ "constant": true, "inputs": [], "name": "name", "outputs": [{ "name": "", "type": "bytes32" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [], "name": "stop", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "guy", "type": "address" }, { "name": "wad", "type": "uint256" }], "name": "approve", "outputs": [{ "name": "", "type": "bool" }], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "owner_", "type": "address" }], "name": "setOwner", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [], "name": "totalSupply", "outputs": [{ "name": "", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [{ "name": "src", "type": "address" }, { "name": "dst", "type": "address" }, { "name": "wad", "type": "uint256" }], "name": "transferFrom", "outputs": [{ "name": "", "type": "bool" }], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [], "name": "decimals", "outputs": [{ "name": "", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [{ "name": "guy", "type": "address" }, { "name": "wad", "type": "uint256" }], "name": "mint", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "wad", "type": "uint256" }], "name": "burn", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "name_", "type": "bytes32" }], "name": "setName", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [{ "name": "src", "type": "address" }], "name": "balanceOf", "outputs": [{ "name": "", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "stopped", "outputs": [{ "name": "", "type": "bool" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [{ "name": "authority_", "type": "address" }], "name": "setAuthority", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [], "name": "owner", "outputs": [{ "name": "", "type": "address" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "symbol", "outputs": [{ "name": "", "type": "bytes32" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [{ "name": "guy", "type": "address" }, { "name": "wad", "type": "uint256" }], "name": "burn", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "wad", "type": "uint256" }], "name": "mint", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "dst", "type": "address" }, { "name": "wad", "type": "uint256" }], "name": "transfer", "outputs": [{ "name": "", "type": "bool" }], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "dst", "type": "address" }, { "name": "wad", "type": "uint256" }], "name": "push", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "src", "type": "address" }, { "name": "dst", "type": "address" }, { "name": "wad", "type": "uint256" }], "name": "move", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [], "name": "start", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [], "name": "authority", "outputs": [{ "name": "", "type": "address" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [{ "name": "guy", "type": "address" }], "name": "approve", "outputs": [{ "name": "", "type": "bool" }], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [{ "name": "src", "type": "address" }, { "name": "guy", "type": "address" }], "name": "allowance", "outputs": [{ "name": "", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": false, "inputs": [{ "name": "src", "type": "address" }, { "name": "wad", "type": "uint256" }], "name": "pull", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "name": "symbol_", "type": "bytes32" }], "payable": false, "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [{ "indexed": true, "name": "guy", "type": "address" }, { "indexed": false, "name": "wad", "type": "uint256" }], "name": "Mint", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "name": "guy", "type": "address" }, { "indexed": false, "name": "wad", "type": "uint256" }], "name": "Burn", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "name": "authority", "type": "address" }], "name": "LogSetAuthority", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "name": "owner", "type": "address" }], "name": "LogSetOwner", "type": "event" }, { "anonymous": true, "inputs": [{ "indexed": true, "name": "sig", "type": "bytes4" }, { "indexed": true, "name": "guy", "type": "address" }, { "indexed": true, "name": "foo", "type": "bytes32" }, { "indexed": true, "name": "bar", "type": "bytes32" }, { "indexed": false, "name": "wad", "type": "uint256" }, { "indexed": false, "name": "fax", "type": "bytes" }], "name": "LogNote", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "name": "src", "type": "address" }, { "indexed": true, "name": "guy", "type": "address" }, { "indexed": false, "name": "wad", "type": "uint256" }], "name": "Approval", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "name": "src", "type": "address" }, { "indexed": true, "name": "dst", "type": "address" }, { "indexed": false, "name": "wad", "type": "uint256" }], "name": "Transfer", "type": "event" }]
+  }
+}
+
 class FormTab extends Component {
   constructor(props) {
     super(props)
@@ -45,9 +61,16 @@ class FormTab extends Component {
       amount: 0.0500,
       WETHContractInstance: null,
 
+      // Allowance Form Inputs
+      token: 'WETH',
+      tokenBalance: 0,
+      tokenAllowance: 0,
+      newAllowance: 0,
+      tokenContractInstance: null,
+
       // isLend: true,
 
-      tabIndex: 2,
+      tabIndex: 3,
     }
   }
 
@@ -55,6 +78,7 @@ class FormTab extends Component {
     if (this.props.address) this.getBalance(this.props.address)
     this.getETD()
     this.getWETHContract(this.props.network)
+    this.getTokenContract(this.state, this.props)
   }
 
   componentWillReceiveProps(newProps) {
@@ -63,6 +87,7 @@ class FormTab extends Component {
     if (newProps.address != address || newProps.network != network) {
       this.getBalance(newProps.address)
       this.getWETHContract(newProps.network)
+      this.getTokenContract(this.state, newProps)
     }
   }
 
@@ -111,6 +136,43 @@ class FormTab extends Component {
       })
   }
 
+  getTokenContract(state, props) {
+    const { network } = props
+    const { token } = state
+
+    if (!ContractAddresses[token][network]) return
+
+    if (!ContractAddresses[token].def) {
+      const url = `https://${network === 1 ? 'api' : 'api-kovan'}.etherscan.io/api?module=contract&action=getabi&address=${ContractAddresses[token][network]}`
+      axios.get(url)
+        .then(res => {
+          if (res.data.status === '1') {
+            const contractABI = JSON.parse(res.data.result)
+            if (contractABI != '') {
+              const tokenContractInstance = web3.eth.contract(contractABI).at(ContractAddresses[token][network])
+              this.setState({ tokenContractInstance },
+                () => {
+                  this.getTokenBalance(this.props.address)
+                  this.getTokenAllowance(this.props.address)
+                }
+              )
+            }
+          } else {
+            this.setState({ tokenContractInstance: null, tokenBalance: 0, tokenAllowance: 0 })
+          }
+        })
+    } else {
+      const contractABI = ContractAddresses[token].def
+      const tokenContractInstance = web3.eth.contract(contractABI).at(ContractAddresses[token][network])
+      this.setState({ tokenContractInstance },
+        () => {
+          this.getTokenBalance(this.props.address)
+          this.getTokenAllowance(this.props.address)
+        }
+      )
+    }
+  }
+
   getWETHBalance(address) {
     const { WETHContractInstance } = this.state
     if (!WETHContractInstance) return
@@ -128,15 +190,42 @@ class FormTab extends Component {
     })
   }
 
+  getTokenBalance(address) {
+    const { tokenContractInstance } = this.state
+    if (!tokenContractInstance) return
+
+    tokenContractInstance.balanceOf(address, (err, result) => {
+      if (err) {
+        this.setState({
+          web3Error: err
+        })
+      } else {
+        this.setState({
+          tokenBalance: this.fromBigToNumber(result),
+        })
+      }
+    })
+  }
+
+  getTokenAllowance(address) {
+    const { tokenContractInstance, token } = this.state
+    const { network } = this.props
+    if (!tokenContractInstance) return
+    tokenContractInstance.allowance(address, ContractAddresses[token][network], (err, result) => {
+      this.setState({ tokenAllowance: this.fromBigToNumber(result) })
+    })
+  }
+
   onChange(key, value, affection = null) {
     const formData = this.state
     formData[key] = value
     this.setState(formData)
   }
 
-  onChangeSync(key) {
+  onChangeSync(item) {
     return ((e) => {
-      this.setState({ [key]: e.target.value })
+      this.setState({ [item.key]: e.target.value })
+      if (item.callback) this[item.callback]({ [item.key]: e.target.value }, this.props)
     }).bind(this)
   }
 
@@ -198,24 +287,37 @@ class FormTab extends Component {
     const { WETHContractInstance, amount, operation } = this.state
     const { address } = this.props
     const { web3 } = window
+    const _this = this
 
     if (operation === 'Wrap') {
       WETHContractInstance.deposit({ value: web3.toWei(amount) }, (err, result) => {
         setTimeout(() => {
-          this.props.onSync()
-          this.getBalance(address)
-          this.getWETHBalance(address)
-        }, 3000)
+          _this.props.onSync()
+          _this.getBalance(address)
+          _this.getWETHBalance(address)
+        }, 8000)
       })
     } else {
       WETHContractInstance.withdraw(web3.toWei(amount), {}, (err, result) => {
         setTimeout(() => {
-          this.props.onSync()
-          this.getBalance(address)
-          this.getWETHBalance(address)
-        }, 3000)
+          _this.props.onSync()
+          _this.getBalance(address)
+          _this.getWETHBalance(address)
+        }, 8000)
       })
     }
+  }
+
+  onAllowance() {
+    const { tokenContractInstance, newAllowance, token } = this.state
+    const { address, network } = this.props
+    console.log(tokenContractInstance, newAllowance)
+    if (!tokenContractInstance) return
+    tokenContractInstance.approve(address, ContractAddresses[token][network], BigNumber(newAllowance), (err, result) => {
+      console.log(err, result)
+      this.props.onSync()
+      this.getTokenAllowance(address)
+    })
   }
 
   // onToggle() {
@@ -389,7 +491,7 @@ class FormTab extends Component {
                         {
                           item.key === "operation"
                             ?
-                            <select value={formData.operation} onChange={this.onChangeSync(item.key)}>
+                            <select value={formData.operation} onChange={this.onChangeSync(item)}>
                               <option disabled>Select Operation</option>
                               <option>Wrap</option>
                               <option>Unwrap</option>
@@ -409,7 +511,7 @@ class FormTab extends Component {
             </table>
           </TabPanel>
           <TabPanel>
-            <table cellspacing="15" className="WrapETHTable">
+            <table cellspacing="15" className="AllowanceTable">
               <thead>
                 <tr>
                   {
@@ -426,12 +528,13 @@ class FormTab extends Component {
                     AllowanceFormInputs.map(item => (
                       <td style={item.style}>
                         {
-                          item.key === "operation"
+                          item.key === "token"
                             ?
-                            <select value={formData.operation} onChange={this.onChangeSync(item.key)}>
-                              <option disabled>Select Operation</option>
-                              <option>Wrap</option>
-                              <option>Unwrap</option>
+                            <select value={formData.token} onChange={this.onChangeSync(item)}>
+                              <option disabled>Select Token</option>
+                              <option>WETH</option>
+                              <option>DAI</option>
+                              <option>LST</option>
                             </select>
                             :
                             <FormInput data={item} onChange={this.onChange.bind(this)} val={formData[item.key]} />
@@ -440,7 +543,7 @@ class FormTab extends Component {
                     ))
                   }
                   <td>
-                    <div className={`FormInput Button ${isValid ? '' : 'Disabled'}`} onClick={this.onWrapETH.bind(this)}>
+                    <div className={`FormInput Button ${isValid ? '' : 'Disabled'}`} onClick={this.onAllowance.bind(this)}>
                       <div className="left" />Submit</div>
                   </td>
                 </tr>
