@@ -1,11 +1,8 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import moment from 'moment'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 
 import FormInput from '../FormInput/FormInput'
-import { BigNumber } from './BigNumber'
-import API from '../../assets/API'
 
 import { FormInputs, FeeFormInputs, WrapETHFormInputs, AllowanceFormInputs } from './Forms'
 
@@ -71,7 +68,7 @@ class FormTab extends Component {
 
       // isLend: true,
 
-      tabIndex: 0,
+      tabIndex: 3,
     }
   }
 
@@ -85,7 +82,7 @@ class FormTab extends Component {
   componentWillReceiveProps(newProps) {
     const { address, network } = this.props
 
-    if (newProps.address != address || newProps.network != network) {
+    if (newProps.address !== address || newProps.network !== network) {
       this.getBalance(newProps.address)
       this.getWETHContract(newProps.network)
       this.getTokenContract(this.state, newProps)
@@ -129,13 +126,14 @@ class FormTab extends Component {
   }
 
   getWETHContract(network) {
+    const { web3 } = window
     if (!WETHAddresses[network]) return
 
     const url = `https://${network === 1 ? 'api' : 'api-kovan'}.etherscan.io/api?module=contract&action=getabi&address=${WETHAddresses[network]}`
     axios.get(url)
       .then(res => {
         const contractABI = JSON.parse(res.data.result)
-        if (contractABI != '') {
+        if (contractABI !== '') {
           const WETHContractInstance = web3.eth.contract(contractABI).at(WETHAddresses[network])
           this.setState({ WETHContractInstance }, () => this.getWETHBalance(this.props.address))
         }
@@ -167,6 +165,7 @@ class FormTab extends Component {
   getTokenContract(state, props) {
     const { network } = props
     const { token } = state
+    const { web3 } = window
 
     if (!ContractAddresses[token][network]) return
 
@@ -176,7 +175,7 @@ class FormTab extends Component {
         .then(res => {
           if (res.data.status === '1') {
             const contractABI = JSON.parse(res.data.result)
-            if (contractABI != '') {
+            if (contractABI !== '') {
               const tokenContractInstance = web3.eth.contract(contractABI).at(ContractAddresses[token][network])
               this.setState({ tokenContractInstance },
                 () => {
@@ -223,6 +222,7 @@ class FormTab extends Component {
     const { network } = this.props
     if (!tokenContractInstance) return
     tokenContractInstance.allowance(address, ContractAddresses[token][network], (err, result) => {
+      console.log(result)
       this.setState({ tokenAllowance: this.fromBigToNumber(result) })
     })
   }
@@ -234,23 +234,23 @@ class FormTab extends Component {
   }
 
   onChangeSync(item) {
-    return ((e) => {
+    return (e) => {
       this.setState({ [item.key]: e.target.value })
       if (item.callback) this[item.callback]({ [item.key]: e.target.value }, this.props)
-    }).bind(this)
+    }
   }
 
   isValid() {
     const formData = this.state
     let valid = true
     FormInputs.forEach(item => {
-      if (item.required && Number(formData[item.key]) == 0) valid = false
+      if (item.required && Number(formData[item.key]) === 0) valid = false
     })
     return valid
   }
 
   onSubmit(isLend) {
-    return (() => {
+    return () => {
       // const { isLend } = this.state
       const formData = this.state
       const { address, methods } = this.props
@@ -291,7 +291,7 @@ class FormTab extends Component {
           setTimeout(methods.getOffers, 1000)
         })
       })
-    }).bind(this)
+    }
   }
 
   onWrapETH() {
@@ -322,10 +322,11 @@ class FormTab extends Component {
   onAllowance() {
     const { tokenContractInstance, newAllowance, token } = this.state
     const { address, network } = this.props
-    console.log(tokenContractInstance, newAllowance)
+    // const BigNumber = window.BigNumber
+
     if (!tokenContractInstance) return
-    tokenContractInstance.approve(address, ContractAddresses[token][network], BigNumber(newAllowance), (err, result) => {
-      console.log(err, result)
+
+    tokenContractInstance.approve(address, ContractAddresses[token][network], /*BigNumber(newAllowance), */(err, result) => {
       this.props.onSync()
       this.getTokenAllowance(address)
     })
@@ -338,7 +339,6 @@ class FormTab extends Component {
   // }
 
   render() {
-    const { title = 'Table', data = [] } = this.props
     const formData = this.state
 
     const isValid = this.isValid()

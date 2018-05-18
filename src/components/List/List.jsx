@@ -1,13 +1,8 @@
 import React, { Component } from 'react'
-import moment from 'moment'
 
 import './List.scss'
 
 class List extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   getData(data) {
     const { key, filter } = data.data
     if (key) {
@@ -23,13 +18,12 @@ class List extends Component {
   }
 
   calcTerm(value) {
-    const val = value.toString().split(' ')[0]
-    return `${parseInt(value / 24)}d` + (value % 24 != 0 ? ` ${value % 24}h` : '')
+    return `${parseInt(value / 24, 10)}d` + (value % 24 !== 0 ? ` ${value % 24}h` : '')
   }
 
   setPrecision(value, prec) {
-    const up = parseInt(value)
-    const down = ('000' + parseInt(value * Math.pow(10, prec)).toString()).substr(-prec)
+    const up = parseInt(value, 10)
+    const down = ('000' + parseInt(value * Math.pow(10, prec), 10).toString()).substr(-prec)
     return this.addCommas(up) + '.' + down
   }
 

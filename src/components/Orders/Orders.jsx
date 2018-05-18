@@ -4,7 +4,6 @@ import PropTypes from 'prop-types'
 
 import TableGroup from '../TableGroup/TableGroup'
 import ListGroup from '../ListGroup/ListGroup'
-import Table from '../Table/Table'
 import FormTab from '../FormTab/FormTab'
 import Header from '../Header/Header'
 

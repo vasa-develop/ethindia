@@ -1,11 +1,8 @@
 import React, { Component } from 'react'
-import axios from 'axios'
 import FadeIn from 'react-fade-in'
 
 import {
   Route,
-  Link,
-  Redirect,
   Switch
 } from 'react-router-dom'
 

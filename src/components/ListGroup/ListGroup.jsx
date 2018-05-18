@@ -5,10 +5,6 @@ import List from '../List/List'
 import './ListGroup.scss'
 
 class ListGroup extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   render() {
     const { style, data } = this.props
     const left = Object.assign(data.left, data.data)

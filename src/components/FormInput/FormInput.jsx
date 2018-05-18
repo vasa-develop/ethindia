@@ -3,17 +3,13 @@ import React, { Component } from 'react'
 import './FormInput.scss'
 
 class FormInput extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   onChange(index) {
-    return ((e) => {
+    return (e) => {
       const { data, val, onChange } = this.props
       const values = this.getValues(data, val)
       values[index + 1] = this.doubleDot(e.target.value)
       onChange(data.key, this.getValue(values), data.affection)
-    }).bind(this)
+    }
   }
 
   doubleDot(value) {
@@ -25,30 +21,30 @@ class FormInput extends Component {
   }
 
   onStep(index, isIncreate) {
-    return ((e) => {
+    return (e) => {
       const { data, val, onChange } = this.props
       const values = this.getValues(data, val)
       let value = values[index + 1].toString()
       if (data.inputs[index].arrow && data.inputs[index].suffix) value = Number(value.split(data.inputs[index].suffix).join(''))
       values[index + 1] = value * 1.0 + (isIncreate ? 1 : -1) * (data.inputs[index].step || 1)
       onChange(data.key, this.getValue(values), data.affection)
-    }).bind(this)
+    }
   }
 
   setPrecision(value, prec) {
     if (!prec) return value
-    const up = parseInt(value)
-    const down = ('000' + parseInt(value * Math.pow(10, prec)).toString()).substr(-prec)
+    const up = parseInt(value, 10)
+    const down = ('000' + parseInt(value * Math.pow(10, prec), 10).toString()).substr(-prec)
     return up + '.' + down
   }
 
   getValues(data, val) {
-    if (data.inputs.length == 1) return [1, this.setPrecision(val, data.inputs[0].precision)]
+    if (data.inputs.length === 1) return [1, this.setPrecision(val, data.inputs[0].precision)]
     let value = val
     const ret = [data.inputs.length]
     for (let i = 0; i < data.inputs.length; i++) {
       const input = data.inputs[i]
-      ret.push(parseInt(value / input.unit).toString() + ((input.arrow && input.suffix) ? input.suffix : ''))
+      ret.push(parseInt(value / input.unit, 10).toString() + ((input.arrow && input.suffix) ? input.suffix : ''))
       value = value % input.unit
     }
     return ret

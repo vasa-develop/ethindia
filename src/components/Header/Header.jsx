@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import axios from 'axios'
 
 import logo from '../../assets/images/Logo.svg'
 
@@ -30,7 +29,7 @@ class Header extends Component {
   componentWillReceiveProps(newProps) {
     const { address, network, isSync } = this.props
 
-    if (newProps.address != address || newProps.network != network) {
+    if (newProps.address !== address || newProps.network !== network) {
       this.getBalance(newProps.address, newProps.syncData, null)
       this.getABI(newProps.network)
       this.props.onAddressChange()
@@ -39,6 +38,7 @@ class Header extends Component {
 
   getABI(network) {
     const { address } = this.props
+    const { web3 } = window
 
     if (!DAIAddresses[network]) return
 
@@ -86,8 +86,8 @@ class Header extends Component {
 
   setPrecision(value, prec) {
     if (!prec) return value
-    const up = parseInt(value)
-    const down = ('000' + parseInt(value * Math.pow(10, prec)).toString()).substr(-prec)
+    const up = parseInt(value, 10)
+    const down = ('000' + parseInt(value * Math.pow(10, prec), 10).toString()).substr(-prec)
     return up + '.' + down
   }
 
@@ -97,13 +97,13 @@ class Header extends Component {
 
   render() {
     const { address } = this.props
-    const { balance, balanceDAI, ethToDai } = this.state
+    const { balance, balanceDAI } = this.state
 
     return (
       <div className="HeaderWrapper">
         <div className="Inner">
           <div className="Logo">
-            <img src={logo} />
+            <img src={logo} alt="Logo" />
           </div>
           <div className="Header">
             <div className="Info Address">

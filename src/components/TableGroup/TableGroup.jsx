@@ -5,10 +5,6 @@ import Table from '../Table/Table'
 import './TableGroup.scss'
 
 class TableGroup extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   render() {
     const { style, data } = this.props
     const left = Object.assign(data.left, data.data)
