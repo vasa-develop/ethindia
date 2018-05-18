@@ -222,7 +222,6 @@ class FormTab extends Component {
     const { network } = this.props
     if (!tokenContractInstance) return
     tokenContractInstance.allowance(address, ContractAddresses[token][network], (err, result) => {
-      console.log(result)
       this.setState({ tokenAllowance: this.fromBigToNumber(result) })
     })
   }
