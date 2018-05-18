@@ -68,7 +68,7 @@ class FormTab extends Component {
 
       // isLend: true,
 
-      tabIndex: 3,
+      tabIndex: 0,
     }
   }
 
