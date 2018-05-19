@@ -321,11 +321,11 @@ class FormTab extends Component {
   onAllowance() {
     const { tokenContractInstance, newAllowance, token } = this.state
     const { address, network } = this.props
-    // const BigNumber = window.BigNumber
+    const { web3 } = window
 
     if (!tokenContractInstance) return
 
-    tokenContractInstance.approve(address, ContractAddresses[token][network], /*BigNumber(newAllowance), */(err, result) => {
+    tokenContractInstance.approve(ContractAddresses[token][network], web3.toWei(newAllowance), {from: address}, (err, result) => {
       this.props.onSync()
       this.getTokenAllowance(address)
     })
