@@ -36,14 +36,16 @@ class FormTab extends Component {
     super(props)
 
     this.state = {
+      isLoading: {},
 
       // Lend/Borrow Form Inputs
+      contracts: {},
       loanAmountOffered: 4.123,
       interestRatePerDay: 0.008,
-      loanDuration: 300,
+      loanDuration: 12 * 3600,
       offerExpiry: 72,
       wrangler: 'Lendroid',
-      allowance: 5.123,
+      allowance: 0,
       ethToDai: 0,
 
       // Fee Form Inputs
@@ -63,7 +65,7 @@ class FormTab extends Component {
       token: 'WETH',
       tokenBalance: 0,
       tokenAllowance: 0,
-      newAllowance: 0,
+      newAllowance: 10.0,
       tokenContractInstance: null,
 
       // isLend: true,
@@ -75,8 +77,9 @@ class FormTab extends Component {
   componentDidMount() {
     if (this.props.address) this.getBalance(this.props.address)
     this.getETD()
-    this.getWETHContract(this.props.network)
-    this.getTokenContract(this.state, this.props)
+    this.getTokenContract({ token: 'WETH' }, this.props.network)
+    this.getTokenContract({ token: 'DAI' }, this.props.network)
+    this.getTokenContract({ token: 'LST' }, this.props.network)
   }
 
   componentWillReceiveProps(newProps) {
@@ -84,8 +87,9 @@ class FormTab extends Component {
 
     if (newProps.address !== address || newProps.network !== network) {
       this.getBalance(newProps.address)
-      this.getWETHContract(newProps.network)
-      this.getTokenContract(this.state, newProps)
+      this.getTokenContract({ token: 'WETH' }, newProps.network)
+      this.getTokenContract({ token: 'DAI' }, newProps.network)
+      this.getTokenContract({ token: 'LST' }, newProps.network)
     }
   }
 
@@ -125,49 +129,17 @@ class FormTab extends Component {
     })
   }
 
-  getWETHContract(network) {
+  getTokenContract(state = null, net = null) {
     const { web3 } = window
-    if (!WETHAddresses[network]) return
-
-    const url = `https://${network === 1 ? 'api' : 'api-kovan'}.etherscan.io/api?module=contract&action=getabi&address=${WETHAddresses[network]}`
-    axios.get(url)
-      .then(res => {
-        const contractABI = JSON.parse(res.data.result)
-        if (contractABI !== '') {
-          const WETHContractInstance = web3.eth.contract(contractABI).at(WETHAddresses[network])
-          this.setState({ WETHContractInstance }, () => this.getWETHBalance(this.props.address))
-        }
-      })
-  }
-
-  getWETHBalance(address, origin = null, compare = true) {
-    const { WETHContractInstance } = this.state
-    if (!WETHContractInstance) return
-
-    WETHContractInstance.balanceOf(address, (err, result) => {
-      if (err) {
-        this.setState({
-          web3Error: err
-        })
-      } else {
-        const value = this.fromBigToNumber(result)
-        if (origin === null || (compare ? (value > origin) : (value < origin))) {
-          this.setState({
-            wETHBalance: value,
-          })
-        } else {
-          setTimeout(() => this.getWETHBalance(address, origin, compare), 1000)
-        }
-      }
-    })
-  }
-
-  getTokenContract(state, props) {
-    const { network } = props
-    const { token } = state
-    const { web3 } = window
+    const token = state ? state.token : this.state.token
+    const network = net ? net : this.props.network
 
     if (!ContractAddresses[token][network]) return
+
+    const { isLoading } = this.state
+    isLoading[token + 'Balance'] = true
+    isLoading[token + 'Allowance'] = true
+    this.setState(isLoading)
 
     if (!ContractAddresses[token].def) {
       const url = `https://${network === 1 ? 'api' : 'api-kovan'}.etherscan.io/api?module=contract&action=getabi&address=${ContractAddresses[token][network]}`
@@ -177,52 +149,87 @@ class FormTab extends Component {
             const contractABI = JSON.parse(res.data.result)
             if (contractABI !== '') {
               const tokenContractInstance = web3.eth.contract(contractABI).at(ContractAddresses[token][network])
-              this.setState({ tokenContractInstance },
+              const { contracts } = this.state
+              contracts[token] = contracts[token] || {}
+              contracts[token].contract = tokenContractInstance
+              this.setState({ contracts },
                 () => {
-                  this.getTokenBalance(this.props.address)
-                  this.getTokenAllowance(this.props.address)
+                  this.getTokenBalance(this.props.address, token)
+                  this.getTokenAllowance(this.props.address, token)
                 }
               )
             }
-          } else {
-            this.setState({ tokenContractInstance: null, tokenBalance: 0, tokenAllowance: 0 })
           }
         })
     } else {
       const contractABI = ContractAddresses[token].def
       const tokenContractInstance = web3.eth.contract(contractABI).at(ContractAddresses[token][network])
-      this.setState({ tokenContractInstance },
+      const { contracts } = this.state
+      contracts[token] = contracts[token] || {}
+      contracts[token].contract = tokenContractInstance
+      this.setState({ contracts },
         () => {
-          this.getTokenBalance(this.props.address)
-          this.getTokenAllowance(this.props.address)
+          this.getTokenBalance(this.props.address, token)
+          this.getTokenAllowance(this.props.address, token)
         }
       )
     }
   }
 
-  getTokenBalance(address) {
-    const { tokenContractInstance } = this.state
-    if (!tokenContractInstance) return
+  getTokenBalance(address, token, origin = null, compare = true) {
+    const { contracts } = this.state
+    const contractInstance = contracts[token].contract
+    if (!contractInstance) return
 
-    tokenContractInstance.balanceOf(address, (err, result) => {
+    const { isLoading } = this.state
+    isLoading[token + 'Balance'] = true
+    this.setState(isLoading)
+
+    contractInstance.balanceOf(address, (err, result) => {
       if (err) {
         this.setState({
           web3Error: err
         })
       } else {
-        this.setState({
-          tokenBalance: this.fromBigToNumber(result),
-        })
+        const value = this.fromBigToNumber(result)
+        if (origin === null || (compare ? (value > origin) : (value < origin))) {
+          const { contracts, isLoading } = this.state
+          contracts[token].balance = value
+          isLoading[token + 'Balance'] = false
+          this.setState({ contracts, isLoading })
+        } else {
+          setTimeout(() => this.getTokenBalance(address, token, origin, compare), 1000)
+        }
       }
     })
   }
 
-  getTokenAllowance(address) {
-    const { tokenContractInstance, token } = this.state
+  getTokenAllowance(address, token, origin = null) {
+    const { contracts } = this.state
     const { network } = this.props
-    if (!tokenContractInstance) return
-    tokenContractInstance.allowance(address, ContractAddresses[token][network], (err, result) => {
-      this.setState({ tokenAllowance: this.fromBigToNumber(result) })
+    const contractInstance = contracts[token].contract
+    if (!contractInstance) return
+
+    const { isLoading } = this.state
+    isLoading[token + 'Allowance'] = true
+    this.setState(isLoading)
+
+    contractInstance.allowance(address, ContractAddresses[token][network], (err, result) => {
+      if (err) {
+        this.setState({
+          web3Error: err
+        })
+      } else {
+        const value = this.fromBigToNumber(result)
+        if (!origin || value === origin) {
+          const { contracts, isLoading } = this.state
+          contracts[token].allowance = this.fromBigToNumber(result)
+          isLoading[token + 'Allowance'] = false
+          this.setState({ contracts, isLoading })
+        } else {
+          setTimeout(() => this.getTokenAllowance(address, token, origin), 1000)
+        }
+      }
     })
   }
 
@@ -235,14 +242,27 @@ class FormTab extends Component {
   onChangeSync(item) {
     return (e) => {
       this.setState({ [item.key]: e.target.value })
-      if (item.callback) this[item.callback]({ [item.key]: e.target.value }, this.props)
+      if (item.callback) this[item.callback]({ [item.key]: e.target.value }, this.props.network)
     }
   }
 
-  isValid() {
+  isValid(isLend = true) {
     const formData = this.state
     let valid = true
-    FormInputs.forEach(item => {
+    FormInputs(isLend).forEach(item => {
+      if (item.required && Number(formData[item.key]) === 0) {
+        valid = false
+      } else if (item.validation) {
+        if (!item.validation(formData)) valid = false
+      }
+    })
+    return valid
+  }
+
+  isValidForm(form) {
+    const formData = this.state
+    let valid = true
+    form.forEach(item => {
       if (item.required && Number(formData[item.key]) === 0) valid = false
     })
     return valid
@@ -254,7 +274,7 @@ class FormTab extends Component {
       const formData = this.state
       const { address, methods } = this.props
       let postData = {}
-      FormInputs.forEach(item => {
+      FormInputs(isLend).forEach(item => {
         postData[item.key] = item.output ? item.output(formData[item.key]) : formData[item.key]
       })
       FeeFormInputs.forEach(item => {
@@ -294,7 +314,10 @@ class FormTab extends Component {
   }
 
   onWrapETH() {
-    const { WETHContractInstance, amount, operation, ETHBalance, wETHBalance } = this.state
+    const { contracts, amount, operation, ETHBalance } = this.state
+    const WETHContractInstance = contracts['WETH'].contract
+    if (!WETHContractInstance) return
+    const wETHBalance = contracts['WETH'].balance
     const { address } = this.props
     const { web3 } = window
     const _this = this
@@ -304,7 +327,7 @@ class FormTab extends Component {
         setTimeout(() => {
           _this.props.onSync(ETHBalance, false)
           _this.getBalance(address, ETHBalance, false)
-          _this.getWETHBalance(address, wETHBalance, true)
+          _this.getTokenBalance(address, 'WETH', wETHBalance, true)
         }, 1000)
       })
     } else {
@@ -312,22 +335,23 @@ class FormTab extends Component {
         setTimeout(() => {
           _this.props.onSync(ETHBalance, true)
           _this.getBalance(address, ETHBalance, true)
-          _this.getWETHBalance(address, wETHBalance, false)
+          _this.getTokenBalance(address, 'WETH', wETHBalance, false)
         }, 1000)
       })
     }
   }
 
   onAllowance() {
-    const { tokenContractInstance, newAllowance, token } = this.state
+    const { contracts, newAllowance, token } = this.state
+    const tokenContractInstance = contracts[token].contract
     const { address, network } = this.props
     const { web3 } = window
 
     if (!tokenContractInstance) return
 
-    tokenContractInstance.approve(ContractAddresses[token][network], web3.toWei(newAllowance), {from: address}, (err, result) => {
+    tokenContractInstance.approve(ContractAddresses[token][network], web3.toWei(newAllowance), { from: address }, (err, result) => {
       this.props.onSync()
-      this.getTokenAllowance(address)
+      this.getTokenAllowance(address, token, newAllowance)
     })
   }
 
@@ -336,6 +360,23 @@ class FormTab extends Component {
   //     isLend: !this.state.isLend
   //   })
   // }
+
+  onTabChange(tabIndex) {
+    this.setState({ tabIndex })
+
+    const formData = this.state
+
+    switch (tabIndex) {
+      case 0: // Lend Form
+        break;
+      case 1: // Borrow Form
+        break;
+      case 2: // Wrap/Unwrap Form
+        break;
+      case 3: // Allowance Form
+        break;
+    }
+  }
 
   render() {
     const formData = this.state
@@ -349,7 +390,7 @@ class FormTab extends Component {
           <div className="Handle" onClick={this.onToggle.bind(this)}>{!formData.isLend ? 'Lend' : 'Borrow'}</div>
           <div className="Handle Bar">{formData.isLend ? 'Lend' : 'Borrow'}</div>
         </div> */}
-        <Tabs selectedIndex={this.state.tabIndex} onSelect={tabIndex => this.setState({ tabIndex })}>
+        <Tabs selectedIndex={this.state.tabIndex} onSelect={this.onTabChange.bind(this)}>
           <TabList>
             <Tab>Lend</Tab>
             <Tab>Borrow</Tab>
@@ -369,7 +410,7 @@ class FormTab extends Component {
               <thead>
                 <tr>
                   {
-                    FormInputs.map(item => (
+                    FormInputs(true).map(item => (
                       <th width={item.width}>{item.label}</th>
                     ))
                   }
@@ -379,14 +420,19 @@ class FormTab extends Component {
               <tbody>
                 <tr>
                   {
-                    FormInputs.map(item => (
+                    FormInputs(true).map(item => (
                       <td style={item.style}>
-                        <FormInput data={item} onChange={this.onChange.bind(this)} val={formData[item.key]} />
+                        <FormInput
+                          data={item}
+                          onChange={this.onChange.bind(this)}
+                          val={item.value ? (item.value(formData)) : formData[item.key]}
+                          loading={item.loading ? formData.isLoading[item.loading] : false}
+                        />
                       </td>
                     ))
                   }
                   <td>
-                    <div className={`FormInput Button ${isValid ? '' : 'Disabled'}`} onClick={this.onSubmit(true)}>
+                    <div className={`FormInput Button ${this.isValid(true) ? '' : 'Disabled'}`} onClick={this.onSubmit(true)}>
                       <div className="left" />
                       Order
                 </div>
@@ -410,7 +456,7 @@ class FormTab extends Component {
                   {
                     FeeFormInputs.map(item => (
                       <td>
-                        <FormInput data={item} onChange={this.onChange.bind(this)} val={formData[item.key]} />
+                        <FormInput data={item} onChange={this.onChange.bind(this)} val={item.value ? (item.value(formData)) : formData[item.key]} />
                       </td>
                     ))
                   }
@@ -431,7 +477,7 @@ class FormTab extends Component {
               <thead>
                 <tr>
                   {
-                    FormInputs.map(item => (
+                    FormInputs(false).map(item => (
                       <th width={item.width}>{item.label}</th>
                     ))
                   }
@@ -441,14 +487,19 @@ class FormTab extends Component {
               <tbody>
                 <tr>
                   {
-                    FormInputs.map(item => (
+                    FormInputs(false).map(item => (
                       <td style={item.style}>
-                        <FormInput data={item} onChange={this.onChange.bind(this)} val={formData[item.key]} />
+                        <FormInput
+                          data={item}
+                          onChange={this.onChange.bind(this)}
+                          val={item.value ? (item.value(formData)) : formData[item.key]}
+                          loading={item.loading ? formData.isLoading[item.loading] : false}
+                        />
                       </td>
                     ))
                   }
                   <td>
-                    <div className={`FormInput Button ${isValid ? '' : 'Disabled'}`} onClick={this.onSubmit(false)}>
+                    <div className={`FormInput Button ${this.isValid(false) ? '' : 'Disabled'}`} onClick={this.onSubmit(false)}>
                       <div className="left" />
                       Order
                 </div>
@@ -472,7 +523,12 @@ class FormTab extends Component {
                   {
                     FeeFormInputs.map(item => (
                       <td>
-                        <FormInput data={item} onChange={this.onChange.bind(this)} val={formData[item.key]} />
+                        <FormInput
+                          data={item}
+                          onChange={this.onChange.bind(this)}
+                          val={item.value ? (item.value(formData)) : formData[item.key]}
+                          loading={item.loading ? formData.isLoading[item.loading] : false}
+                        />
                       </td>
                     ))
                   }
@@ -507,13 +563,18 @@ class FormTab extends Component {
                               <option>Unwrap</option>
                             </select>
                             :
-                            <FormInput data={item} onChange={this.onChange.bind(this)} val={formData[item.key]} />
+                            <FormInput
+                              data={item}
+                              onChange={this.onChange.bind(this)}
+                              val={item.value ? (item.value(formData)) : formData[item.key]}
+                              loading={item.loading ? formData.isLoading[item.loading] : false}
+                            />
                         }
                       </td>
                     ))
                   }
                   <td>
-                    <div className={`FormInput Button ${isValid ? '' : 'Disabled'}`} onClick={this.onWrapETH.bind(this)}>
+                    <div className={`FormInput Button ${this.isValidForm(WrapETHFormInputs) ? '' : 'Disabled'}`} onClick={this.onWrapETH.bind(this)}>
                       <div className="left" />Submit</div>
                   </td>
                 </tr>
@@ -547,13 +608,18 @@ class FormTab extends Component {
                               <option>LST</option>
                             </select>
                             :
-                            <FormInput data={item} onChange={this.onChange.bind(this)} val={formData[item.key]} />
+                            <FormInput
+                              data={item}
+                              onChange={this.onChange.bind(this)}
+                              val={item.value ? (item.value(formData)) : formData[item.key]}
+                              loading={item.loading ? formData.isLoading[item.loading(formData.token, formData)] : false}
+                            />
                         }
                       </td>
                     ))
                   }
                   <td>
-                    <div className={`FormInput Button ${isValid ? '' : 'Disabled'}`} onClick={this.onAllowance.bind(this)}>
+                    <div className={`FormInput Button ${this.isValidForm(AllowanceFormInputs) ? '' : 'Disabled'}`} onClick={this.onAllowance.bind(this)}>
                       <div className="left" />Submit</div>
                   </td>
                 </tr>

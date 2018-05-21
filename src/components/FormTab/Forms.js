@@ -1,85 +1,91 @@
 import moment from 'moment'
 
-export const FormInputs = [
-  {
-    key: 'loanAmountOffered',
-    label: 'Amount',
-    width: 150,
-    output: (val) => (val.toString()),
-    inputs: [{
-      precision: 3,
-      suffix: 'DAI',
-      unit: 1
-    }],
-    required: true
-  }, {
-    key: 'interestRatePerDay',
-    label: 'Daily Rate',
-    width: 150,
-    output: (val) => (val.toString()),
-    inputs: [{
-      precision: 3,
-      arrow: true,
-      step: 0.1,
-      unit: 1
-    }],
-    required: true
-  }, {
-    key: 'loanDuration',
-    label: 'Length',
-    width: 150,
-    output: (val) => (val + ' hours'),
-    inputs: [{
-      precision: 0,
-      arrow: true,
-      step: 1,
-      suffix: 'd',
-      unit: 24,
+export function FormInputs(isLend) {
+  return [
+    {
+      key: 'loanAmountOffered',
+      label: 'Amount',
+      width: 150,
+      output: (val) => (val.toString()),
+      inputs: [{
+        precision: 3,
+        suffix: isLend ? 'DAI' : 'WETH',
+        unit: 1
+      }],
+      required: true,
+      validation: (formData) => (formData.loanAmountOffered <= (formData.contracts[isLend ? 'DAI' : 'WETH'] ? (formData.contracts[isLend ? 'DAI' : 'WETH'].allowance || 0) : 0))
     }, {
-      precision: 0,
-      arrow: true,
-      step: 1,
-      suffix: 'h',
-      max: 23,
-      unit: 1
-    }],
-    required: true
-  }, {
-    key: 'offerExpiry',
-    label: 'Order Expires',
-    width: 150,
-    output: (val) => {
-      let ret = new moment()
-      ret.add(val, 'm')
-      return ret.format()
+      key: 'interestRatePerDay',
+      label: 'Daily Rate',
+      width: 150,
+      output: (val) => (val.toString()),
+      inputs: [{
+        precision: 3,
+        arrow: true,
+        step: 0.1,
+        unit: 1
+      }],
+      required: true
+    }, {
+      key: 'loanDuration',
+      label: 'Length',
+      width: 150,
+      output: (val) => (val.toString()),
+      inputs: [{
+        precision: 0,
+        arrow: true,
+        step: 1,
+        suffix: 'd',
+        unit: 24 * 3600,
+      }, {
+        precision: 0,
+        arrow: true,
+        step: 1,
+        suffix: 'h',
+        max: 23,
+        unit: 1 * 3600
+      }],
+      required: true
+    }, {
+      key: 'offerExpiry',
+      label: 'Order Expires',
+      width: 150,
+      output: (val) => {
+        let ret = new moment.utc()
+        ret.add(val, 'm')
+        return ret.format()
+      },
+      inputs: [{
+        precision: 0,
+        arrow: true,
+        step: 1,
+        suffix: 'h',
+        unit: 60
+      }, {
+        precision: 0,
+        arrow: true,
+        step: 1,
+        suffix: 'm',
+        max: 60,
+        unit: 1
+      }]
+    }, {
+      key: 'allowance',
+      label: 'Allowance',
+      width: 150,
+      output: (val) => (val.toString()),
+      inputs: [{
+        precision: 3,
+        suffix: isLend ? 'DAI' : 'WETH',
+        unit: 1
+      }],
+      style: { paddingRight: 8 },
+      value: (formData) => (formData.contracts[isLend ? 'DAI' : 'WETH'] ? (formData.contracts[isLend ? 'DAI' : 'WETH'].allowance || 0) : 0),
+      readOnly: true,
+      loading: `${isLend ? 'DAI' : 'WETH'}Allowance`
     },
-    inputs: [{
-      precision: 0,
-      arrow: true,
-      step: 1,
-      suffix: 'h',
-      unit: 60
-    }, {
-      precision: 0,
-      arrow: true,
-      step: 1,
-      suffix: 'm',
-      max: 60,
-      unit: 1
-    }]
-  }, {
-    key: 'allowance',
-    label: 'Allowance',
-    width: 150,
-    output: (val) => (val.toString()),
-    inputs: [{
-      precision: 3,
-      suffix: 'ETH',
-      unit: 1
-    }],
-    style: { paddingRight: 8 }
-  },
-]
+  ]
+}
 
 export const FeeFormInputs = [
   {
@@ -147,7 +153,9 @@ export const WrapETHFormInputs = [
       suffix: 'ETH',
       unit: 1
     }],
-    readOnly: true
+    readOnly: true,
+    value: (formData) => (formData.contracts['WETH'] ? (formData.contracts['WETH'].balance || 0) : 0),
+    loading: `WETHBalance`
   }, {
     key: 'operation',
     label: 'Operation',
@@ -181,7 +189,12 @@ export const AllowanceFormInputs = [
       precision: 3,
       unit: 1
     }],
-    readOnly: true
+    readOnly: true,
+    value: (formData) => (formData.contracts[formData.token] ? (formData.contracts[formData.token].balance || 0) : 0),
+    loading: (token, formData) => {
+      console.log(token, formData)
+      return `${token}Balance`
+    }
   }, {
     key: 'tokenAllowance',
     label: 'Token Allowance',
@@ -191,7 +204,9 @@ export const AllowanceFormInputs = [
       precision: 3,
       unit: 1
     }],
-    readOnly: true
+    readOnly: true,
+    value: (formData) => (formData.contracts[formData.token] ? (formData.contracts[formData.token].allowance || 0) : 0),
+    loading: (token) => (`${token}Allowance`)
   }, {
     key: 'newAllowance',
     label: 'New Allowance',

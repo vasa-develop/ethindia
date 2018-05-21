@@ -63,7 +63,7 @@ class FormInput extends Component {
   }
 
   render() {
-    const { data, val } = this.props
+    const { data, val, loading } = this.props
     const values = this.getValues(data, val)
     const inputCount = values[0]
 
@@ -72,7 +72,16 @@ class FormInput extends Component {
         {
           data.inputs.map((item, index) => (
             <div className={`FormInput ${item.arrow ? 'Arrow' : ''}`} style={{ width: `calc(${100 / inputCount}% - ${inputCount > 0 ? '5px' : '0px'})` }}>
-              <input value={values[index + 1]} onChange={this.onChange(index)} min="0" max={item.max} readOnly={data.readOnly}/>
+              {
+                loading
+                  ?
+                  <div className="Loading">
+                    <div className="Loader" />
+                  </div>
+                  :
+                  null
+              }
+              <input value={values[index + 1]} onChange={this.onChange(index)} min="0" max={item.max} readOnly={data.readOnly} />
               {
                 item.arrow || !item.suffix ? null
                   : <div class="Suffix">{item.suffix}</div>
