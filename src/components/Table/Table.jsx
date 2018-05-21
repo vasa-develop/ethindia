@@ -18,7 +18,7 @@ class Table extends Component {
   }
 
   calcTerm(value) {
-    return `${parseInt(value / 24, 10)}d` + (value % 24 !== 0 ? ` ${value % 24}h` : '')
+    return `${parseInt(value / 3600 / 24, 10)}d` + (value / 3600 % 24 !== 0 ? ` ${value / 3600 % 24}h` : '')
   }
 
   setPrecision(value, prec) {
