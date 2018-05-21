@@ -44,6 +44,20 @@ class Table extends Component {
     return ret
   }
 
+  // Slots
+
+  onOrder(data, input) {
+    console.log(data, input)
+  }
+
+  // Action
+
+  onAction(action, data) {
+    console.log(action, data)
+    if (!action.slot) return
+    this[action.slot](data, action.param)
+  }
+
   render() {
     const { data, classes } = this.props
     const filteredData = this.getData(data)
@@ -85,7 +99,7 @@ class Table extends Component {
                               <div className="dot" />
                               <div className="dot" />
                             </button>
-                            : <button style={data.action.style}>{data.action.label}</button>
+                            : <button style={data.action.style} onClick={() => this.onAction(data.action, d)}>{data.action.label}</button>
                         }
                       </td>
                     </tr>

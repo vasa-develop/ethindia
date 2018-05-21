@@ -28,6 +28,8 @@ const Tables = [
     },
     action: {
       label: 'Fill',
+      slot: 'onOrder',
+      param: { isLend: true }
     }
   }, {
     title: 'Borrow Order Book',
@@ -57,7 +59,9 @@ const Tables = [
       )
     },
     action: {
-      label: 'Select'
+      label: 'Select',
+      slot: 'onOrder',
+      param: { isLend: true }
     }
   }, {
     title: 'MY LEND ORDERS',
