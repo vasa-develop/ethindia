@@ -59,7 +59,7 @@ class Table extends Component {
   }
 
   calcTerm(value) {
-    return `${parseInt(value / 3600 / 24, 10)}d` + (value / 3600 % 24 !== 0 ? ` ${value / 3600 % 24}h` : '')
+    return `${parseInt(value / 3600 / 24, 10)}d` + (value / 3600 % 24 !== 0 ? ` ${parseInt(value / 3600 % 24, 10)}h` : '')
   }
 
   setPrecision(value, prec) {
@@ -93,6 +93,7 @@ class Table extends Component {
     let url = 'http://127.0.0.1:5000/loan_requests'
 
     const postData = Object.assign({ filler: address }, data)
+    console.log(LoanOfferRegistery)
 
     axios.post(url, postData)
       .then(res => {

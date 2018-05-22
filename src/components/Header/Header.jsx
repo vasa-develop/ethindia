@@ -16,6 +16,7 @@ class Header extends Component {
     this.state = {
       balance: 0,
       balanceDAI: 0,
+      allowance: 0,
     }
 
     this.getABI = this.getABI.bind(this)
@@ -23,7 +24,7 @@ class Header extends Component {
 
   componentDidMount() {
     this.getBalance(this.props.address)
-    this.getABI(this.props.network)
+    this.getABI(this.props.network, this.props.address)
   }
 
   componentWillReceiveProps(newProps) {
@@ -31,13 +32,14 @@ class Header extends Component {
 
     if (newProps.address !== address || newProps.network !== network) {
       this.getBalance(newProps.address, newProps.syncData, null)
-      this.getABI(newProps.network)
+      this.getABI(newProps.network, newProps.address)
       this.props.onAddressChange()
-    } else if (newProps.isSync && !isSync) this.getBalance(newProps.address, newProps.syncData, () => this.props.onSynced('header'))
+    } else if (newProps.isSync && !isSync) {
+      this.getBalance(newProps.address, newProps.syncData, () => this.props.onSynced('header'))
+    }
   }
 
-  getABI(network) {
-    const { address } = this.props
+  getABI(network, address) {
     const { web3 } = window
 
     if (!DAIAddresses[network]) return
@@ -54,6 +56,17 @@ class Header extends Component {
       } else {
         this.setState({
           balanceDAI: this.fromBigToNumber(result),
+        })
+      }
+    })
+    DAIContractInstance.allowance(address, DAIAddresses[network], (err, result) => {
+      if (err) {
+        this.setState({
+          web3Error: err
+        })
+      } else {
+        this.setState({
+          allowance: this.fromBigToNumber(result),
         })
       }
     })
@@ -97,7 +110,7 @@ class Header extends Component {
 
   render() {
     const { address } = this.props
-    const { balance, balanceDAI } = this.state
+    const { balance, balanceDAI, allowance } = this.state
 
     return (
       <div className="HeaderWrapper">
@@ -121,7 +134,7 @@ class Header extends Component {
               </div>
               <div className="SubInfo">
                 <div className="Label">Allowance</div>
-                <div className="Value">-45 <span>ETH</span></div>
+                <div className="Value">{this.setPrecision(allowance, 2)} <span>DAI</span></div>
               </div>
             </div>
           </div>

@@ -18,7 +18,7 @@ class List extends Component {
   }
 
   calcTerm(value) {
-    return `${parseInt(value / 3600 / 24, 10)}d` + (value / 3600 % 24 !== 0 ? ` ${value / 3600 % 24}h` : '')
+    return `${parseInt(value / 3600 / 24, 10)}d` + (value / 3600 % 24 !== 0 ? ` ${parseInt(value / 3600 % 24, 10)}h` : '')
   }
 
   setPrecision(value, prec) {
