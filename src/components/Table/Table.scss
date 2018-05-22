@@ -107,3 +107,88 @@
     }
   }
 }
+
+.ReactModal__Content {
+  .Error {
+    color: red;
+  }
+
+  h2 {
+    text-transform: uppercase;
+    padding: 0 20px;
+  }
+
+  .ModalBody {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .Info {
+      padding: 10px;
+      margin-top: 20px;
+
+      table {
+        tr {
+          td {
+            padding: 2px 10px;
+            box-shadow: 1px 1px 2px lightgrey;
+            color: rgba(0, 0, 0, 0.6);
+
+            &:first-child {
+              color: #a87df3;
+            }
+          }
+        }
+      }
+    }
+
+    .Buttons {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      height: 80px;
+
+      > div {
+        width: 160px;
+        text-align: center;
+        background: #a87df3;
+        border-radius: 5px;
+        line-height: 35px;
+        color: white;
+
+        &.Cancel {
+          background: #f37d7d;
+        }
+      }
+    }
+  }
+
+  button {
+    -webkit-appearance: none;
+    border: 0;
+    width: 15px;
+    height: 15px;
+    background: transparent;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    padding: 0;
+
+    &:after,
+    &:before {
+      content: '';
+      background-color: black;
+      width: 15px;
+      height: 2px;
+      position: absolute;
+      transform: rotate(45deg);
+      left: 0;
+      top: 6px;
+    }
+
+    &:after {
+      transform: rotate(-45deg);
+    }
+  }
+}

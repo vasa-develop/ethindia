@@ -61,7 +61,7 @@ const Tables = [
     action: {
       label: 'Select',
       slot: 'onOrder',
-      param: { isLend: true }
+      param: { isLend: false }
     }
   }, {
     title: 'MY LEND ORDERS',
@@ -102,7 +102,7 @@ const Tables = [
       key: 'close',
     }
   }, {
-    title: 'MY BORROW ORDERS',
+    title: 'MY BORROW ORDERS',  
     headers: [
       {
         label: 'Loan Number',

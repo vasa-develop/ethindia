@@ -1,8 +1,49 @@
 import React, { Component } from 'react'
+import axios from 'axios'
+import Modal from 'react-modal'
+
+import { LoanOfferRegistery } from './LoanOfferRegistery'
 
 import './Table.scss'
 
+const customStyles = {
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.75)'
+  },
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    padding: '30px 20px 0',
+    minWidth: 500
+  }
+}
+
 class Table extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      modalIsOpen: false,
+      postError: null,
+      result: {}
+    }
+
+    this.openModal = this.openModal.bind(this)
+    this.closeModal = this.closeModal.bind(this)
+  }
+
+  openModal() {
+    this.setState({ modalIsOpen: true })
+  }
+
+  closeModal() {
+    this.setState({ modalIsOpen: false })
+  }
+
   getData(data) {
     const { key, filter } = data.data
     if (key) {
@@ -47,7 +88,30 @@ class Table extends Component {
   // Slots
 
   onOrder(data, input) {
-    console.log(data, input)
+    const { address } = this.props
+    const _this = this
+    let url = 'http://127.0.0.1:5000/loan_requests'
+
+    const postData = Object.assign({ filler: address }, data)
+
+    axios.post(url, postData)
+      .then(res => {
+        const result = res.data
+        _this.setState({
+          postError: null,
+          result: result.data,
+          approval: result.approval
+        }, () => {
+          _this.openModal()
+        })
+      })
+      .catch(err => {
+        _this.setState({
+          postError: err
+        }, () => {
+          _this.openModal()
+        })
+      })
   }
 
   // Action
@@ -60,6 +124,7 @@ class Table extends Component {
 
   render() {
     const { data, classes } = this.props
+    const { postError, result } = this.state
     const filteredData = this.getData(data)
 
     return (
@@ -112,6 +177,40 @@ class Table extends Component {
             </table>
           </div>
         </div>
+        <Modal
+          isOpen={this.state.modalIsOpen}
+          onRequestClose={this.closeModal}
+          style={customStyles}
+          contentLabel="Example Modal"
+        >
+          <h2 ref={subtitle => this.subtitle = subtitle}>Order Book</h2>
+          <button onClick={this.closeModal}></button>
+          <div className="ModalBody">
+            {
+              postError ?
+                <div className="Error">{postError.toString()}</div>
+                :
+                <div>
+                  <div className="Info">
+                    <table>
+                      {
+                        Object.keys(result).map(key => (
+                          <tr>
+                            <td>{key}</td>
+                            <td>{result[key].toString()}</td>
+                          </tr>
+                        ))
+                      }
+                    </table>
+                  </div>
+                  <div className="Buttons">
+                    <div className="Confirm" onClick={this.closeModal}>Confirm</div>
+                    <div className="Cancel" onClick={this.closeModal}>Cancel</div>
+                  </div>
+                </div>
+            }
+          </div>
+        </Modal>
       </div>
     )
   }

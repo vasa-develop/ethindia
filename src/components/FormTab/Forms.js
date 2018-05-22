@@ -192,7 +192,6 @@ export const AllowanceFormInputs = [
     readOnly: true,
     value: (formData) => (formData.contracts[formData.token] ? (formData.contracts[formData.token].balance || 0) : 0),
     loading: (token, formData) => {
-      console.log(token, formData)
       return `${token}Balance`
     }
   }, {

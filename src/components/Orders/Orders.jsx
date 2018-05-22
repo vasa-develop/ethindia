@@ -87,9 +87,9 @@ class Orders extends Component {
       <div className="OrdersWrapper">
         <Header address={web3.selectedAccount} network={web3.networkId} isSync={headerSync} syncData={syncData} onSynced={this.onSynced.bind(this)} onAddressChange={this.onAddressChange.bind(this)} />
         <FormTab methods={methods} address={web3.selectedAccount} network={web3.networkId} onSync={this.onSync.bind(this)} />
-        <TableGroup data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }} />
-        <ListGroup data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }} style={{ marginBottom: 29 }} />
-        <ListGroup data={{ left: Tables[4], right: Tables[5] }} />
+        <TableGroup address={web3.selectedAccount} data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }} />
+        <ListGroup address={web3.selectedAccount} data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }} style={{ marginBottom: 29 }} />
+        <ListGroup address={web3.selectedAccount} data={{ left: Tables[4], right: Tables[5] }} />
       </div>
     )
   }
