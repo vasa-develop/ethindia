@@ -163,8 +163,9 @@ class Table extends Component {
         approval._isOfferCreatorLender,
         (err, result) => {
           if (err) {
-            //
+            this.closeModal()
           } else {
+            this.closeModal()
           }
           this.setState({
             isLoading: false
@@ -242,6 +243,12 @@ class Table extends Component {
                 <div className="Error">{postError.toString()}</div>
                 :
                 <div>
+                  {
+                    this.state.isLoading &&
+                    <div className="Loading">
+                      <div className="Loader" />
+                    </div>
+                  }
                   <div className="Info">
                     <table>
                       {
