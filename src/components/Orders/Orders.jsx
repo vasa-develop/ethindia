@@ -37,9 +37,10 @@ class Orders extends Component {
   getOffers() {
     this.apiGet('offers', (result) => {
       const address = this.context.web3.selectedAccount
-      const offers = result.offers || []
+      let offers = result.offers || []
       const myLendOffers = offers.filter(item => (item.lender === address))
       const myBorrowOffers = offers.filter(item => (item.borrower === address))
+      offers = offers.filter(item => (item.lender !== address && item.borrower !== address))
       this.setState({ offers, myLendOffers, myBorrowOffers })
     })
   }
@@ -71,7 +72,7 @@ class Orders extends Component {
   }
 
   onSync(origin = null, compare = true) {
-    this.setState({ headerSync: true, syncData: {origin, compare} })
+    this.setState({ headerSync: true, syncData: { origin, compare } })
   }
 
   onSynced(title) {
