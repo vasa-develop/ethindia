@@ -145,17 +145,31 @@ class Table extends Component {
   // Action
 
   onAction(action, data) {
-    console.log(action, data)
     if (!action.slot) return
     this[action.slot](data, action.param)
   }
 
   onConfirm() {
     const { LoanOfferRegistryContractInstance, approval } = this.state
-    console.log(LoanOfferRegistryContractInstance)
-    
-    LoanOfferRegistryContractInstance.fill(approval, (err, result) => {
-      console.log(err, result)
+    this.setState({
+      isLoading: true
+    }, () => {
+      LoanOfferRegistryContractInstance.fill(
+        approval._addresses,
+        approval._values,
+        approval._vS,
+        approval._rS,
+        approval._sS,
+        approval._isOfferCreatorLender,
+        (err, result) => {
+          if (err) {
+            //
+          } else {
+          }
+          this.setState({
+            isLoading: false
+          })
+        })
     })
   }
 
