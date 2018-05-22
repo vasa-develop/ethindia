@@ -111,6 +111,10 @@ class FormTab extends Component {
   getBalance(address, origin = null, compare = true) {
     const { web3 } = window
 
+    const { isLoading } = this.state
+    isLoading['ETHBalance'] = true
+    this.setState({ isLoading })
+
     web3 && web3.eth && web3.eth.getBalance(address, (err, result) => {
       if (err) {
         this.setState({
@@ -119,8 +123,12 @@ class FormTab extends Component {
       } else {
         const value = this.fromBigToNumber(result)
         if (origin === null || (compare ? (value > origin) : (value < origin))) {
+          const { isLoading } = this.state
+          isLoading['ETHBalance'] = false
+
           this.setState({
             ETHBalance: value,
+            isLoading
           })
         } else {
           setTimeout(() => this.getBalance(address, origin, compare), 1000)
@@ -139,7 +147,7 @@ class FormTab extends Component {
     const { isLoading } = this.state
     isLoading[token + 'Balance'] = true
     isLoading[token + 'Allowance'] = true
-    this.setState(isLoading)
+    this.setState({ isLoading })
 
     if (!ContractAddresses[token].def) {
       const url = `https://${network === 1 ? 'api' : 'api-kovan'}.etherscan.io/api?module=contract&action=getabi&address=${ContractAddresses[token][network]}`
@@ -183,7 +191,7 @@ class FormTab extends Component {
 
     const { isLoading } = this.state
     isLoading[token + 'Balance'] = true
-    this.setState(isLoading)
+    this.setState({ isLoading })
 
     contractInstance.balanceOf(address, (err, result) => {
       if (err) {
@@ -212,7 +220,7 @@ class FormTab extends Component {
 
     const { isLoading } = this.state
     isLoading[token + 'Allowance'] = true
-    this.setState(isLoading)
+    this.setState({ isLoading })
 
     contractInstance.allowance(address, ContractAddresses[token][network], (err, result) => {
       if (err) {

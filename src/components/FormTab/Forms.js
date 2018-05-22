@@ -142,7 +142,8 @@ export const WrapETHFormInputs = [
       suffix: 'ETH',
       unit: 1
     }],
-    readOnly: true
+    readOnly: true,
+    loading: `ETHBalance`
   }, {
     key: 'wETHBalance',
     label: 'WETH Balance',
