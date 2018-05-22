@@ -1,4 +1,4 @@
-export const LoanOfferRegistery = [
+export const LoanOfferRegisteryABI = [
   {
     "constant": true,
     "inputs": [],

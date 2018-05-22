@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import axios from 'axios'
 import Modal from 'react-modal'
 
-import { LoanOfferRegistery } from './LoanOfferRegistery'
+import { LoanOfferRegisteryABI } from './LoanOfferRegisteryABI'
 
 import './Table.scss'
 
@@ -22,6 +22,10 @@ const customStyles = {
   }
 }
 
+const LoanOfferRegistryContractAddresses = {
+  42: '0x6D5B0De54bddC6d2F80f1913AdFfd217F9BA06B7'
+}
+
 class Table extends Component {
   constructor(props) {
     super(props)
@@ -29,11 +33,35 @@ class Table extends Component {
     this.state = {
       modalIsOpen: false,
       postError: null,
-      result: {}
+      result: {},
+      approval: {},
+      LoanOfferRegistryContractInstance: null
     }
 
     this.openModal = this.openModal.bind(this)
     this.closeModal = this.closeModal.bind(this)
+  }
+
+  componentDidMount() {
+    this.getABI(this.props.network, this.props.address)
+  }
+
+  componentWillReceiveProps(newProps) {
+    const { address, network } = this.props
+
+    if (newProps.address !== address || newProps.network !== network) {
+      this.getABI(newProps.network, newProps.address)
+    }
+  }
+
+  getABI(network, address) {
+    const { web3 } = window
+    if (!LoanOfferRegistryContractAddresses[network]) return
+
+    const contractABI = LoanOfferRegisteryABI
+    const LoanOfferRegistryContract = web3.eth.contract(contractABI)
+    const LoanOfferRegistryContractInstance = LoanOfferRegistryContract.at(LoanOfferRegistryContractAddresses[network])
+    this.setState({ LoanOfferRegistryContractInstance })
   }
 
   openModal() {
@@ -93,7 +121,6 @@ class Table extends Component {
     let url = 'http://127.0.0.1:5000/loan_requests'
 
     const postData = Object.assign({ filler: address }, data)
-    console.log(LoanOfferRegistery)
 
     axios.post(url, postData)
       .then(res => {
@@ -121,6 +148,15 @@ class Table extends Component {
     console.log(action, data)
     if (!action.slot) return
     this[action.slot](data, action.param)
+  }
+
+  onConfirm() {
+    const { LoanOfferRegistryContractInstance, approval } = this.state
+    console.log(LoanOfferRegistryContractInstance)
+    
+    LoanOfferRegistryContractInstance.fill(approval, (err, result) => {
+      console.log(err, result)
+    })
   }
 
   render() {
@@ -205,7 +241,7 @@ class Table extends Component {
                     </table>
                   </div>
                   <div className="Buttons">
-                    <div className="Confirm" onClick={this.closeModal}>Confirm</div>
+                    <div className="Confirm" onClick={this.onConfirm.bind(this)}>Confirm</div>
                     <div className="Cancel" onClick={this.closeModal}>Cancel</div>
                   </div>
                 </div>
