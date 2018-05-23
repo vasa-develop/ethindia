@@ -352,15 +352,30 @@ class FormTab extends Component {
   onAllowance() {
     const { contracts, newAllowance, token } = this.state
     const tokenContractInstance = contracts[token].contract
+    const tokenAllowance = contracts[token].allowance
     const { address, network } = this.props
     const { web3 } = window
 
     if (!tokenContractInstance) return
 
-    tokenContractInstance.approve(ContractAddresses[token][network], web3.toWei(newAllowance), { from: address }, (err, result) => {
+    const callback = (err, result) => {
+      if (err) return
       this.props.onSync()
       this.getTokenAllowance(address, token, newAllowance)
-    })
+    }
+
+    if (
+      tokenAllowance === 0
+      || !tokenContractInstance.increaseApproval
+      || !tokenContractInstance.decreaseApproval) {
+      tokenContractInstance.approve(ContractAddresses[token][network], web3.toWei(newAllowance), { from: address }, callback)
+    } else {
+      if (newAllowance > tokenAllowance) {
+        tokenContractInstance.increaseApproval(ContractAddresses[token][network], web3.toWei(newAllowance - tokenAllowance), { from: address }, callback)
+      } else {
+        tokenContractInstance.decreaseApproval(ContractAddresses[token][network], web3.toWei(tokenAllowance - newAllowance), { from: address }, callback)
+      }
+    }
   }
 
   // onToggle() {
