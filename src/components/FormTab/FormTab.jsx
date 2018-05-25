@@ -276,11 +276,23 @@ class FormTab extends Component {
     return valid
   }
 
+  randHex(len = 40) {
+    const maxlen = 8
+    const min = Math.pow(16, Math.min(len, maxlen) - 1)
+    const max = Math.pow(16, Math.min(len, maxlen)) - 1
+    const n = Math.floor(Math.random() * (max - min + 1)) + min
+    let r = n.toString(16)
+    while (r.length < len) {
+      r = r + this.randHex(len - maxlen)
+    }
+    return r
+  }
+
   onSubmit(isLend) {
     return () => {
       // const { isLend } = this.state
       const formData = this.state
-      const { address, methods } = this.props
+      const { address, methods, network } = this.props
       let postData = {}
       FormInputs(isLend).forEach(item => {
         postData[item.key] = item.output ? item.output(formData[item.key]) : formData[item.key]
@@ -288,16 +300,16 @@ class FormTab extends Component {
       FeeFormInputs.forEach(item => {
         postData[item.key] = item.output ? item.output(formData[item.key]) : formData[item.key]
       })
-      postData.wrangler = formData.wrangler
+      postData.wrangler = address
       postData.lender = isLend ? address : ''
       postData.borrower = !isLend ? address : ''
 
+      postData.creatorSalt = '0x' + this.randHex(40)
+      postData.collateralToken = ContractAddresses.WETH[network] || ''
+      postData.loanToken = ContractAddresses.DAI[network] || ''
       const keys = [
         'relayer',
         'collateralAmount',
-        'collateralToken',
-        'creatorSalt',
-        'loanToken'
       ]
       keys.forEach(key => (postData[key] = ''))
 
