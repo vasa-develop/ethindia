@@ -300,7 +300,7 @@ class FormTab extends Component {
       FeeFormInputs.forEach(item => {
         postData[item.key] = item.output ? item.output(formData[item.key]) : formData[item.key]
       })
-      postData.wrangler = address
+      postData.wrangler = '0x061C6ACc2B78A500489C2845D5d7F94847c2F4ba'
       postData.lender = isLend ? address : ''
       postData.borrower = !isLend ? address : ''
 
