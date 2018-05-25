@@ -23,7 +23,7 @@ const customStyles = {
 }
 
 const LoanOfferRegistryContractAddresses = {
-  42: '0x6D5B0De54bddC6d2F80f1913AdFfd217F9BA06B7'
+  42: '0x0430d77Fb06d93e09619D9805F9Ec87502e6C2cB'
 }
 
 class Table extends Component {

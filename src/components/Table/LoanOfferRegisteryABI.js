@@ -1,74 +1,71 @@
 export const LoanOfferRegisteryABI = [
   {
-    "constant": true,
-    "inputs": [],
-    "name": "TOKEN_CONTRACT_ADDRESS",
-    "outputs": [
+    "anonymous": false,
+    "inputs": [
       {
-        "name": "",
+        "indexed": true,
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "newOwner",
         "type": "address"
       }
     ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
+    "name": "OwnershipTransferred",
+    "type": "event"
   },
   {
-    "constant": true,
+    "constant": false,
     "inputs": [
       {
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "filled",
-    "outputs": [
+        "name": "_addresses",
+        "type": "address[6]"
+      },
       {
-        "name": "",
+        "name": "_values",
+        "type": "uint256[9]"
+      },
+      {
+        "name": "_v",
+        "type": "uint8"
+      },
+      {
+        "name": "_r",
+        "type": "bytes32"
+      },
+      {
+        "name": "_s",
+        "type": "bytes32"
+      },
+      {
+        "name": "cancelledCollateralTokenAmount",
         "type": "uint256"
       }
     ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "cancelled",
+    "name": "cancel",
     "outputs": [
       {
         "name": "",
-        "type": "uint256"
+        "type": "bool"
       }
     ],
     "payable": false,
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": true,
+    "anonymous": false,
     "inputs": [
       {
-        "name": "offerHash",
-        "type": "bytes32"
+        "indexed": true,
+        "name": "previousOwner",
+        "type": "address"
       }
     ],
-    "name": "getFilledOrCancelledCollateralAmount",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
+    "name": "OwnershipRenounced",
+    "type": "event"
   },
   {
     "constant": false,
@@ -119,57 +116,6 @@ export const LoanOfferRegisteryABI = [
     "type": "function"
   },
   {
-    "constant": true,
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "TOKEN_TRANSFER_PROXY_CONTRACT_ADDRESS",
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "_addresses",
-        "type": "address[7]"
-      },
-      {
-        "name": "_values",
-        "type": "uint256[13]"
-      }
-    ],
-    "name": "computeOfferHash",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "constant": false,
     "inputs": [
       {
@@ -199,32 +145,125 @@ export const LoanOfferRegisteryABI = [
     "type": "constructor"
   },
   {
-    "anonymous": false,
+    "constant": true,
     "inputs": [
       {
-        "indexed": true,
-        "name": "previousOwner",
-        "type": "address"
+        "name": "",
+        "type": "bytes32"
       }
     ],
-    "name": "OwnershipRenounced",
-    "type": "event"
+    "name": "cancelled",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "anonymous": false,
+    "constant": true,
     "inputs": [
       {
-        "indexed": true,
-        "name": "previousOwner",
-        "type": "address"
+        "name": "_addresses",
+        "type": "address[6]"
       },
       {
-        "indexed": true,
-        "name": "newOwner",
+        "name": "_values",
+        "type": "uint256[9]"
+      }
+    ],
+    "name": "computeOfferHash",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "filled",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "offerHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getFilledOrCancelledCollateralAmount",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "name": "",
         "type": "address"
       }
     ],
-    "name": "OwnershipTransferred",
-    "type": "event"
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "TOKEN_CONTRACT_ADDRESS",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "TOKEN_TRANSFER_PROXY_CONTRACT_ADDRESS",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   }
 ]
