@@ -1,8 +1,44 @@
 import React, { Component } from 'react'
 
+import { LoanOfferRegisteryABI } from '../Table/LoanOfferRegisteryABI'
+
 import './List.scss'
 
+const LoanOfferRegistryContractAddresses = {
+  42: '0xFD466cA49c6804029ccB36181c4d4CA51794c1b9'
+}
+
 class List extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      LoanOfferRegistryContractInstance: null,
+    }
+  }
+
+  componentDidMount() {
+    this.getABI(this.props.network, this.props.address)
+  }
+
+  componentWillReceiveProps(newProps) {
+    const { address, network } = this.props
+
+    if (newProps.address !== address || newProps.network !== network) {
+      this.getABI(newProps.network, newProps.address)
+    }
+  }
+
+  getABI(network, address) {
+    const { web3 } = window
+    if (!LoanOfferRegistryContractAddresses[network]) return
+
+    const contractABI = LoanOfferRegisteryABI
+    const LoanOfferRegistryContract = web3.eth.contract(contractABI)
+    const LoanOfferRegistryContractInstance = LoanOfferRegistryContract.at(LoanOfferRegistryContractAddresses[network])
+    this.setState({ LoanOfferRegistryContractInstance })
+  }
+
   getData(data) {
     const { key, filter } = data.data
     if (key) {
@@ -51,6 +87,73 @@ class List extends Component {
     return 'red'
   }
 
+  fromBigToNumber(big) {
+    return Number((big.c[0] / 10000).toString() + (big.c[1] || '').toString())
+  }
+
+  // Slots
+
+  onCancel(data, input) {
+
+    // 1. an array of addresses[6] in this order: lender, borrower, relayer, wrangler, collateralToken, loanToken
+    const addresses = [
+      data.lender,
+      data.borrower,
+      data.relayer,
+      data.wrangler,
+      data.collateralToken,
+      data.loanToken
+    ]
+
+    // 2. an array of uints[9] in this order: loanAmountOffered, interestRatePerDay, loanDuration, offerExpiryTimestamp, relayerFeeLST, monitoringFeeLST, rolloverFeeLST, closureFeeLST, creatorSalt
+    const values = [
+      data.loanAmountOffered,
+      data.interestRatePerDay,
+      data.loanDuration,
+      data.offerExpiryTimestamp,
+      data.relayerFeeLST,
+      data.monitoringFeeLST,
+      data.rolloverFeeLST,
+      data.closureFeeLST,
+      data.creatorSalt
+    ]
+
+    // 3. vCreator
+    // 4. rCreator
+    // 5. sCreator
+    // 6. a uint value cancelledCollateralTokenAmount which is calculated as follows:
+    // orderHash = contract.computeOfferHash(address[6], uints[9]); // Refer 1 and 2 immediately above for input details
+    // filledAmount = contract.filled(orderHash);
+    // cancelledCollateralTokenAmount = (order.loanAmountOffered * currentWETHExchangeRate) - (filledAmount)
+    const { LoanOfferRegistryContractInstance } = this.state
+    const { currentWETHExchangeRate, slots } = this.props
+
+    const onCancel = (err, result) => {
+      console.log(err, result)
+    }
+
+    const onFilledAmount = (err, result) => {
+      const filledAmount = this.fromBigToNumber(result)
+      const cancelledCollateralTokenAmount = data.loanAmountOffered * currentWETHExchangeRate - filledAmount
+
+      LoanOfferRegistryContractInstance.cancel(addresses, values, data.vCreator, data.rCreator, data.sCreator, cancelledCollateralTokenAmount, onCancel)
+    }
+
+    const onOrderHash = (err, result) => {
+      if (err) return
+      LoanOfferRegistryContractInstance.filled(result, onFilledAmount)
+    }
+
+    LoanOfferRegistryContractInstance.computeOfferHash(addresses, values, onOrderHash)
+  }
+
+  // Action
+
+  onAction(action, data) {
+    if (!action.slot) return
+    this[action.slot](data, action.param)
+  }
+
   render() {
     const { data, classes } = this.props
     const filteredData = this.getData(data)
@@ -87,7 +190,7 @@ class List extends Component {
                   {
                     data.action.label === '3-dot' ?
                       <button style={data.action.style} className="close three-dot"></button>
-                      : <button style={data.action.style} className={data.action.key}>{data.action.label}</button>
+                      : <button style={data.action.style} className={data.action.key} onClick={() => this.onAction(data.action, d)}>{data.action.label}</button>
                   }
                 </div>
               </div>

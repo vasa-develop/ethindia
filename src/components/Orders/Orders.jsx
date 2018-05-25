@@ -23,15 +23,18 @@ class Orders extends Component {
       myBorrowOffers: [],
       headerSync: false,
       syncData: {},
+      currentWETHExchangeRate: 0,
     }
 
     this.apiGet = this.apiGet.bind(this)
     this.apiPost = this.apiPost.bind(this)
     this.getOffers = this.getOffers.bind(this)
+    this.getETW = this.getETW.bind(this)
   }
 
   componentDidMount() {
     this.getOffers()
+    this.getETW()
   }
 
   getOffers() {
@@ -43,6 +46,19 @@ class Orders extends Component {
       offers = offers.filter(item => (item.lender !== address && item.borrower !== address))
       this.setState({ offers, myLendOffers, myBorrowOffers })
     })
+  }
+
+  getETW() {
+    const url = 'https://api.coinmarketcap.com/v1/ticker/weth//?convert=ETH'
+    axios.get(url)
+      .then(res => {
+        const result = res.data[0]
+        this.setState({
+          currentWETHExchangeRate: 1 / result.price_eth
+        }, () => {
+          setTimeout(this.getETW, 12 * 1000)
+        })
+      })
   }
 
   apiGet(endPoint, cb = null) {
@@ -81,7 +97,7 @@ class Orders extends Component {
 
   render() {
     const { web3 } = this.context
-    const { offers, myLendOffers, myBorrowOffers, headerSync, syncData } = this.state
+    const { offers, myLendOffers, myBorrowOffers, headerSync, syncData, currentWETHExchangeRate } = this.state
     const methods = { apiGet: this.apiGet, apiPost: this.apiPost, getOffers: this.getOffers }
 
     return (
@@ -89,8 +105,8 @@ class Orders extends Component {
         <Header address={web3.selectedAccount} network={web3.networkId} isSync={headerSync} syncData={syncData} onSynced={this.onSynced.bind(this)} onAddressChange={this.onAddressChange.bind(this)} />
         <FormTab methods={methods} address={web3.selectedAccount} network={web3.networkId} onSync={this.onSync.bind(this)} />
         <TableGroup address={web3.selectedAccount} network={web3.networkId} data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }} />
-        <ListGroup address={web3.selectedAccount} network={web3.networkId} data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }} style={{ marginBottom: 29 }} />
-        <ListGroup address={web3.selectedAccount} network={web3.networkId} data={{ left: Tables[4], right: Tables[5] }} />
+        <ListGroup address={web3.selectedAccount} network={web3.networkId} currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }} style={{ marginBottom: 29 }} />
+        <ListGroup address={web3.selectedAccount} network={web3.networkId} currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[4], right: Tables[5] }} />
       </div>
     )
   }

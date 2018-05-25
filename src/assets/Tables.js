@@ -100,6 +100,8 @@ const Tables = [
     },
     action: {
       key: 'close',
+      slot: 'onCancel',
+      param: { isLend: true }
     }
   }, {
     title: 'MY BORROW ORDERS',  
@@ -138,6 +140,8 @@ const Tables = [
     },
     action: {
       key: 'close',
+      slot: 'onCancel',
+      param: { isLend: false }
     }
   }, {
     title: 'MY LEND POSITIONS',
