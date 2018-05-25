@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import axios from 'axios'
 
 import { LoanOfferRegisteryABI } from '../Table/LoanOfferRegisteryABI'
 
@@ -126,10 +127,17 @@ class List extends Component {
     // filledAmount = contract.filled(orderHash);
     // cancelledCollateralTokenAmount = (order.loanAmountOffered * currentWETHExchangeRate) - (filledAmount)
     const { LoanOfferRegistryContractInstance } = this.state
-    const { currentWETHExchangeRate, slots } = this.props
+    const { currentWETHExchangeRate, slots, methods } = this.props
 
     const onCancel = (err, result) => {
-      console.log(err, result)
+      if (err) return
+
+      let url = `http://localhost:8080/offers/${data.id}`
+      axios.delete(url)
+        .then(res => {
+          const result = res.data
+          setTimeout(methods.getOffers, 1000)
+        })
     }
 
     const onFilledAmount = (err, result) => {
