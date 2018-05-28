@@ -1,6 +1,10 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 import PropTypes from 'prop-types'
+import { compose } from 'recompose'
+
+import { connectContract } from '../../redux/modules'
+import { promisify } from '../../utilities'
 
 import TableGroup from '../TableGroup/TableGroup'
 import ListGroup from '../ListGroup/ListGroup'
@@ -35,6 +39,11 @@ class Orders extends Component {
   componentDidMount() {
     this.getOffers()
     this.getETW()
+
+    const { contractFetch } = this.props
+    promisify(contractFetch, {})
+      .then(res => { console.log(this.props) })
+      .catch(e => { console.log(e) })
   }
 
   getOffers() {
@@ -45,6 +54,7 @@ class Orders extends Component {
       const myBorrowOffers = offers.filter(item => (item.borrower === address))
       offers = offers.filter(item => (item.lender !== address && item.borrower !== address))
       this.setState({ offers, myLendOffers, myBorrowOffers })
+      console.log(this.props, this.state)
     })
   }
 
@@ -116,4 +126,6 @@ Orders.contextTypes = {
   web3: PropTypes.object
 };
 
-export default Orders
+export default compose(
+  connectContract(),
+)(Orders)
