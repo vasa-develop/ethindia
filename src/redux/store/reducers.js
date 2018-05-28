@@ -1,11 +1,11 @@
 import {
-  contract
+  contracts
 } from '../modules'
 
 import { combineReducers } from 'redux'
 
 const appReducer = combineReducers({
-  contract
+  contracts
 })
 
 export default function rootReducer(state, action) {

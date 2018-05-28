@@ -1,5 +1,6 @@
 import {
-  CONTRACT_FETCH_SUCCESS
+  CONTRACT_FETCH_SUCCESS,
+  TOKEN_BALANCE_SUCCESS
 } from './actions'
 import { defaultReducers } from '../defaultReducers'
 
@@ -11,7 +12,12 @@ export default function contracts(state = DEFAULT, action = {}) {
     case CONTRACT_FETCH_SUCCESS:
       return {
         ...state,
-        contracts: payload.contracts || {},
+        contracts: Object.assign({}, state.contracts || {}, payload.contracts),
+      }
+    case TOKEN_BALANCE_SUCCESS:
+      return {
+        ...state,
+        balances: Object.assign({}, state.balances || {}, payload.balances),
       }
     default:
       return state

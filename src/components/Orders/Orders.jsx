@@ -18,6 +18,10 @@ import 'react-tabs/style/react-tabs.scss'
 import './Orders.scss'
 
 class Orders extends Component {
+  static propTypes = {
+    contracts: PropTypes.object.isRequired
+  }
+
   constructor(props, context) {
     super(props)
 
@@ -39,11 +43,34 @@ class Orders extends Component {
   componentDidMount() {
     this.getOffers()
     this.getETW()
+  }
 
-    const { contractFetch } = this.props
-    promisify(contractFetch, {})
-      .then(res => { console.log(this.props) })
-      .catch(e => { console.log(e) })
+  componentWillReceiveProps(newProps) {
+    const { address, network } = this.props
+
+    if (newProps.address !== address || newProps.network !== network) {
+      const { contractFetchWeth, contractFetchDai, contractFetchLst, contractFetchLoanOfferRegistry } = this.props
+      const { web3 } = window
+      console.log(newProps)
+
+      if (newProps.network) {
+        promisify(contractFetchWeth, { web3, network: newProps.network })
+          .then(res => { console.log(res) })
+          .catch(e => { console.log(e) })
+
+        promisify(contractFetchDai, { web3, network: newProps.network })
+          .then(res => { console.log(res) })
+          .catch(e => { console.log(e) })
+
+        promisify(contractFetchLst, { web3, network: newProps.network })
+          .then(res => { console.log(res) })
+          .catch(e => { console.log(e) })
+
+        promisify(contractFetchLoanOfferRegistry, { web3, network: newProps.network })
+          .then(res => { console.log(res) })
+          .catch(e => { console.log(e) })
+      }
+    }
   }
 
   getOffers() {
@@ -54,7 +81,6 @@ class Orders extends Component {
       const myBorrowOffers = offers.filter(item => (item.borrower === address))
       offers = offers.filter(item => (item.lender !== address && item.borrower !== address))
       this.setState({ offers, myLendOffers, myBorrowOffers })
-      console.log(this.props, this.state)
     })
   }
 
