@@ -1,7 +1,7 @@
 import "babel-polyfill"
 import {
   put,
-  call,
+  // call,
   fork,
   all,
   take

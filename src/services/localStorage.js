@@ -1,4 +1,4 @@
-import cookie from 'react-cookies';
+// import cookie from 'react-cookies';
 
 export const loadState = () => {
   try {

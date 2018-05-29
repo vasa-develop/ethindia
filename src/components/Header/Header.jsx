@@ -3,15 +3,11 @@ import { compose } from 'recompose'
 
 import { connectContract } from '../../redux/modules'
 
-import logo from '../../assets/images/Logo.svg'
+// import logo from '../../assets/images/Logo.svg'
 
 import './Header.scss'
 
 class Header extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   setPrecision(value, prec) {
     if (!prec) return value
     if (!value) value = 0

@@ -49,8 +49,6 @@ class FormTab extends Component {
       newAllowance: 10.0,
       tokenContractInstance: null,
 
-      // isLend: true,
-
       tabIndex: 0,
     }
   }
@@ -305,16 +303,8 @@ class FormTab extends Component {
     }
   }
 
-  // onToggle() {
-  //   this.setState({
-  //     isLend: !this.state.isLend
-  //   })
-  // }
-
   onTabChange(tabIndex) {
     this.setState({ tabIndex })
-
-    const formData = this.state
 
     switch (tabIndex) {
       case 0: // Lend Form
@@ -325,6 +315,8 @@ class FormTab extends Component {
         break;
       case 3: // Allowance Form
         break;
+      default:
+        break;
     }
   }
 
@@ -333,15 +325,9 @@ class FormTab extends Component {
     const formData = this.state
     contracts.token = formData.token
 
-    const isValid = this.isValid()
-
     return (
       <div className="TabWrapper">
         <div className="Title">WHAT ARE YOU UP TO TODAY?</div>
-        {/* <div className={`Toggle ${formData.isLend ? 'Lend' : 'Borrow'}`}>
-          <div className="Handle" onClick={this.onToggle.bind(this)}>{!formData.isLend ? 'Lend' : 'Borrow'}</div>
-          <div className="Handle Bar">{formData.isLend ? 'Lend' : 'Borrow'}</div>
-        </div> */}
         <Tabs selectedIndex={this.state.tabIndex} onSelect={this.onTabChange.bind(this)}>
           <TabList>
             <Tab>Lend</Tab>

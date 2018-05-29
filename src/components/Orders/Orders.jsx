@@ -29,7 +29,6 @@ class Orders extends Component {
       offers: [],
       myLendOffers: [],
       myBorrowOffers: [],
-      headerSync: false,
       syncData: {},
       currentWETHExchangeRate: 0,
     }
@@ -172,7 +171,7 @@ class Orders extends Component {
 
   render() {
     const { web3 } = this.context
-    const { offers, myLendOffers, myBorrowOffers, headerSync, syncData, currentWETHExchangeRate } = this.state
+    const { offers, myLendOffers, myBorrowOffers, currentWETHExchangeRate } = this.state
     const methods = { apiGet: this.apiGet, apiPost: this.apiPost, getOffers: this.getOffers }
 
     return (

@@ -3,17 +3,10 @@ import axios from 'axios'
 import { compose } from 'recompose'
 
 import { connectContract } from '../../redux/modules'
-import { promisify } from '../../utilities'
-
-import { LoanOfferRegisteryABI } from '../Table/LoanOfferRegisteryABI'
 
 import './List.scss'
 
 class List extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   getData(data) {
     const { key, filter } = data.data
     if (key) {
@@ -110,6 +103,7 @@ class List extends Component {
       axios.delete(url)
         .then(res => {
           const result = res.data
+          console.log(result)
           setTimeout(methods.getOffers, 1000)
         })
     }

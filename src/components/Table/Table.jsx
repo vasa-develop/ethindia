@@ -4,9 +4,6 @@ import Modal from 'react-modal'
 import { compose } from 'recompose'
 
 import { connectContract } from '../../redux/modules'
-import { promisify } from '../../utilities'
-
-import { LoanOfferRegisteryABI } from './LoanOfferRegisteryABI'
 
 import './Table.scss'
 
