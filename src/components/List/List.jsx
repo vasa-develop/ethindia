@@ -1,43 +1,17 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import { compose } from 'recompose'
+
+import { connectContract } from '../../redux/modules'
+import { promisify } from '../../utilities'
 
 import { LoanOfferRegisteryABI } from '../Table/LoanOfferRegisteryABI'
 
 import './List.scss'
 
-const LoanOfferRegistryContractAddresses = {
-  42: '0xFD466cA49c6804029ccB36181c4d4CA51794c1b9'
-}
-
 class List extends Component {
   constructor(props) {
     super(props)
-
-    this.state = {
-      LoanOfferRegistryContractInstance: null,
-    }
-  }
-
-  componentDidMount() {
-    this.getABI(this.props.network, this.props.address)
-  }
-
-  componentWillReceiveProps(newProps) {
-    const { address, network } = this.props
-
-    if (newProps.address !== address || newProps.network !== network) {
-      this.getABI(newProps.network, newProps.address)
-    }
-  }
-
-  getABI(network, address) {
-    const { web3 } = window
-    if (!LoanOfferRegistryContractAddresses[network]) return
-
-    const contractABI = LoanOfferRegisteryABI
-    const LoanOfferRegistryContract = web3.eth.contract(contractABI)
-    const LoanOfferRegistryContractInstance = LoanOfferRegistryContract.at(LoanOfferRegistryContractAddresses[network])
-    this.setState({ LoanOfferRegistryContractInstance })
   }
 
   getData(data) {
@@ -126,8 +100,8 @@ class List extends Component {
     // orderHash = contract.computeOfferHash(address[6], uints[9]); // Refer 1 and 2 immediately above for input details
     // filledAmount = contract.filled(orderHash);
     // cancelledCollateralTokenAmount = (order.loanAmountOffered * currentWETHExchangeRate) - (filledAmount)
-    const { LoanOfferRegistryContractInstance } = this.state
-    const { currentWETHExchangeRate, slots, methods } = this.props
+    const { contracts, currentWETHExchangeRate, methods } = this.props
+    const LoanOfferRegistryContractInstance = contracts.contracts ? contracts.contracts.LoanOfferRegistry : null
 
     const onCancel = (err, result) => {
       if (err) return
@@ -213,4 +187,6 @@ class List extends Component {
   }
 }
 
-export default List
+export default compose(
+  connectContract(),
+)(List)

@@ -165,7 +165,6 @@ class FormTab extends Component {
   onChangeSync(item) {
     return (e) => {
       this.setState({ [item.key]: e.target.value })
-      if (item.callback) this[item.callback]({ [item.key]: e.target.value }, this.props.network)
     }
   }
 
@@ -251,14 +250,13 @@ class FormTab extends Component {
   }
 
   onWrapETH() {
-    const { contracts } = this.props
+    const { contracts, address } = this.props
     const { amount, operation } = this.state
     const WETHContractInstance = contracts.contracts ? contracts.contracts.WETH : null
     const ETHBalance = contracts.balances ? contracts.balances.ETH : 0
     const wETHBalance = contracts.balances ? contracts.balances.WETH : 0
     if (!WETHContractInstance) return
 
-    const { address } = this.props
     const { web3 } = window
     const _this = this
 
@@ -280,11 +278,10 @@ class FormTab extends Component {
   }
 
   onAllowance() {
-    const { contracts } = this.props
+    const { contracts, address } = this.props
     const { newAllowance, token } = this.state
     const tokenContractInstance = contracts.contracts ? contracts.contracts[token] : null
     const tokenAllowance = contracts.allowances ? contracts.allowances[token] : 0
-    const { address } = this.props
     const { web3 } = window
 
     if (!tokenContractInstance) return

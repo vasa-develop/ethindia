@@ -178,10 +178,10 @@ class Orders extends Component {
     return (
       <div className="OrdersWrapper">
         <Header address={web3.selectedAccount} />
-        <FormTab methods={methods} address={web3.selectedAccount} network={web3.networkId} />
-        <TableGroup methods={methods} address={web3.selectedAccount} network={web3.networkId} data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }} />
-        <ListGroup methods={methods} address={web3.selectedAccount} network={web3.networkId} currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }} style={{ marginBottom: 29 }} />
-        <ListGroup methods={methods} address={web3.selectedAccount} network={web3.networkId} currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[4], right: Tables[5] }} />
+        <FormTab methods={methods} address={web3.selectedAccount} />
+        <TableGroup methods={methods} address={web3.selectedAccount} data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }} />
+        <ListGroup methods={methods} address={web3.selectedAccount} currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }} style={{ marginBottom: 29 }} />
+        <ListGroup methods={methods} address={web3.selectedAccount} currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[4], right: Tables[5] }} />
       </div>
     )
   }

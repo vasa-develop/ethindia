@@ -1,6 +1,10 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 import Modal from 'react-modal'
+import { compose } from 'recompose'
+
+import { connectContract } from '../../redux/modules'
+import { promisify } from '../../utilities'
 
 import { LoanOfferRegisteryABI } from './LoanOfferRegisteryABI'
 
@@ -22,10 +26,6 @@ const customStyles = {
   }
 }
 
-const LoanOfferRegistryContractAddresses = {
-  42: '0xFD466cA49c6804029ccB36181c4d4CA51794c1b9'
-}
-
 class Table extends Component {
   constructor(props) {
     super(props)
@@ -35,33 +35,10 @@ class Table extends Component {
       postError: null,
       result: {},
       approval: {},
-      LoanOfferRegistryContractInstance: null
     }
 
     this.openModal = this.openModal.bind(this)
     this.closeModal = this.closeModal.bind(this)
-  }
-
-  componentDidMount() {
-    this.getABI(this.props.network, this.props.address)
-  }
-
-  componentWillReceiveProps(newProps) {
-    const { address, network } = this.props
-
-    if (newProps.address !== address || newProps.network !== network) {
-      this.getABI(newProps.network, newProps.address)
-    }
-  }
-
-  getABI(network, address) {
-    const { web3 } = window
-    if (!LoanOfferRegistryContractAddresses[network]) return
-
-    const contractABI = LoanOfferRegisteryABI
-    const LoanOfferRegistryContract = web3.eth.contract(contractABI)
-    const LoanOfferRegistryContractInstance = LoanOfferRegistryContract.at(LoanOfferRegistryContractAddresses[network])
-    this.setState({ LoanOfferRegistryContractInstance })
   }
 
   openModal() {
@@ -150,7 +127,9 @@ class Table extends Component {
   }
 
   onConfirm() {
-    const { LoanOfferRegistryContractInstance, approval } = this.state
+    const { approval } = this.state
+    const { contracts } = this.props
+    const LoanOfferRegistryContractInstance = contracts.contracts ? contracts.contracts.LoanOfferRegistry : null
     this.setState({
       isLoading: true
     }, () => {
@@ -274,4 +253,6 @@ class Table extends Component {
   }
 }
 
-export default Table
+export default compose(
+  connectContract(),
+)(Table)
