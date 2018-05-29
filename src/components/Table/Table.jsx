@@ -32,6 +32,7 @@ class Table extends Component {
       postError: null,
       result: {},
       approval: {},
+      currentData: null,
     }
 
     this.openModal = this.openModal.bind(this)
@@ -120,12 +121,13 @@ class Table extends Component {
 
   onAction(action, data) {
     if (!action.slot) return
+    this.setState({ currentData: data })
     this[action.slot](data, action.param)
   }
 
   onConfirm() {
-    const { approval } = this.state
-    const { contracts } = this.props
+    const { approval, currentData } = this.state
+    const { contracts, methods } = this.props
     const LoanOfferRegistryContractInstance = contracts.contracts ? contracts.contracts.LoanOfferRegistry : null
     this.setState({
       isLoading: true
@@ -142,6 +144,14 @@ class Table extends Component {
             this.closeModal()
           } else {
             this.closeModal()
+
+            let url = `http://localhost:8080/offers/${currentData.id}`
+            axios.delete(url)
+              .then(res => {
+                const result = res.data
+                console.log(result)
+                setTimeout(methods.getOffers, 1000)
+              })
           }
           this.setState({
             isLoading: false

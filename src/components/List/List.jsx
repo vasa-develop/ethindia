@@ -98,6 +98,7 @@ class List extends Component {
 
     const onCancel = (err, result) => {
       if (err) return
+      console.log(result)
 
       let url = `http://localhost:8080/offers/${data.id}`
       axios.delete(url)
