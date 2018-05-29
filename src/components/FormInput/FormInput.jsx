@@ -33,6 +33,7 @@ class FormInput extends Component {
 
   setPrecision(value, prec) {
     if (!prec) return value
+    if (!value) value = 0
     const up = parseInt(value, 10)
     const down = ('000' + parseInt(value * Math.pow(10, prec), 10).toString()).substr(-prec)
     return up + '.' + down

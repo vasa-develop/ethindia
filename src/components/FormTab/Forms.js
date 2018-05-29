@@ -13,7 +13,7 @@ export function FormInputs(isLend) {
         unit: 1
       }],
       required: true,
-      validation: (formData) => (formData.loanAmountOffered <= (formData.contracts[isLend ? 'DAI' : 'WETH'] ? (formData.contracts[isLend ? 'DAI' : 'WETH'].allowance || 0) : 0))
+      validation: (contracts) => (contracts.loanAmountOffered <= (contracts.allowances ? (contracts.allowances[isLend ? 'DAI' : 'WETH'] || 0) : 0))
     }, {
       key: 'interestRatePerDay',
       label: 'Daily Rate',
@@ -80,7 +80,7 @@ export function FormInputs(isLend) {
         unit: 1
       }],
       style: { paddingRight: 8 },
-      value: (formData) => (formData.contracts[isLend ? 'DAI' : 'WETH'] ? (formData.contracts[isLend ? 'DAI' : 'WETH'].allowance || 0) : 0),
+      value: (contracts) => (contracts.allowances ? (contracts.allowances[isLend ? 'DAI' : 'WETH'] || 0) : 0),
       readOnly: true,
       loading: `${isLend ? 'DAI' : 'WETH'}Allowance`
     },
@@ -143,6 +143,7 @@ export const WrapETHFormInputs = [
       unit: 1
     }],
     readOnly: true,
+    value: (contracts) => (contracts.balances ? (contracts.balances.ETH || 0) : 0),
     loading: `ETHBalance`
   }, {
     key: 'wETHBalance',
@@ -155,7 +156,7 @@ export const WrapETHFormInputs = [
       unit: 1
     }],
     readOnly: true,
-    value: (formData) => (formData.contracts['WETH'] ? (formData.contracts['WETH'].balance || 0) : 0),
+    value: (contracts) => (contracts.balances ? (contracts.balances.WETH || 0) : 0),
     loading: `WETHBalance`
   }, {
     key: 'operation',
@@ -179,7 +180,6 @@ export const AllowanceFormInputs = [
   {
     key: 'token',
     label: 'Token',
-    callback: 'getTokenContract',
     width: 150,
   }, {
     key: 'tokenBalance',
@@ -191,7 +191,7 @@ export const AllowanceFormInputs = [
       unit: 1
     }],
     readOnly: true,
-    value: (formData) => (formData.contracts[formData.token] ? (formData.contracts[formData.token].balance || 0) : 0),
+    value: (contracts) => (contracts.balances ? (contracts.balances[contracts.token] || 0) : 0),
     loading: (token, formData) => {
       return `${token}Balance`
     }
@@ -205,7 +205,7 @@ export const AllowanceFormInputs = [
       unit: 1
     }],
     readOnly: true,
-    value: (formData) => (formData.contracts[formData.token] ? (formData.contracts[formData.token].allowance || 0) : 0),
+    value: (contracts) => (contracts.allowances ? (contracts.allowances[contracts.token] || 0) : 0),
     loading: (token) => (`${token}Allowance`)
   }, {
     key: 'newAllowance',

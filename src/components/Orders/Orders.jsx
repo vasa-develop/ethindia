@@ -49,27 +49,78 @@ class Orders extends Component {
     const { address, network } = this.props
 
     if (newProps.address !== address || newProps.network !== network) {
-      const { contractFetchWeth, contractFetchDai, contractFetchLst, contractFetchLoanOfferRegistry } = this.props
+      const {
+        contractETHBlance,
+        contractFetchWeth,
+        contractFetchDai,
+        contractFetchLst,
+        contractFetchLoanOfferRegistry,
+        tokenBalanceWeth,
+        tokenBalanceDai,
+        tokenBalanceLst,
+        tokenBalanceLoanOfferRegistry,
+        tokenAllowanceWeth,
+        tokenAllowanceDai,
+        tokenAllowanceLst,
+        tokenAllowanceLoanOfferRegistry,
+      } = this.props
       const { web3 } = window
-      console.log(newProps)
 
       if (newProps.network) {
-        promisify(contractFetchWeth, { web3, network: newProps.network })
+        promisify(contractETHBlance, { web3, address: newProps.address })
           .then(res => { console.log(res) })
+          .catch(e => { console.log(e) })
+
+        promisify(contractFetchWeth, { web3, network: newProps.network })
+          .then(res => {
+            promisify(tokenBalanceWeth, { contractInstance: res, address: newProps.address })
+              .then(res => { console.log(res) })
+              .catch(e => { console.log(e) })
+
+            promisify(tokenAllowanceWeth, { contractInstance: res, address: newProps.address })
+              .then(res => { console.log(res) })
+              .catch(e => { console.log(e) })
+          })
           .catch(e => { console.log(e) })
 
         promisify(contractFetchDai, { web3, network: newProps.network })
-          .then(res => { console.log(res) })
+          .then(res => {
+            promisify(tokenBalanceDai, { contractInstance: res, address: newProps.address })
+              .then(res => { console.log(res) })
+              .catch(e => { console.log(e) })
+
+            promisify(tokenAllowanceDai, { contractInstance: res, address: newProps.address })
+              .then(res => { console.log(res) })
+              .catch(e => { console.log(e) })
+          })
           .catch(e => { console.log(e) })
 
         promisify(contractFetchLst, { web3, network: newProps.network })
-          .then(res => { console.log(res) })
+          .then(res => {
+            promisify(tokenBalanceLst, { contractInstance: res, address: newProps.address })
+              .then(res => { console.log(res) })
+              .catch(e => { console.log(e) })
+
+            promisify(tokenAllowanceLst, { contractInstance: res, address: newProps.address })
+              .then(res => { console.log(res) })
+              .catch(e => { console.log(e) })
+          })
           .catch(e => { console.log(e) })
 
         promisify(contractFetchLoanOfferRegistry, { web3, network: newProps.network })
-          .then(res => { console.log(res) })
+          .then(res => {
+            promisify(tokenBalanceLoanOfferRegistry, { contractInstance: res, address: newProps.address })
+              .then(res => { console.log(res) })
+              .catch(e => { console.log(e) })
+
+            promisify(tokenAllowanceLoanOfferRegistry, { contractInstance: res, address: newProps.address })
+              .then(res => { console.log(res) })
+              .catch(e => { console.log(e) })
+          })
           .catch(e => { console.log(e) })
       }
+
+      this.getOffers()
     }
   }
 
@@ -119,18 +170,6 @@ class Orders extends Component {
       })
   }
 
-  onAddressChange() {
-    this.getOffers()
-  }
-
-  onSync(origin = null, compare = true) {
-    this.setState({ headerSync: true, syncData: { origin, compare } })
-  }
-
-  onSynced(title) {
-    if (title === 'header') this.setState({ headerSync: false })
-  }
-
   render() {
     const { web3 } = this.context
     const { offers, myLendOffers, myBorrowOffers, headerSync, syncData, currentWETHExchangeRate } = this.state
@@ -138,8 +177,8 @@ class Orders extends Component {
 
     return (
       <div className="OrdersWrapper">
-        <Header address={web3.selectedAccount} network={web3.networkId} isSync={headerSync} syncData={syncData} onSynced={this.onSynced.bind(this)} onAddressChange={this.onAddressChange.bind(this)} />
-        <FormTab methods={methods} address={web3.selectedAccount} network={web3.networkId} onSync={this.onSync.bind(this)} />
+        <Header address={web3.selectedAccount} />
+        <FormTab methods={methods} address={web3.selectedAccount} network={web3.networkId} />
         <TableGroup methods={methods} address={web3.selectedAccount} network={web3.networkId} data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }} />
         <ListGroup methods={methods} address={web3.selectedAccount} network={web3.networkId} currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }} style={{ marginBottom: 29 }} />
         <ListGroup methods={methods} address={web3.selectedAccount} network={web3.networkId} currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[4], right: Tables[5] }} />
