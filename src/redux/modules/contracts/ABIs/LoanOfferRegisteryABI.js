@@ -40,7 +40,7 @@ export const LoanOfferRegisteryABI = [
         "type": "bytes32"
       },
       {
-        "name": "cancelledCollateralTokenAmount",
+        "name": "cancelledLoanTokenAmount",
         "type": "uint256"
       }
     ],
@@ -54,18 +54,6 @@ export const LoanOfferRegisteryABI = [
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "name": "previousOwner",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipRenounced",
-    "type": "event"
   },
   {
     "constant": false,
@@ -138,11 +126,27 @@ export const LoanOfferRegisteryABI = [
       {
         "name": "_tokenTransferProxy",
         "type": "address"
+      },
+      {
+        "name": "_loanRegistry",
+        "type": "address"
       }
     ],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "previousOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipRenounced",
+    "type": "event"
   },
   {
     "constant": true,
@@ -213,11 +217,25 @@ export const LoanOfferRegisteryABI = [
         "type": "bytes32"
       }
     ],
-    "name": "getFilledOrCancelledCollateralAmount",
+    "name": "getFilledOrCancelledLoanAmount",
     "outputs": [
       {
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "LOAN_REGISTRY_CONTRACT_ADDRESS",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
       }
     ],
     "payable": false,

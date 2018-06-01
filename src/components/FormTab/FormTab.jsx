@@ -229,21 +229,55 @@ class FormTab extends Component {
 
       delete postData.allowance
 
-      const { web3 } = window
-      web3.eth.sign(address, web3.sha3(JSON.stringify(postData)), (err, result) => {
-        if (err) return
+      // 1. an array of addresses[6] in this order: lender, borrower, relayer, wrangler, collateralToken, loanToken
+      const addresses = [
+        postData.lender,
+        postData.borrower,
+        postData.relayer,
+        postData.wrangler,
+        postData.collateralToken,
+        postData.loanToken
+      ]
 
-        postData.ecSignatureCreator = result
-        result = result.substr(2)
+      // 2. an array of uints[9] in this order: loanAmountOffered, interestRatePerDay, loanDuration, offerExpiryTimestamp, relayerFeeLST, monitoringFeeLST, rolloverFeeLST, closureFeeLST, creatorSalt
+      const values = [
+        postData.loanAmountOffered,
+        postData.interestRatePerDay,
+        postData.loanDuration,
+        postData.offerExpiryTimestamp,
+        postData.relayerFeeLST,
+        postData.monitoringFeeLST,
+        postData.rolloverFeeLST,
+        postData.closureFeeLST,
+        postData.creatorSalt
+      ]
 
-        postData.rCreator = '0x' + result.slice(0, 64)
-        postData.sCreator = '0x' + result.slice(64, 128)
-        postData.vCreator = web3.toDecimal('0x' + result.slice(128, 130))
+      const LoanOfferRegistryContractInstance = contracts.contracts ? contracts.contracts.LoanOfferRegistry : null
 
-        methods.apiPost('offers', postData, (result) => {
-          setTimeout(methods.getOffers, 1000)
+      const onSign = (orderHash) => {
+        const { web3 } = window
+        web3.eth.sign(address, web3.sha3(orderHash), (err, result) => {
+          if (err) return
+
+          postData.ecSignatureCreator = result
+          result = result.substr(2)
+
+          postData.rCreator = '0x' + result.slice(0, 64)
+          postData.sCreator = '0x' + result.slice(64, 128)
+          postData.vCreator = web3.toDecimal('0x' + result.slice(128, 130))
+
+          methods.apiPost('offers', postData, (result) => {
+            setTimeout(methods.getOffers, 1000)
+          })
         })
-      })
+      }
+
+      const onOrderHash = (err, result) => {
+        if (err) return
+        onSign(result)
+      }
+
+      LoanOfferRegistryContractInstance.computeOfferHash(addresses, values, onOrderHash)
     }
   }
 
