@@ -53,7 +53,7 @@ export function FormInputs(isLend) {
       output: (val) => {
         let ret = new moment.utc()
         ret.add(val, 'm')
-        return ret.format()
+        return ret.format('x')
       },
       inputs: [{
         precision: 0,

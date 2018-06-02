@@ -203,11 +203,17 @@ class FormTab extends Component {
     return r
   }
 
+  fillZero(len = 40) {
+    return '0x' + (new Array(len)).fill(0).join('')
+  }
+
   onSubmit(isLend) {
     return () => {
       const formData = this.state
       const { address, methods, contracts } = this.props
+      const { web3 } = window
       const postData = {}
+
       FormInputs(isLend).forEach(item => {
         postData[item.key] = item.output ? item.output(formData[item.key]) : formData[item.key]
       })
@@ -221,19 +227,16 @@ class FormTab extends Component {
       postData.creatorSalt = '0x' + this.randHex(40)
       postData.collateralToken = contracts.contracts ? contracts.contracts.WETH.address : ''
       postData.loanToken = contracts.contracts ? contracts.contracts.DAI.address : ''
-      const keys = [
-        'relayer',
-        'collateralAmount',
-      ]
-      keys.forEach(key => (postData[key] = ''))
+      postData.relayer = ''
+      postData.collateralAmount = web3.toWei(0, 'ether')
 
       delete postData.allowance
 
       // 1. an array of addresses[6] in this order: lender, borrower, relayer, wrangler, collateralToken, loanToken
       const addresses = [
-        postData.lender,
-        postData.borrower,
-        postData.relayer,
+        postData.lender = postData.lender.length ? postData.lender : this.fillZero(),
+        postData.borrower = postData.borrower.length ? postData.borrower : this.fillZero(),
+        postData.relayer = postData.relayer.length ? postData.relayer : this.fillZero(),
         postData.wrangler,
         postData.collateralToken,
         postData.loanToken
@@ -241,21 +244,20 @@ class FormTab extends Component {
 
       // 2. an array of uints[9] in this order: loanAmountOffered, interestRatePerDay, loanDuration, offerExpiryTimestamp, relayerFeeLST, monitoringFeeLST, rolloverFeeLST, closureFeeLST, creatorSalt
       const values = [
-        postData.loanAmountOffered,
-        postData.interestRatePerDay,
+        postData.loanAmountOffered = web3.toWei(postData.loanAmountOffered, 'ether'),
+        postData.interestRatePerDay = web3.toWei(postData.interestRatePerDay, 'ether'),
         postData.loanDuration,
-        postData.offerExpiryTimestamp,
-        postData.relayerFeeLST,
-        postData.monitoringFeeLST,
-        postData.rolloverFeeLST,
-        postData.closureFeeLST,
+        postData.offerExpiry,
+        postData.relayerFeeLST = web3.toWei(postData.relayerFeeLST, 'ether'),
+        postData.monitoringFeeLST = web3.toWei(postData.monitoringFeeLST, 'ether'),
+        postData.rolloverFeeLST = web3.toWei(postData.rolloverFeeLST, 'ether'),
+        postData.closureFeeLST = web3.toWei(postData.closureFeeLST, 'ether'),
         postData.creatorSalt
       ]
 
       const LoanOfferRegistryContractInstance = contracts.contracts ? contracts.contracts.LoanOfferRegistry : null
 
       const onSign = (orderHash) => {
-        const { web3 } = window
         web3.eth.sign(address, web3.sha3(orderHash), (err, result) => {
           if (err) return
 
