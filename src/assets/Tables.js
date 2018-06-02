@@ -1,8 +1,4 @@
-const fromBigToNumber = big => {
-  return big / Math.pow(10, 18)
-}
-
-const Tables = [
+const CreateTables = (web3) => ([
   {
     title: 'Lend Order Book',
     headers: [
@@ -29,8 +25,8 @@ const Tables = [
           .filter(item => (item.lender && item.lender.length > 0))
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
-            item.interestRate = fromBigToNumber(item.interestRatePerDay)
-            item.loanAmount = fromBigToNumber(item.loanAmountOffered)
+            item.interestRate = web3.fromWei(item.interestRatePerDay, 'ether')
+            item.loanAmount = web3.fromWei(item.loanAmountOffered, 'ether')
             return item
           })
       )
@@ -66,8 +62,8 @@ const Tables = [
           .filter(item => (item.borrower && item.borrower.length > 0))
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
-            item.interestRate = fromBigToNumber(item.interestRatePerDay)
-            item.loanAmount = fromBigToNumber(item.loanAmountOffered)
+            item.interestRate = web3.fromWei(item.interestRatePerDay, 'ether')
+            item.loanAmount = web3.fromWei(item.loanAmountOffered, 'ether')
             return item
           })
       )
@@ -107,8 +103,8 @@ const Tables = [
         d
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
-            item.totalInterest = fromBigToNumber(item.loanAmountOffered) * fromBigToNumber(item.interestRatePerDay)
-            item.loanAmount = fromBigToNumber(item.loanAmountOffered)
+            item.totalInterest = web3.fromWei(item.loanAmountOffered, 'ether') * web3.fromWei(item.interestRatePerDay, 'ether')
+            item.loanAmount = web3.fromWei(item.loanAmountOffered, 'ether')
             return item
           })
       )
@@ -148,8 +144,8 @@ const Tables = [
         d
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
-            item.totalInterest = fromBigToNumber(item.loanAmountOffered) * fromBigToNumber(item.interestRatePerDay)
-            item.loanAmount = fromBigToNumber(item.loanAmountOffered)
+            item.totalInterest = web3.fromWei(item.loanAmountOffered, 'ether') * web3.fromWei(item.interestRatePerDay, 'ether')
+            item.loanAmount = web3.fromWei(item.loanAmountOffered, 'ether')
             return item
           })
       )
@@ -232,6 +228,6 @@ const Tables = [
       label: '3-dot'
     }
   },
-]
+])
 
-export default Tables
+export default CreateTables

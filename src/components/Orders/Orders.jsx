@@ -11,11 +11,13 @@ import ListGroup from '../ListGroup/ListGroup'
 import FormTab from '../FormTab/FormTab'
 import Header from '../Header/Header'
 
-import Tables from '../../assets/Tables'
+import CreateTables from '../../assets/Tables'
 import API from '../../assets/API'
 
 import 'react-tabs/style/react-tabs.scss'
 import './Orders.scss'
+
+const Tables = CreateTables(window.web3)
 
 class Orders extends Component {
   static propTypes = {
