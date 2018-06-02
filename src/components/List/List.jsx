@@ -56,6 +56,7 @@ class List extends Component {
   }
 
   fromBigToNumber(big) {
+    if (!big.c) return 0
     return Number((big.c[0] / 10000).toString() + (big.c[1] || '').toString())
   }
 

@@ -1,10 +1,14 @@
+const fromBigToNumber = big => {
+  return big / Math.pow(10, 18)
+}
+
 const Tables = [
   {
     title: 'Lend Order Book',
     headers: [
       {
         label: 'Amount',
-        key: 'loanAmountOffered',
+        key: 'loanAmount',
         precision: 3,
         style: { textAlign: 'center' }
       }, {
@@ -13,7 +17,7 @@ const Tables = [
         filter: 'calcTerm'
       }, {
         label: 'Rate',
-        key: 'interestRatePerDay',
+        key: 'interestRate',
         precision: 3,
         suffix: '%'
       }
@@ -24,6 +28,11 @@ const Tables = [
         d
           .filter(item => (item.lender && item.lender.length > 0))
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
+          .map(item => {
+            item.interestRate = fromBigToNumber(item.interestRatePerDay)
+            item.loanAmount = fromBigToNumber(item.loanAmountOffered)
+            return item
+          })
       )
     },
     action: {
@@ -36,7 +45,7 @@ const Tables = [
     headers: [
       {
         label: 'Rate',
-        key: 'interestRatePerDay',
+        key: 'interestRate',
         precision: 3,
         suffix: '%'
       }, {
@@ -45,7 +54,7 @@ const Tables = [
         filter: 'calcTerm'
       }, {
         label: 'Amount',
-        key: 'loanAmountOffered',
+        key: 'loanAmount',
         precision: 3,
         style: { textAlign: 'center' }
       }
@@ -56,6 +65,11 @@ const Tables = [
         d
           .filter(item => (item.borrower && item.borrower.length > 0))
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
+          .map(item => {
+            item.interestRate = fromBigToNumber(item.interestRatePerDay)
+            item.loanAmount = fromBigToNumber(item.loanAmountOffered)
+            return item
+          })
       )
     },
     action: {
@@ -72,7 +86,7 @@ const Tables = [
         style: { fontFamily: 'Space Mono', width: '100%' }
       }, {
         label: 'Amount',
-        key: 'loanAmountOffered',
+        key: 'loanAmount',
         precision: 2,
         style: { fontFamily: 'Space Mono', width: '33%' }
       }, {
@@ -93,7 +107,8 @@ const Tables = [
         d
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
-            item.totalInterest = item.loanAmountOffered * item.interestRatePerDay
+            item.totalInterest = fromBigToNumber(item.loanAmountOffered) * fromBigToNumber(item.interestRatePerDay)
+            item.loanAmount = fromBigToNumber(item.loanAmountOffered)
             return item
           })
       )
@@ -104,7 +119,7 @@ const Tables = [
       param: { isLend: true }
     }
   }, {
-    title: 'MY BORROW ORDERS',  
+    title: 'MY BORROW ORDERS',
     headers: [
       {
         label: 'Loan Number',
@@ -112,7 +127,7 @@ const Tables = [
         style: { fontFamily: 'Space Mono', width: '100%' }
       }, {
         label: 'Amount',
-        key: 'loanAmountOffered',
+        key: 'loanAmount',
         precision: 2,
         style: { fontFamily: 'Space Mono', width: '33%' }
       }, {
@@ -133,7 +148,8 @@ const Tables = [
         d
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
-            item.totalInterest = item.loanAmountOffered * item.interestRatePerDay
+            item.totalInterest = fromBigToNumber(item.loanAmountOffered) * fromBigToNumber(item.interestRatePerDay)
+            item.loanAmount = fromBigToNumber(item.loanAmountOffered)
             return item
           })
       )
