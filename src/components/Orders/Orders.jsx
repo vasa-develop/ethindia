@@ -40,6 +40,7 @@ class Orders extends Component {
   }
 
   componentDidMount() {
+    this.getContracs(this.props.address, this.props.network)
     this.getOffers()
     this.getETW()
   }
@@ -48,6 +49,13 @@ class Orders extends Component {
     const { address, network } = this.props
 
     if (newProps.address !== address || newProps.network !== network) {
+      this.getContracs(newProps.address, newProps.network)
+      this.getOffers()
+    }
+  }
+
+  getContracs(address, network) {
+    if (network) {
       const {
         contractETHBlance,
         contractFetchWeth,
@@ -65,61 +73,57 @@ class Orders extends Component {
       } = this.props
       const { web3 } = window
 
-      if (newProps.network) {
-        promisify(contractETHBlance, { web3, address: newProps.address })
-          .then(res => { console.log(res) })
-          .catch(e => { console.log(e) })
+      promisify(contractETHBlance, { web3, address: address })
+        .then(res => { console.log(res) })
+        .catch(e => { console.log(e) })
 
-        promisify(contractFetchWeth, { web3, network: newProps.network })
-          .then(res => {
-            promisify(tokenBalanceWeth, { contractInstance: res, address: newProps.address })
-              .then(res => { console.log(res) })
-              .catch(e => { console.log(e) })
+      promisify(contractFetchWeth, { web3, network: network })
+        .then(res => {
+          promisify(tokenBalanceWeth, { contractInstance: res, address: address })
+            .then(res => { console.log(res) })
+            .catch(e => { console.log(e) })
 
-            promisify(tokenAllowanceWeth, { contractInstance: res, address: newProps.address })
-              .then(res => { console.log(res) })
-              .catch(e => { console.log(e) })
-          })
-          .catch(e => { console.log(e) })
+          promisify(tokenAllowanceWeth, { contractInstance: res, address: address })
+            .then(res => { console.log(res) })
+            .catch(e => { console.log(e) })
+        })
+        .catch(e => { console.log(e) })
 
-        promisify(contractFetchDai, { web3, network: newProps.network })
-          .then(res => {
-            promisify(tokenBalanceDai, { contractInstance: res, address: newProps.address })
-              .then(res => { console.log(res) })
-              .catch(e => { console.log(e) })
+      promisify(contractFetchDai, { web3, network: network })
+        .then(res => {
+          promisify(tokenBalanceDai, { contractInstance: res, address: address })
+            .then(res => { console.log(res) })
+            .catch(e => { console.log(e) })
 
-            promisify(tokenAllowanceDai, { contractInstance: res, address: newProps.address })
-              .then(res => { console.log(res) })
-              .catch(e => { console.log(e) })
-          })
-          .catch(e => { console.log(e) })
+          promisify(tokenAllowanceDai, { contractInstance: res, address: address })
+            .then(res => { console.log(res) })
+            .catch(e => { console.log(e) })
+        })
+        .catch(e => { console.log(e) })
 
-        promisify(contractFetchLst, { web3, network: newProps.network })
-          .then(res => {
-            promisify(tokenBalanceLst, { contractInstance: res, address: newProps.address })
-              .then(res => { console.log(res) })
-              .catch(e => { console.log(e) })
+      promisify(contractFetchLst, { web3, network: network })
+        .then(res => {
+          promisify(tokenBalanceLst, { contractInstance: res, address: address })
+            .then(res => { console.log(res) })
+            .catch(e => { console.log(e) })
 
-            promisify(tokenAllowanceLst, { contractInstance: res, address: newProps.address })
-              .then(res => { console.log(res) })
-              .catch(e => { console.log(e) })
-          })
-          .catch(e => { console.log(e) })
+          promisify(tokenAllowanceLst, { contractInstance: res, address: address })
+            .then(res => { console.log(res) })
+            .catch(e => { console.log(e) })
+        })
+        .catch(e => { console.log(e) })
 
-        promisify(contractFetchLoanOfferRegistry, { web3, network: newProps.network })
-          .then(res => {
-            promisify(tokenBalanceLoanOfferRegistry, { contractInstance: res, address: newProps.address })
-              .then(res => { console.log(res) })
-              .catch(e => { console.log(e) })
+      promisify(contractFetchLoanOfferRegistry, { web3, network: network })
+        .then(res => {
+          promisify(tokenBalanceLoanOfferRegistry, { contractInstance: res, address: address })
+            .then(res => { console.log(res) })
+            .catch(e => { console.log(e) })
 
-            promisify(tokenAllowanceLoanOfferRegistry, { contractInstance: res, address: newProps.address })
-              .then(res => { console.log(res) })
-              .catch(e => { console.log(e) })
-          })
-          .catch(e => { console.log(e) })
-      }
-
-      this.getOffers()
+          promisify(tokenAllowanceLoanOfferRegistry, { contractInstance: res, address: address })
+            .then(res => { console.log(res) })
+            .catch(e => { console.log(e) })
+        })
+        .catch(e => { console.log(e) })
     }
   }
 

@@ -104,7 +104,6 @@ class List extends Component {
       axios.delete(url)
         .then(res => {
           const result = res.data
-          console.log(result)
           setTimeout(methods.getOffers, 1000)
         })
     }
