@@ -5,8 +5,6 @@ import { compose } from 'recompose'
 
 import { connectContract } from '../../redux/modules'
 
-import FormInput from '../FormInput/FormInput'
-
 import './Table.scss'
 
 const customStyles = {
@@ -138,7 +136,7 @@ class Table extends Component {
     this.closeModal('modalAmountIsOpen')
 
     const { address } = this.props
-    const { currentData, param, fillLoanAmount } = this.state
+    const { currentData, fillLoanAmount } = this.state
     const _this = this
     let url = 'http://127.0.0.1:5000/loan_requests'
 

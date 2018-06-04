@@ -26,7 +26,7 @@ const CreateTables = (web3) => ([
       key: 'offers',
       filter: (d) => (
         d
-          .filter(item => (item.lender && item.lender != fillZero()))
+          .filter(item => (item.lender && item.lender !== fillZero()))
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
             item.interestRate = web3.fromWei(item.interestRatePerDay, 'ether')
@@ -63,7 +63,7 @@ const CreateTables = (web3) => ([
       key: 'offers',
       filter: (d) => (
         d
-          .filter(item => (item.borrower && item.borrower != fillZero()))
+          .filter(item => (item.borrower && item.borrower !== fillZero()))
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
             item.interestRate = web3.fromWei(item.interestRatePerDay, 'ether')
