@@ -259,7 +259,7 @@ class FormTab extends Component {
       const LoanOfferRegistryContractInstance = contracts.contracts ? contracts.contracts.LoanOfferRegistry : null
 
       const onSign = (orderHash) => {
-        web3.eth.sign(address, web3.sha3(orderHash), (err, result) => {
+        web3.eth.sign(address, orderHash, (err, result) => {
           if (err) return
 
           postData.ecSignatureCreator = result
@@ -276,10 +276,15 @@ class FormTab extends Component {
       }
 
       const onOrderHash = (err, result) => {
+        console.log('onOrderHash');
+        console.log(result);
         if (err) return
         onSign(result)
       }
-
+      console.log('addresses')
+      console.log(addresses)
+      console.log('values')
+      console.log(values)
       LoanOfferRegistryContractInstance.computeOfferHash(addresses, values, onOrderHash)
     }
   }
