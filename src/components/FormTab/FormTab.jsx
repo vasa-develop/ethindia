@@ -276,15 +276,9 @@ class FormTab extends Component {
       }
 
       const onOrderHash = (err, result) => {
-        console.log('onOrderHash');
-        console.log(result);
         if (err) return
         onSign(result)
       }
-      console.log('addresses')
-      console.log(addresses)
-      console.log('values')
-      console.log(values)
       LoanOfferRegistryContractInstance.computeOfferHash(addresses, values, onOrderHash)
     }
   }
