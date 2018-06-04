@@ -5,6 +5,8 @@ import { compose } from 'recompose'
 
 import { connectContract } from '../../redux/modules'
 
+import FormInput from '../FormInput/FormInput'
+
 import './Table.scss'
 
 const customStyles = {
@@ -29,22 +31,31 @@ class Table extends Component {
 
     this.state = {
       modalIsOpen: false,
+      modalAmountIsOpen: false,
       postError: null,
       result: {},
       approval: {},
       currentData: null,
+      param: {},
+      fillLoanAmount: 0,
     }
 
     this.openModal = this.openModal.bind(this)
     this.closeModal = this.closeModal.bind(this)
   }
 
-  openModal() {
-    this.setState({ modalIsOpen: true })
+  onChange(key, value, affection = null) {
+    const formData = this.state
+    formData[key] = value
+    this.setState(formData)
   }
 
-  closeModal() {
-    this.setState({ modalIsOpen: false })
+  openModal(key) {
+    this.setState({ [key]: true })
+  }
+
+  closeModal(key) {
+    this.setState({ [key]: false, fillLoanAmount: 0 })
   }
 
   getData(data) {
@@ -88,43 +99,6 @@ class Table extends Component {
     return ret
   }
 
-  // Slots
-
-  onOrder(data, input) {
-    const { address } = this.props
-    const _this = this
-    let url = 'http://127.0.0.1:5000/loan_requests'
-
-    const postData = Object.assign({ filler: address }, data)
-
-    axios.post(url, postData)
-      .then(res => {
-        const result = res.data
-        _this.setState({
-          postError: null,
-          result: result.data,
-          approval: result.approval
-        }, () => {
-          _this.openModal()
-        })
-      })
-      .catch(err => {
-        _this.setState({
-          postError: err
-        }, () => {
-          _this.openModal()
-        })
-      })
-  }
-
-  // Action
-
-  onAction(action, data) {
-    if (!action.slot) return
-    this.setState({ currentData: data })
-    this[action.slot](data, action.param)
-  }
-
   onConfirm() {
     const { approval, currentData } = this.state
     const { contracts, methods } = this.props
@@ -141,9 +115,9 @@ class Table extends Component {
         approval._isOfferCreatorLender,
         (err, result) => {
           if (err) {
-            this.closeModal()
+            this.closeModal('modalIsOpen')
           } else {
-            this.closeModal()
+            this.closeModal('modalIsOpen')
 
             let url = `http://localhost:8080/offers/${currentData.id}`
             axios.delete(url)
@@ -160,10 +134,56 @@ class Table extends Component {
     })
   }
 
+  onSubmitOrder() {
+    this.closeModal('modalAmountIsOpen')
+
+    const { address } = this.props
+    const { currentData, param, fillLoanAmount } = this.state
+    const _this = this
+    let url = 'http://127.0.0.1:5000/loan_requests'
+
+    const postData = Object.assign({ filler: address, fillLoanAmount }, currentData)
+
+    axios.post(url, postData)
+      .then(res => {
+        const result = res.data
+        _this.setState({
+          postError: null,
+          result: result.data,
+          approval: result.approval
+        }, () => {
+          _this.openModal('modalIsOpen')
+        })
+      })
+      .catch(err => {
+        _this.setState({
+          postError: err
+        }, () => {
+          _this.openModal('modalIsOpen')
+        })
+      })
+  }
+
+  // Slots
+
+  onOrder(data, param) {
+    console.log(window.web3.fromWei(data.loanAmountOffered, 'ether'), this.state)
+    this.setState({ currentData: data, param, fillLoanAmount: window.web3.fromWei(data.loanAmountOffered, 'ether') })
+    this.openModal('modalAmountIsOpen')
+  }
+
+  // Action
+
+  onAction(action, data) {
+    if (!action.slot) return
+    this[action.slot](data, action.param)
+  }
+
   render() {
     const { data, classes } = this.props
-    const { postError, result } = this.state
+    const { postError, result, modalIsOpen, modalAmountIsOpen, currentData, param, fillLoanAmount, isLoading } = this.state
     const filteredData = this.getData(data)
+    const { web3 } = window
 
     return (
       <div className="TableWrapper">
@@ -216,13 +236,13 @@ class Table extends Component {
           </div>
         </div>
         <Modal
-          isOpen={this.state.modalIsOpen}
-          onRequestClose={this.closeModal}
+          isOpen={modalIsOpen}
+          onRequestClose={() => this.closeModal('modalIsOpen')}
           style={customStyles}
-          contentLabel="Example Modal"
+          contentLabel="Order Book"
         >
-          <h2 ref={subtitle => this.subtitle = subtitle}>Order Book</h2>
-          <button onClick={this.closeModal}></button>
+          <h2>ORDER BOOK</h2>
+          <button onClick={() => this.closeModal('modalIsOpen')}></button>
           <div className="ModalBody">
             {
               postError ?
@@ -230,7 +250,7 @@ class Table extends Component {
                 :
                 <div>
                   {
-                    this.state.isLoading &&
+                    isLoading &&
                     <div className="Loading">
                       <div className="Loader" />
                     </div>
@@ -249,13 +269,46 @@ class Table extends Component {
                   </div>
                   <div className="Buttons">
                     <div className="Confirm" onClick={this.onConfirm.bind(this)}>Confirm</div>
-                    <div className="Cancel" onClick={this.closeModal}>Cancel</div>
                   </div>
                 </div>
             }
           </div>
         </Modal>
-      </div>
+        <Modal
+          isOpen={modalAmountIsOpen}
+          onRequestClose={() => this.closeModal('modalAmountIsOpen')}
+          style={customStyles}
+          contentLabel={`Amount to ${param.isLend ? 'Fill' : 'Select'}`}
+        >
+          <h2>{`Amount to ${param.isLend ? 'Fill' : 'Select'}`}</h2>
+          <button onClick={() => this.closeModal('modalAmountIsOpen')}></button>
+          <div className="ModalBody">
+            <div style={{ width: '100%' }}>
+              <div className="FillLoanAmount">
+                <div className="Label">Amount</div>
+                <div className="FormInputWrapper">
+                  <div className={`FormInput ${param.isLend ? 'DAI' : 'WETH'}`}>
+                    <input
+                      type="number"
+                      onChange={(e) => this.setState({ fillLoanAmount: e.target.value })}
+                      value={fillLoanAmount}
+                    />
+                    <div className="Suffix">{param.isLend ? 'DAI' : 'WETH'}</div>
+                    <div className="after"></div>
+                    <div className="before"></div>
+                  </div>
+                </div>
+              </div>
+              <div className="Buttons">
+                <div
+                  className={`Confirm ${fillLoanAmount > currentData ? web3.fromWei(currentData.loanAmountOffered, 'ether') : 0 ? 'Disabled' : ''}`}
+                  onClick={this.onSubmitOrder.bind(this)}
+                >Submit</div>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      </div >
     )
   }
 }

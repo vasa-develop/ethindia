@@ -7,6 +7,12 @@
     border-radius: 4px;
     position: relative;
 
+    &.WETH {
+      input {
+        padding-right: 55px;
+      }
+    }
+
     input {
       width: 100%;
       border: 0;
