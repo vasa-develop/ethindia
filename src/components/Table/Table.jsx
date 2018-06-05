@@ -140,7 +140,10 @@ class Table extends Component {
     const _this = this
     let url = 'http://127.0.0.1:5000/loan_requests'
 
-    const postData = Object.assign({ filler: address, fillLoanAmount }, currentData)
+    const postData = Object.assign({
+      filler: address,
+      fillLoanAmount: window.web3.toWei(fillLoanAmount, 'ether')
+    }, currentData)
 
     axios.post(url, postData)
       .then(res => {
@@ -165,8 +168,12 @@ class Table extends Component {
   // Slots
 
   onOrder(data, param) {
-    console.log(window.web3.fromWei(data.loanAmountOffered, 'ether'), this.state)
-    this.setState({ currentData: data, param, fillLoanAmount: window.web3.fromWei(data.loanAmountOffered, 'ether') })
+    const amount = window.web3.fromWei(data.loanAmountOffered, 'ether')
+    this.setState({
+      currentData: Object.assign({ loanAmount: amount }, data),
+      param,
+      fillLoanAmount: amount,
+    })
     this.openModal('modalAmountIsOpen')
   }
 
@@ -290,6 +297,8 @@ class Table extends Component {
                       type="number"
                       onChange={(e) => this.setState({ fillLoanAmount: e.target.value })}
                       value={fillLoanAmount}
+                      min="0"
+                      max={currentData ? currentData.loanAmount : 0}
                     />
                     <div className="Suffix">{param.isLend ? 'DAI' : 'WETH'}</div>
                     <div className="after"></div>
@@ -299,7 +308,8 @@ class Table extends Component {
               </div>
               <div className="Buttons">
                 <div
-                  className={`Confirm ${fillLoanAmount > currentData ? web3.fromWei(currentData.loanAmountOffered, 'ether') : 0 ? 'Disabled' : ''}`}
+                  className={`Confirm ${fillLoanAmount > (currentData ? currentData.loanAmount : 0) ? 'Disabled' : ''}`}
+                  disabled={fillLoanAmount > (currentData ? currentData.loanAmount : 0) ? true : false}
                   onClick={this.onSubmitOrder.bind(this)}
                 >Submit</div>
               </div>

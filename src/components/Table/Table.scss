@@ -190,6 +190,10 @@
         &.Cancel {
           background: #f37d7d;
         }
+
+        &.Disabled {
+          background: lightgrey;
+        }
       }
     }
   }
