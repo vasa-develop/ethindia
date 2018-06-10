@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import moment from 'moment'
 import Modal from 'react-modal'
 import { compose } from 'recompose'
 
@@ -137,6 +138,7 @@ class Table extends Component {
 
     const { address } = this.props
     const { currentData, fillLoanAmount } = this.state
+    const { web3 } = window
     const _this = this
     let url = 'http://127.0.0.1:5000/loan_requests'
 
@@ -147,11 +149,19 @@ class Table extends Component {
 
     axios.post(url, postData)
       .then(res => {
-        const result = res.data
+        const approval = res.data.approval
+        const result = res.data.data
+        Object.keys(result).forEach(key => {
+          console.log(key, result[key])
+          if (key === 'expiresAtTimestamp')
+            result[key] = moment.utc(result[key]).format('YYYY-MM-DD HH:mm Z')
+          else if (result[key].toString().indexOf('0x') !== 0 && key !== 'nonce')
+            result[key] = web3.fromWei(result[key].toString(), 'ether')
+        })
         _this.setState({
           postError: null,
-          result: result.data,
-          approval: result.approval
+          result,
+          approval,
         }, () => {
           _this.openModal('modalIsOpen')
         })
