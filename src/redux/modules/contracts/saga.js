@@ -165,7 +165,7 @@ export function* asyncLoanPositions({ payload, resolve, reject }) {
       })
     })
 
-    const counts = response.map(item => web3.fromWei(item, 'ether'))
+    const counts = response.map(item => item.toNumber())
     const positions = []
 
     for (let i = 0; i < counts[0]; i++) {
@@ -247,7 +247,7 @@ export function* asyncLoanPositions({ payload, resolve, reject }) {
         borrowed: positions.filter(position => (position.type === 'borrowed')),
       }
     }))
-    resolve(positions);
+    resolve({positions, counts});
   } catch (e) {
     reject(e)
   }
