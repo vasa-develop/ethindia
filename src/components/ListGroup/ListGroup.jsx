@@ -6,9 +6,9 @@ import './ListGroup.scss'
 
 class ListGroup extends Component {
   render() {
-    const { style, data, address, currentWETHExchangeRate, methods } = this.props
-    const left = Object.assign(data.left, data.data)
-    const right = Object.assign(data.right, data.data)
+    const { style, data, address, currentWETHExchangeRate, methods, loading } = this.props
+    const left = Object.assign(data.left, data.data, { loading })
+    const right = Object.assign(data.right, data.data, { loading })
 
     return (
       <div className="ListGroup" style={style}>

@@ -34,6 +34,10 @@ class Orders extends Component {
       syncData: {},
       currentWETHExchangeRate: 0,
       currentDAIExchangeRate: 0,
+      loading: {
+        offers: false,
+        positions: false,
+      }
     }
 
     this.apiGet = this.apiGet.bind(this)
@@ -138,24 +142,39 @@ class Orders extends Component {
   }
 
   getOffers() {
+    const { loading } = this.state
+    loading.offers = true
+    this.setState({ loading })
+
     this.apiGet('offers', (result) => {
       const address = this.context.web3.selectedAccount
       let offers = result.offers || []
       const myLendOffers = offers.filter(item => (item.lender === address))
       const myBorrowOffers = offers.filter(item => (item.borrower === address))
       offers = offers.filter(item => (item.lender !== address && item.borrower !== address))
-      this.setState({ offers, myLendOffers, myBorrowOffers })
+      const { loading } = this.state
+      loading.offers = false
+      this.setState({ offers, myLendOffers, myBorrowOffers, loading })
     })
   }
 
   getPositions() {
+    const { loading } = this.state
+    loading.positions = true
+    this.setState({ loading })
+
     const { contracts, address, loanPosition } = this.props
     const { currentDAIExchangeRate } = this.state
     const LoanRegistry = contracts.contracts.LoanRegistry
     const Loan = contracts.contracts.Loan
     promisify(loanPosition, { web3, address, LoanRegistry, Loan, currentDAIExchangeRate })
-      .then(res => { console.log(res) })
-      .catch(e => { console.log(e) })
+      .then(res => console.log(res))
+      .catch(e => console.log(e))
+      .finally(() => {
+        const { loading } = this.state
+        loading.positions = false
+        this.setState({ loading })
+      })
   }
 
   getPositionsData() {
@@ -229,7 +248,7 @@ class Orders extends Component {
 
   render() {
     const { web3 } = this.context
-    const { offers, myLendOffers, myBorrowOffers, currentWETHExchangeRate } = this.state
+    const { offers, myLendOffers, myBorrowOffers, currentWETHExchangeRate, loading } = this.state
     const positions = this.getPositionsData()
     const methods = { apiGet: this.apiGet, apiPost: this.apiPost, getOffers: this.getOffers, getPositions: this.getPositions }
 
@@ -237,9 +256,9 @@ class Orders extends Component {
       <div className="OrdersWrapper">
         <Header address={web3.selectedAccount} />
         <FormTab methods={methods} address={web3.selectedAccount} />
-        <TableGroup methods={methods} address={web3.selectedAccount} data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }} />
-        <ListGroup methods={methods} address={web3.selectedAccount} currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }} style={{ marginBottom: 29 }} />
-        <ListGroup methods={methods} address={web3.selectedAccount} currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[4], right: Tables[5], data: positions }} />
+        <TableGroup methods={methods} address={web3.selectedAccount} data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }} loading={loading.offers} />
+        <ListGroup methods={methods} address={web3.selectedAccount} currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }} loading={loading.offers} style={{ marginBottom: 29 }} />
+        <ListGroup methods={methods} address={web3.selectedAccount} currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[4], right: Tables[5], data: positions }} loading={loading.positions} />
       </div>
     )
   }

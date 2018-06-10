@@ -165,6 +165,12 @@ class List extends Component {
         <div className="Title">{data.title}</div>
         <div className="Lists">
           {
+            data.loading &&
+            <div className="Loading">
+              <div className="Loader" />
+            </div>
+          }
+          {
             filteredData.map((d, index) => (
               <div class={`List ${classes}`}>
                 {
@@ -211,7 +217,7 @@ class List extends Component {
             ))
           }
           {
-            filteredData.length === 0 && <div class={`List ${classes}`}>No Data</div>
+            filteredData.length === 0 && <div class={`List ${classes}`}>{data.loading ? 'Loading' : 'No Data'}</div>
           }
         </div>
       </div>

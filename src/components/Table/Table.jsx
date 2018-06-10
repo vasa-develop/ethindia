@@ -202,6 +202,12 @@ class Table extends Component {
 
     return (
       <div className="TableWrapper">
+        {
+          data.loading &&
+          <div className="Loading">
+            <div className="Loader" />
+          </div>
+        }
         <div className="Title">{data.title}</div>
         <div class="tbl-header">
           <table cellpadding="0" cellspacing="0" border="0">
