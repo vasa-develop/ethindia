@@ -111,7 +111,7 @@ class FormTab extends Component {
     this.setState({ isLoading })
 
     const tokenBalance = this.props['tokenBalance' + this.getTokenName(token)]
-    promisify(tokenBalance, { contractInstance, address, origin, compare })
+    promisify(tokenBalance, { web3: window.web3, contractInstance, address, origin, compare })
       .then(res => {
         console.log(res)
         const { isLoading } = this.state
@@ -138,7 +138,7 @@ class FormTab extends Component {
     this.setState({ isLoading })
 
     const tokenAllowance = this.props['tokenAllowance' + this.getTokenName(token)]
-    promisify(tokenAllowance, { contractInstance, address, origin })
+    promisify(tokenAllowance, { web3: window.web3, contractInstance, address, origin })
       .then(res => {
         console.log(res)
         const { isLoading } = this.state
