@@ -152,9 +152,8 @@ class Table extends Component {
         const approval = res.data.approval
         const result = res.data.data
         Object.keys(result).forEach(key => {
-          console.log(key, result[key])
           if (key === 'expiresAtTimestamp')
-            result[key] = moment.utc(result[key]).format('YYYY-MM-DD HH:mm Z')
+            result[key] = moment.utc(result[key] * 1000).format('YYYY-MM-DD HH:mm Z')
           else if (result[key].toString().indexOf('0x') !== 0 && key !== 'nonce')
             result[key] = web3.fromWei(result[key].toString(), 'ether')
         })
