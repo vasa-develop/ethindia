@@ -80,10 +80,12 @@
   }
 
   .tbl-content {
+    max-height: 330px;
+    min-height: 330px;
+    overflow-x: auto;
+
     > div {
-      max-height: 330px;
-      min-height: 330px;
-      overflow-x: auto;
+      padding-bottom: 80px;
     }
 
     &:after {
