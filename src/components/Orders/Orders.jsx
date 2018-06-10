@@ -33,18 +33,21 @@ class Orders extends Component {
       myBorrowOffers: [],
       syncData: {},
       currentWETHExchangeRate: 0,
+      currentDAIExchangeRate: 0,
     }
 
     this.apiGet = this.apiGet.bind(this)
     this.apiPost = this.apiPost.bind(this)
     this.getOffers = this.getOffers.bind(this)
     this.getETW = this.getETW.bind(this)
+    this.getETD = this.getETD.bind(this)
   }
 
   componentDidMount() {
     this.getContracs(this.props.address, this.props.network)
     this.getOffers()
     this.getETW()
+    this.getETD()
   }
 
   componentWillReceiveProps(newProps) {
@@ -64,65 +67,70 @@ class Orders extends Component {
         contractFetchDai,
         contractFetchLst,
         contractFetchLoanOfferRegistry,
+        contractFetchLoanRegistry,
+        contractFetchLoan,
         tokenBalanceWeth,
         tokenBalanceDai,
         tokenBalanceLst,
-        tokenBalanceLoanOfferRegistry,
         tokenAllowanceWeth,
         tokenAllowanceDai,
         tokenAllowanceLst,
-        tokenAllowanceLoanOfferRegistry,
       } = this.props
       const { web3 } = window
 
-      promisify(contractETHBlance, { web3, address: address })
+      promisify(contractETHBlance, { web3, address })
         .then(res => { console.log(res) })
         .catch(e => { console.log(e) })
 
-      promisify(contractFetchWeth, { web3, network: network })
+      promisify(contractFetchWeth, { web3, network })
         .then(res => {
-          promisify(tokenBalanceWeth, { contractInstance: res, address: address })
+          promisify(tokenBalanceWeth, { web3, contractInstance: res, address })
             .then(res => { console.log(res) })
             .catch(e => { console.log(e) })
 
-          promisify(tokenAllowanceWeth, { contractInstance: res, address: address })
+          promisify(tokenAllowanceWeth, { web3, contractInstance: res, address })
             .then(res => { console.log(res) })
             .catch(e => { console.log(e) })
         })
         .catch(e => { console.log(e) })
 
-      promisify(contractFetchDai, { web3, network: network })
+      promisify(contractFetchDai, { web3, network })
         .then(res => {
-          promisify(tokenBalanceDai, { contractInstance: res, address: address })
+          promisify(tokenBalanceDai, { web3, contractInstance: res, address })
             .then(res => { console.log(res) })
             .catch(e => { console.log(e) })
 
-          promisify(tokenAllowanceDai, { contractInstance: res, address: address })
+          promisify(tokenAllowanceDai, { web3, contractInstance: res, address })
             .then(res => { console.log(res) })
             .catch(e => { console.log(e) })
         })
         .catch(e => { console.log(e) })
 
-      promisify(contractFetchLst, { web3, network: network })
+      promisify(contractFetchLst, { web3, network })
         .then(res => {
-          promisify(tokenBalanceLst, { contractInstance: res, address: address })
+          promisify(tokenBalanceLst, { web3, contractInstance: res, address })
             .then(res => { console.log(res) })
             .catch(e => { console.log(e) })
 
-          promisify(tokenAllowanceLst, { contractInstance: res, address: address })
+          promisify(tokenAllowanceLst, { web3, contractInstance: res, address })
             .then(res => { console.log(res) })
             .catch(e => { console.log(e) })
         })
         .catch(e => { console.log(e) })
 
-      promisify(contractFetchLoanOfferRegistry, { web3, network: network })
-        .then(res => {
-          promisify(tokenBalanceLoanOfferRegistry, { contractInstance: res, address: address })
-            .then(res => { console.log(res) })
-            .catch(e => { console.log(e) })
+      promisify(contractFetchLoanOfferRegistry, { web3, network })
+        .then(res => { console.log(res) })
+        .catch(e => { console.log(e) })
 
-          promisify(tokenAllowanceLoanOfferRegistry, { contractInstance: res, address: address })
-            .then(res => { console.log(res) })
+      promisify(contractFetchLoanRegistry, { web3, network })
+        .then(res => {
+          console.log(res)
+
+          promisify(contractFetchLoan, { web3, network })
+            .then(res => {
+              console.log(res)
+              this.getPositions()
+            })
             .catch(e => { console.log(e) })
         })
         .catch(e => { console.log(e) })
@@ -140,6 +148,37 @@ class Orders extends Component {
     })
   }
 
+  getPositions() {
+    const { contracts, address, loanPosition } = this.props
+    const { currentDAIExchangeRate } = this.state
+    const LoanRegistry = contracts.contracts.LoanRegistry
+    const Loan = contracts.contracts.Loan
+    promisify(loanPosition, { web3, address, LoanRegistry, Loan, currentDAIExchangeRate })
+      .then(res => { console.log(res) })
+      .catch(e => { console.log(e) })
+  }
+
+  getPositionsData() {
+    const { contracts: { positions } } = this.props
+    const { currentDAIExchangeRate } = this.state
+    if (!positions || currentDAIExchangeRate === 0) return {}
+    const positionsData = {
+      lent: positions.lent.map(position => {
+        const currentCollateralAmount = position.origin.loanAmountBorrowed / currentDAIExchangeRate
+        return Object.assign({
+          health: parseInt(position.origin.collateralAmount / currentCollateralAmount * 100, 10)
+        }, position)
+      }),
+      borrowed: positions.borrowed.map(position => {
+        const currentCollateralAmount = position.origin.loanAmountBorrowed / currentDAIExchangeRate
+        return Object.assign({
+          health: parseInt(position.origin.collateralAmount / currentCollateralAmount * 100, 10)
+        }, position)
+      }),
+    }
+    return positionsData
+  }
+
   getETW() {
     const url = 'https://api.coinmarketcap.com/v1/ticker/weth//?convert=ETH'
     axios.get(url)
@@ -149,6 +188,19 @@ class Orders extends Component {
           currentWETHExchangeRate: 1 / result.price_eth
         }, () => {
           setTimeout(this.getETW, 12 * 1000)
+        })
+      })
+  }
+
+  getETD() {
+    const url = 'https://api.coinmarketcap.com/v1/ticker/dai//?convert=ETH'
+    axios.get(url)
+      .then(res => {
+        const result = res.data[0]
+        this.setState({
+          currentDAIExchangeRate: 1 / result.price_eth
+        }, () => {
+          setTimeout(this.getETD, 12 * 1000)
         })
       })
   }
@@ -178,6 +230,7 @@ class Orders extends Component {
   render() {
     const { web3 } = this.context
     const { offers, myLendOffers, myBorrowOffers, currentWETHExchangeRate } = this.state
+    const positions = this.getPositionsData()
     const methods = { apiGet: this.apiGet, apiPost: this.apiPost, getOffers: this.getOffers }
 
     return (
@@ -186,7 +239,7 @@ class Orders extends Component {
         <FormTab methods={methods} address={web3.selectedAccount} />
         <TableGroup methods={methods} address={web3.selectedAccount} data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }} />
         <ListGroup methods={methods} address={web3.selectedAccount} currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }} style={{ marginBottom: 29 }} />
-        <ListGroup methods={methods} address={web3.selectedAccount} currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[4], right: Tables[5] }} />
+        <ListGroup methods={methods} address={web3.selectedAccount} currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[4], right: Tables[5], data: positions }} />
       </div>
     )
   }

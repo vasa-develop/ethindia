@@ -79,6 +79,21 @@
     }
 
     .Actions {
+      .dropdown {
+        position: absolute;
+        right: 0;
+        top: 0;
+
+        .btn-secondary,
+        .btn-secondary:hover,
+        .btn-secondary:active {
+          background-image: url('../../assets/images/3-dot.png');
+          background-color: transparent;
+          border-color: transparent;
+          box-shadow: none;
+        }
+      }
+
       .close {
         position: absolute;
         width: 12px;

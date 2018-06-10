@@ -11,6 +11,7 @@ import { Provider } from 'react-redux'
 import App from './App'
 import { store } from './redux'
 
+import 'bootstrap/dist/css/bootstrap.min.css'
 import './index.scss'
 
 ReactDOM.render((

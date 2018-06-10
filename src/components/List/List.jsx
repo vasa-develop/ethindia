@@ -1,12 +1,21 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 import { compose } from 'recompose'
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
 
 import { connectContract } from '../../redux/modules'
 
 import './List.scss'
 
 class List extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      dropdownOpen: {}
+    };
+  }
+
   getData(data) {
     const { key, filter } = data.data
     if (key) {
@@ -58,6 +67,14 @@ class List extends Component {
   fromBigToNumber(big) {
     if (!big.c) return 0
     return Number((big.c[0] / 10000).toString() + (big.c[1] || '').toString())
+  }
+
+  toggle(key) {
+    return () => {
+      const { dropdownOpen } = this.state
+      dropdownOpen[key] = !dropdownOpen[key]
+      this.setState({ dropdownOpen })
+    }
   }
 
   // Slots
@@ -124,6 +141,14 @@ class List extends Component {
     LoanOfferRegistryContractInstance.computeOfferHash(addresses, values, onOrderHash)
   }
 
+  onLiquidatePosition(data, input) {
+    console.log(data, input)
+  }
+
+  onClosePosition(data, input) {
+    console.log(data, input)
+  }
+
   // Action
 
   onAction(action, data) {
@@ -140,7 +165,7 @@ class List extends Component {
         <div className="Title">{data.title}</div>
         <div className="Lists">
           {
-            filteredData.map(d => (
+            filteredData.map((d, index) => (
               <div class={`List ${classes}`}>
                 {
                   data.headers.map(h => (
@@ -165,9 +190,21 @@ class List extends Component {
                 }
                 <div className="Actions">
                   {
-                    data.action.label === '3-dot' ?
-                      <button style={data.action.style} className="close three-dot"></button>
-                      : <button style={data.action.style} className={data.action.key} onClick={() => this.onAction(data.action, d)}>{data.action.label}</button>
+                    data.action.label === '3-dot'
+                      ?
+                      <Dropdown isOpen={this.state.dropdownOpen[index]} toggle={this.toggle(index)}>
+                        <DropdownToggle style={data.action.style} className="close three-dot" />
+                        <DropdownMenu>
+                          {
+                            data.action.items.map(item => (
+                              <DropdownItem onClick={() => this.onAction(item, d)}>{item.label}</DropdownItem>
+                            ))
+                          }
+                        </DropdownMenu>
+                      </Dropdown>
+                      // <button style={data.action.style} className="close three-dot"></button>
+                      :
+                      <button style={data.action.style} className={data.action.key} onClick={() => this.onAction(data.action, d)}>{data.action.label}</button>
                   }
                 </div>
               </div>

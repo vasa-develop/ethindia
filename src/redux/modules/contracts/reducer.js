@@ -2,6 +2,7 @@ import {
   CONTRACT_FETCH_SUCCESS,
   TOKEN_BALANCE_SUCCESS,
   TOKEN_ALLOWANCE_SUCCESS,
+  LOAN_POSITION_SUCCESS,
 } from './actions'
 import { defaultReducers } from '../defaultReducers'
 
@@ -24,6 +25,11 @@ export default function contracts(state = DEFAULT, action = {}) {
       return {
         ...state,
         allowances: Object.assign({}, state.allowances || {}, payload.allowances),
+      }
+    case LOAN_POSITION_SUCCESS:
+      return {
+        ...state,
+        positions: Object.assign({}, state.positions || {}, payload.positions),
       }
     default:
       return state

@@ -174,6 +174,7 @@ const CreateTables = (web3) => ([
       }, {
         label: 'Total Interest ',
         key: 'totalInterest',
+        precision: 5,
         style: { fontFamily: 'Space Mono', width: '30%' }
       }, {
         label: 'Term',
@@ -187,13 +188,22 @@ const CreateTables = (web3) => ([
         style: { fontFamily: 'Space Mono', width: '20%' }
       }
     ],
-    data: [
-      { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 13.83, totalInterest: 0.11064, term: 156, health: 80 },
-      { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 64.4, totalInterest: 0.5796, term: 216, health: 45 },
-      { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 13.85, totalInterest: 0.11064, term: 156, health: 90 },
-    ],
+    data: {
+      key: 'lent',
+      test: [
+        { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 13.83, totalInterest: 0.11064, term: 156, health: 80 },
+        { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 64.4, totalInterest: 0.5796, term: 216, health: 45 },
+        { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 13.85, totalInterest: 0.11064, term: 156, health: 90 },
+      ]
+    },
     action: {
       label: '3-dot',
+      type: 'dropdown',
+      items: [{
+        label: 'Liquidate',
+        slot: 'onLiquidatePosition',
+        param: { isLend: true },
+      }]
     }
   }, {
     title: 'MY BORROW POSITIONS',
@@ -210,6 +220,7 @@ const CreateTables = (web3) => ([
       }, {
         label: 'Total Interest ',
         key: 'totalInterest',
+        precision: 5,
         style: { fontFamily: 'Space Mono', width: '30%' }
       }, {
         label: 'Term',
@@ -223,13 +234,26 @@ const CreateTables = (web3) => ([
         style: { fontFamily: 'Space Mono', width: '20%' }
       }
     ],
-    data: [
-      { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 13.83, totalInterest: 0.11064, term: 156, health: 84 },
-      { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 64.4, totalInterest: 0.5796, term: 216, health: 45 },
-      { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 13.85, totalInterest: 0.11064, term: 156, health: 65 },
-    ],
+    data: {
+      key: 'borrowed',
+      test: [
+        { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 13.83, totalInterest: 0.11064, term: 156, health: 84 },
+        { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 64.4, totalInterest: 0.5796, term: 216, health: 45 },
+        { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 13.85, totalInterest: 0.11064, term: 156, health: 65 },
+      ]
+    },
     action: {
-      label: '3-dot'
+      label: '3-dot',
+      type: 'dropdown',
+      items: [{
+        label: 'Liquidate',
+        slot: 'onLiquidatePosition',
+        param: { isLend: false },
+      }, {
+        label: 'Close',
+        slot: 'onClosePosition',
+        param: { isLend: false },
+      },]
     }
   },
 ])
