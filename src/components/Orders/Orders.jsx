@@ -231,7 +231,7 @@ class Orders extends Component {
     const { web3 } = this.context
     const { offers, myLendOffers, myBorrowOffers, currentWETHExchangeRate } = this.state
     const positions = this.getPositionsData()
-    const methods = { apiGet: this.apiGet, apiPost: this.apiPost, getOffers: this.getOffers }
+    const methods = { apiGet: this.apiGet, apiPost: this.apiPost, getOffers: this.getOffers, getPositions: this.getPositions }
 
     return (
       <div className="OrdersWrapper">
