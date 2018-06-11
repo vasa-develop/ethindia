@@ -179,7 +179,7 @@ class Orders extends Component {
     promisify(loanPosition, { web3, address, LoanRegistry, Loan, currentDAIExchangeRate, check })
       .then(res => console.log(res))
       .catch(e => {
-        console.log(123, e)
+        console.log(Date.now(), e)
         if (e.message === 'No Update')
           setTimeout(() => this.getPositions(check), 5000)
       })

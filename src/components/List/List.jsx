@@ -176,10 +176,12 @@ class List extends Component {
   }
 
   onClosePosition(data, param) {
+    const { methods } = this.props
     console.log(data, param)
     // loan.close.send({from: userAddress})
     data.origin.LoanContract.close(data.origin.userAddress, (err, result) => {
-      console.log(err, result)
+      if (err) return
+      setTimeout(methods.getPositions, 5000, { type: 'close', address: data.loanNumber })
     })
   }
 
