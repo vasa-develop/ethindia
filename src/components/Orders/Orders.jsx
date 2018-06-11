@@ -43,6 +43,7 @@ class Orders extends Component {
     this.apiGet = this.apiGet.bind(this)
     this.apiPost = this.apiPost.bind(this)
     this.getOffers = this.getOffers.bind(this)
+    this.getPositions = this.getPositions.bind(this)
     this.getETW = this.getETW.bind(this)
     this.getETD = this.getETD.bind(this)
   }
@@ -163,22 +164,31 @@ class Orders extends Component {
     })
   }
 
-  getPositions() {
-    const { loading } = this.state
-    loading.positions = true
-    this.setState({ loading })
+  getPositions(check = null) {
+    if (!check) {
+      const { loading } = this.state
+      loading.positions = true
+      this.setState({ loading })
+    }
 
     const { contracts, address, loanPosition } = this.props
     const { currentDAIExchangeRate } = this.state
+    const { web3 } = window
     const LoanRegistry = contracts.contracts.LoanRegistry
     const Loan = contracts.contracts.Loan
-    promisify(loanPosition, { web3, address, LoanRegistry, Loan, currentDAIExchangeRate })
+    promisify(loanPosition, { web3, address, LoanRegistry, Loan, currentDAIExchangeRate, check })
       .then(res => console.log(res))
-      .catch(e => console.log(e))
+      .catch(e => {
+        console.log(123, e)
+        if (e.message === 'No Update')
+          setTimeout(() => this.getPositions(check), 5000)
+      })
       .finally(() => {
-        const { loading } = this.state
-        loading.positions = false
-        this.setState({ loading })
+        if (!check) {
+          const { loading } = this.state
+          loading.positions = false
+          this.setState({ loading })
+        }
       })
   }
 
@@ -271,7 +281,7 @@ class Orders extends Component {
 
 Orders.contextTypes = {
   web3: PropTypes.object
-};
+}
 
 export default compose(
   connectContract(),

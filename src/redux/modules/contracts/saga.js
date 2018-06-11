@@ -155,7 +155,7 @@ function watchTokenAllowanceByToken(token) {
 
 export function* asyncLoanPositions({ payload, resolve, reject }) {
   try {
-    const { web3, address, LoanRegistry, Loan, currentDAIExchangeRate } = payload
+    const { web3, address, LoanRegistry, Loan, check } = payload
     const LoanABI = Loan.abi
 
     const response = yield new Promise((resolve, reject) => {
@@ -228,9 +228,9 @@ export function* asyncLoanPositions({ payload, resolve, reject }) {
         })
       })
       const createdAtTimestamp = yield new Promise((resolve, reject) => {
-        LoanContract.expiresAtTimestamp((err, result) => {
+        LoanContract.createdAtTimestamp((err, result) => {
           if (err) return reject(err)
-          resolve(new Date(result.toString()))
+          resolve(result.toString() * 1000)
         })
       })
       const borrower = yield new Promise((resolve, reject) => {
@@ -271,13 +271,46 @@ export function* asyncLoanPositions({ payload, resolve, reject }) {
       }
     }
 
-    yield put(contractActionCreators.loanPositionSuccess({
-      positions: {
-        lent: positions.filter(position => (position.type === 'lent')),
-        borrowed: positions.filter(position => (position.type === 'borrowed')),
+    const checkUpdate = () => {
+      if (!check) return true
+      switch (check.type) {
+        case 'new':
+          const newPositions = positions.filter(position => (position.origin.createdAtTimestamp > check.timestamp))
+          return newPositions.length > 0
+          break
+        case 'close':
+          const closePositions = positions.filter(position => (position.loanNumber === check.address))
+          return closePositions.length === 0
+          break
+        case 'liquidate':
+          const liquidatePositions = positions.filter(position => (position.loanNumber === check.address))
+          return liquidatePositions.length === 0
+          break
+        case 'topup':
+          const topupPositions = positions.filter(position => (position.loanNumber === check.address))
+          return (topupPositions.length > 0) && (topupPositions[0].amount === check.amount)
+          break
+        default:
+          break
       }
-    }))
-    resolve({positions, counts})
+      return true
+    }
+
+    if (checkUpdate()) {
+      yield put(contractActionCreators.loanPositionSuccess({
+        positions: {
+          lent: positions
+            .filter(position => (position.type === 'lent'))
+            .sort((a, b) => (b.origin.createdAtTimestamp - a.origin.createdAtTimestamp)),
+          borrowed: positions
+            .filter(position => (position.type === 'borrowed'))
+            .sort((a, b) => (b.origin.createdAtTimestamp - a.origin.createdAtTimestamp)),
+        }
+      }))
+      resolve({ positions, counts })
+    } else {
+      reject({ message: 'No Update' })
+    }
   } catch (e) {
     reject(e)
   }

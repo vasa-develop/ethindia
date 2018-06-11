@@ -127,7 +127,7 @@ class Table extends Component {
                 const result = res.data
                 console.log(result)
                 setTimeout(methods.getOffers, 1000)
-                setTimeout(methods.getPositions, 1000)
+                setTimeout(methods.getPositions, 5000, { type: 'new', timestamp: Date.now() })
               })
           }
           this.setState({

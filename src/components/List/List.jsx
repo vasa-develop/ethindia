@@ -94,7 +94,12 @@ class List extends Component {
   }
 
   onSubmitTopupWithCollateral() {
-    //
+    this.closeModal('modalAmountIsOpen')
+    // loanContractInstance.topupCollateral(topupCollateralAmount).send({from: userAddress})
+
+    const { address } = this.props
+    const { currentData, topupCollateralAmount } = this.state
+    const { web3 } = window
   }
 
   // Slots
@@ -128,8 +133,8 @@ class List extends Component {
     // 4. rCreator
     // 5. sCreator
     // 6. a uint value cancelledCollateralTokenAmount which is calculated as follows:
-    // orderHash = contract.computeOfferHash(address[6], uints[9]); // Refer 1 and 2 immediately above for input details
-    // filledAmount = contract.filled(orderHash);
+    // orderHash = contract.computeOfferHash(address[6], uints[9]) // Refer 1 and 2 immediately above for input details
+    // filledAmount = contract.filled(orderHash)
     // cancelledCollateralTokenAmount = (order.loanAmountOffered * currentWETHExchangeRate) - (filledAmount)
     const { contracts, currentWETHExchangeRate, methods } = this.props
     const LoanOfferRegistryContractInstance = contracts.contracts ? contracts.contracts.LoanOfferRegistry : null
@@ -180,7 +185,6 @@ class List extends Component {
 
   onTopupWithCollateral(data, param) {
     console.log(data, param)
-    // loanContractInstance.topupCollateral(topupCollateralAmount).send({from: userAddress})
     this.setState({
       currentData: Object.assign(data),
       param,

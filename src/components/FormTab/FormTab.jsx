@@ -344,15 +344,15 @@ class FormTab extends Component {
 
     switch (tabIndex) {
       case 0: // Lend Form
-        break;
+        break
       case 1: // Borrow Form
-        break;
+        break
       case 2: // Wrap/Unwrap Form
-        break;
+        break
       case 3: // Allowance Form
-        break;
+        break
       default:
-        break;
+        break
     }
   }
 
