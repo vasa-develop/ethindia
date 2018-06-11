@@ -209,62 +209,64 @@ class List extends Component {
     return (
       <div className="ListWrapper">
         <div className="Title">{data.title}</div>
-        <div className="Lists">
+        <div className="ListsWrapper">
           {
             data.loading &&
             <div className="Loading">
               <div className="Loader" />
             </div>
           }
-          {
-            filteredData.map((d, index) => (
-              <div class={`List ${classes}`}>
-                {
-                  data.headers.map(h => (
-                    <div className={`ListField ${h.key}`} style={h.style}>
-                      <div className="Label">{h.label}</div>
-                      <div className="Data">
-                        {
-                          h.key === 'health' ?
-                            d[h.key] ?
-                              <div className="HealthBar">
-                                <div className="BarPercent">{this.getDisplayData(d, h)}</div>
-                                <div className="BarBase">
-                                  <div className="Fill" style={{ width: `${d[h.key]}%`, backgroundColor: this.getFill(d[h.key]) }} />
-                                </div>
-                              </div>
-                              : null
-                            : this.getDisplayData(d, h)
-                        }
-                      </div>
-                    </div>
-                  ))
-                }
-                <div className="Actions">
+          <div className="Lists">
+            {
+              filteredData.map((d, index) => (
+                <div class={`List ${classes}`}>
                   {
-                    data.action.label === '3-dot'
-                      ?
-                      <Dropdown isOpen={this.state.dropdownOpen[index]} toggle={this.toggle(index)}>
-                        <DropdownToggle style={data.action.style} className="close three-dot" />
-                        <DropdownMenu>
+                    data.headers.map(h => (
+                      <div className={`ListField ${h.key}`} style={h.style}>
+                        <div className="Label">{h.label}</div>
+                        <div className="Data">
                           {
-                            data.action.items.map(item => (
-                              <DropdownItem disabled={item.disabled(d)} onClick={() => this.onAction(item, d)}>{item.label}</DropdownItem>
-                            ))
+                            h.key === 'health' ?
+                              d[h.key] ?
+                                <div className="HealthBar">
+                                  <div className="BarPercent">{this.getDisplayData(d, h)}</div>
+                                  <div className="BarBase">
+                                    <div className="Fill" style={{ width: `${d[h.key]}%`, backgroundColor: this.getFill(d[h.key]) }} />
+                                  </div>
+                                </div>
+                                : null
+                              : this.getDisplayData(d, h)
                           }
-                        </DropdownMenu>
-                      </Dropdown>
-                      // <button style={data.action.style} className="close three-dot"></button>
-                      :
-                      <button style={data.action.style} className={data.action.key} onClick={() => this.onAction(data.action, d)}>{data.action.label}</button>
+                        </div>
+                      </div>
+                    ))
                   }
+                  <div className="Actions">
+                    {
+                      data.action.label === '3-dot'
+                        ?
+                        <Dropdown isOpen={this.state.dropdownOpen[index]} toggle={this.toggle(index)}>
+                          <DropdownToggle style={data.action.style} className="close three-dot" />
+                          <DropdownMenu>
+                            {
+                              data.action.items.map(item => (
+                                <DropdownItem disabled={item.disabled(d)} onClick={() => this.onAction(item, d)}>{item.label}</DropdownItem>
+                              ))
+                            }
+                          </DropdownMenu>
+                        </Dropdown>
+                        // <button style={data.action.style} className="close three-dot"></button>
+                        :
+                        <button style={data.action.style} className={data.action.key} onClick={() => this.onAction(data.action, d)}>{data.action.label}</button>
+                    }
+                  </div>
                 </div>
-              </div>
-            ))
-          }
-          {
-            filteredData.length === 0 && <div class={`List ${classes}`}>{data.loading ? 'Loading' : 'No Data'}</div>
-          }
+              ))
+            }
+            {
+              filteredData.length === 0 && <div class={`List ${classes}`}>{data.loading ? 'Loading' : 'No Data'}</div>
+            }
+          </div>
         </div>
         <InputModal
           isOpen={modalAmountIsOpen}

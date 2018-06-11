@@ -16,11 +16,15 @@
     padding: 0 40px 0 50px;
   }
 
-  .Lists {
-    max-height: 475px;
-    overflow: auto;
-    background: transparent;
+  .ListsWrapper {
     position: relative;
+
+    .Lists {
+      max-height: 475px;
+      overflow: auto;
+      background: transparent;
+      position: relative;
+    }
   }
 
   .List {
@@ -86,8 +90,8 @@
         top: 0;
 
         .btn-secondary,
-        .btn-secondary:hover,
-        .btn-secondary:active {
+        .btn-secondary:active,
+        .btn-secondary:hover {
           background-image: url('../../assets/images/3-dot.png');
           background-color: transparent;
           border-color: transparent;
