@@ -9,7 +9,7 @@ export function FormInputs(isLend) {
       output: (val) => (val.toString()),
       inputs: [{
         precision: 3,
-        suffix: isLend ? 'DAI' : 'WETH',
+        suffix: isLend ? 'DAI' : 'DAI',
         unit: 1
       }],
       required: true,
