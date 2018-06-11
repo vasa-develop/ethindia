@@ -227,6 +227,30 @@ export function* asyncLoanPositions({ payload, resolve, reject }) {
           resolve(('1' + result.toString()) * 1 * 100)
         })
       })
+      const createdAtTimestamp = yield new Promise((resolve, reject) => {
+        LoanContract.expiresAtTimestamp((err, result) => {
+          if (err) return reject(err)
+          resolve(new Date(result.toString()))
+        })
+      })
+      const borrower = yield new Promise((resolve, reject) => {
+        LoanContract.borrower((err, result) => {
+          if (err) return reject(err)
+          resolve(result.toString())
+        })
+      })
+      const wrangler = yield new Promise((resolve, reject) => {
+        LoanContract.wrangler((err, result) => {
+          if (err) return reject(err)
+          resolve(result.toString())
+        })
+      })
+      const owner = yield new Promise((resolve, reject) => {
+        LoanContract.owner((err, result) => {
+          if (err) return reject(err)
+          resolve(result.toString())
+        })
+      })
 
       position.loanNumber = address
       position.amount = loanAmountBorrowed
@@ -236,8 +260,14 @@ export function* asyncLoanPositions({ payload, resolve, reject }) {
       position.origin = {
         loanAmountBorrowed,
         loanAmountOwed,
-        expiresAtTimestamp,
         collateralAmount,
+        expiresAtTimestamp,
+        createdAtTimestamp,
+        LoanContract,
+        borrower,
+        wrangler,
+        userAddress: address,
+        owner,
       }
     }
 

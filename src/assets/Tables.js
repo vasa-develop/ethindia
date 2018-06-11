@@ -2,6 +2,14 @@ const fillZero = (len = 40) => {
   return '0x' + (new Array(len)).fill(0).join('')
 }
 
+const checkLoanLiquidate = (data) => {
+  return data.origin.userAddress === data.origin.wrangler
+}
+
+const checkLoanClose = (data) => {
+  return data.origin.userAddress === data.origin.borrower
+}
+
 const CreateTables = (web3) => ([
   {
     title: 'Lend Order Book',
@@ -199,11 +207,19 @@ const CreateTables = (web3) => ([
     action: {
       label: '3-dot',
       type: 'dropdown',
-      items: [{
-        label: 'Liquidate',
-        slot: 'onLiquidatePosition',
-        param: { isLend: true },
-      }]
+      items: [
+        {
+          label: 'Liquidate',
+          slot: 'onLiquidatePosition',
+          param: { isLend: true },
+          disabled: checkLoanLiquidate,
+        }, {
+          label: 'Topup with collateral',
+          slot: 'onTopupWithCollateral',
+          param: { isLend: true },
+          disabled: checkLoanClose,
+        },
+      ]
     }
   }, {
     title: 'MY BORROW POSITIONS',
@@ -245,15 +261,24 @@ const CreateTables = (web3) => ([
     action: {
       label: '3-dot',
       type: 'dropdown',
-      items: [{
-        label: 'Liquidate',
-        slot: 'onLiquidatePosition',
-        param: { isLend: false },
-      }, {
-        label: 'Close',
-        slot: 'onClosePosition',
-        param: { isLend: false },
-      },]
+      items: [
+        {
+          label: 'Liquidate',
+          slot: 'onLiquidatePosition',
+          param: { isLend: false },
+          disabled: checkLoanLiquidate,
+        }, {
+          label: 'Topup with collateral',
+          slot: 'onTopupWithCollateral',
+          param: { isLend: true },
+          disabled: checkLoanClose,
+        }, {
+          label: 'Close',
+          slot: 'onClosePosition',
+          param: { isLend: false },
+          disabled: checkLoanClose,
+        },
+      ]
     }
   },
 ])

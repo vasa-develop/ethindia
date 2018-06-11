@@ -149,6 +149,10 @@ class List extends Component {
     console.log(data, input)
   }
 
+  onTopupWithCollateral(data, input) {
+    console.log(data, input)
+  }
+
   // Action
 
   onAction(action, data) {
@@ -203,7 +207,7 @@ class List extends Component {
                         <DropdownMenu>
                           {
                             data.action.items.map(item => (
-                              <DropdownItem onClick={() => this.onAction(item, d)}>{item.label}</DropdownItem>
+                              <DropdownItem disabled={item.disabled(d)} onClick={() => this.onAction(item, d)}>{item.label}</DropdownItem>
                             ))
                           }
                         </DropdownMenu>
