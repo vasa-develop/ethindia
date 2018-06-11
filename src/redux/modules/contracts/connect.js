@@ -7,7 +7,7 @@ function mapStateToProps({ contracts }) {
   }
 }
 
-const mapDispatchToProps = contractActionCreators;
+const mapDispatchToProps = contractActionCreators
 
 export function connectContract(configMapStateToProps = mapStateToProps) {
   return connect(

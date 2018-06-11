@@ -6,11 +6,14 @@ import { compose } from 'recompose'
 
 import { connectContract } from '../../redux/modules'
 
+import InputModal from '../common/InputModal/InputModal'
+
 import './Table.scss'
 
 const customStyles = {
   overlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.75)'
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    zIndex: 1000,
   },
   content: {
     top: '50%',
@@ -183,8 +186,7 @@ class Table extends Component {
       currentData: Object.assign({ loanAmount: amount }, data),
       param,
       fillLoanAmount: amount,
-    })
-    this.openModal('modalAmountIsOpen')
+    }, () => this.openModal('modalAmountIsOpen'))
   }
 
   // Action
@@ -295,43 +297,18 @@ class Table extends Component {
             }
           </div>
         </Modal>
-        <Modal
+        <InputModal
           isOpen={modalAmountIsOpen}
+          title={`Amount to ${param.isLend ? 'Fill' : 'Select'}`}
           onRequestClose={() => this.closeModal('modalAmountIsOpen')}
-          style={customStyles}
+          onChange={(e) => this.setState({ fillLoanAmount: e.target.value })}
+          onSubmit={this.onSubmitOrder.bind(this)}
           contentLabel={`Amount to ${param.isLend ? 'Fill' : 'Select'}`}
-        >
-          <h2>{`Amount to ${param.isLend ? 'Fill' : 'Select'}`}</h2>
-          <button onClick={() => this.closeModal('modalAmountIsOpen')}></button>
-          <div className="ModalBody">
-            <div style={{ width: '100%' }}>
-              <div className="FillLoanAmount">
-                <div className="Label">Amount</div>
-                <div className="FormInputWrapper">
-                  <div className={`FormInput ${param.isLend ? 'DAI' : 'WETH'}`}>
-                    <input
-                      type="number"
-                      onChange={(e) => this.setState({ fillLoanAmount: e.target.value })}
-                      value={fillLoanAmount}
-                      min="0"
-                      max={currentData ? currentData.loanAmount : 0}
-                    />
-                    <div className="Suffix">{param.isLend ? 'DAI' : 'WETH'}</div>
-                    <div className="after"></div>
-                    <div className="before"></div>
-                  </div>
-                </div>
-              </div>
-              <div className="Buttons">
-                <div
-                  className={`Confirm ${fillLoanAmount > (currentData ? currentData.loanAmount : 0) ? 'Disabled' : ''}`}
-                  disabled={fillLoanAmount > (currentData ? currentData.loanAmount : 0) ? true : false}
-                  onClick={this.onSubmitOrder.bind(this)}
-                >Submit</div>
-              </div>
-            </div>
-          </div>
-        </Modal>
+          value={fillLoanAmount}
+          max={currentData ? currentData.loanAmount : 0}
+          suffix={param.isLend ? 'DAI' : 'WETH'}
+          disabled={fillLoanAmount > (currentData ? currentData.loanAmount : 0)}
+        />
       </div >
     )
   }

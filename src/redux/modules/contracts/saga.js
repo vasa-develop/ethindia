@@ -36,7 +36,7 @@ export function* asyncETHBlance({ payload, resolve, reject }) {
     if (!origin || (compare ? (value > origin) : (value < origin))) {
       balances.ETH = value
       yield put(contractActionCreators.tokenBalanceSuccess({ balances }))
-      resolve(balances);
+      resolve(balances)
     } else {
       reject({ message: 'No Update' })
     }
@@ -71,12 +71,12 @@ function watchContractFetchByToken(token) {
             const contractABI = JSON.parse(resData.data.result)
             contracts[token] = web3.eth.contract(contractABI).at(ContractAddresses[token][network])
             yield put(contractActionCreators.contractFetchSuccess({ contracts }))
-            resolve(contracts[token]);
+            resolve(contracts[token])
           } else {
             const contractABI = ContractAddresses[token].def
             contracts[token] = web3.eth.contract(contractABI).at(ContractAddresses[token][network])
             yield put(contractActionCreators.contractFetchSuccess({ contracts }))
-            resolve(contracts[token]);
+            resolve(contracts[token])
           }
         } catch (e) {
           reject(e)
@@ -99,7 +99,7 @@ function watchTokenBalanceByToken(token) {
             if (!contractInstance.balanceOf) resolve({})
             contractInstance.balanceOf(address, (err, result) => {
               if (err) return reject(err)
-              resolve(result);
+              resolve(result)
             })
           })
 
@@ -107,7 +107,7 @@ function watchTokenBalanceByToken(token) {
           if (!origin || (compare ? (value > origin) : (value < origin))) {
             balances[token] = value
             yield put(contractActionCreators.tokenBalanceSuccess({ balances }))
-            resolve(balances);
+            resolve(balances)
           } else {
             reject({ message: 'No Update' })
           }
@@ -132,7 +132,7 @@ function watchTokenAllowanceByToken(token) {
             if (!contractInstance.allowance) resolve({})
             contractInstance.allowance(address, contractInstance.address, (err, result) => {
               if (err) return reject(err)
-              resolve(result);
+              resolve(result)
             })
           })
 
@@ -140,7 +140,7 @@ function watchTokenAllowanceByToken(token) {
           if (!origin || value === origin) {
             allowances[token] = value
             yield put(contractActionCreators.tokenAllowanceSuccess({ allowances }))
-            resolve(allowances);
+            resolve(allowances)
           } else {
             reject({ message: 'No Update' })
           }
@@ -277,7 +277,7 @@ export function* asyncLoanPositions({ payload, resolve, reject }) {
         borrowed: positions.filter(position => (position.type === 'borrowed')),
       }
     }))
-    resolve({positions, counts});
+    resolve({positions, counts})
   } catch (e) {
     reject(e)
   }

@@ -3,11 +3,11 @@ const fillZero = (len = 40) => {
 }
 
 const checkLoanLiquidate = (data) => {
-  return data.origin.userAddress === data.origin.wrangler
+  return data.origin.userAddress !== data.origin.wrangler
 }
 
 const checkLoanClose = (data) => {
-  return data.origin.userAddress === data.origin.borrower
+  return data.origin.userAddress !== data.origin.borrower
 }
 
 const CreateTables = (web3) => ([

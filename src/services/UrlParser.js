@@ -28,7 +28,7 @@ export const getPreview = (url, options) => new Promise((resolve, reject) => {
 })
 
 const parseResponse = (body, url, options) => {
-  const doc = cheerio.load(body);
+  const doc = cheerio.load(body)
 
   return {
     url,
@@ -37,119 +37,119 @@ const parseResponse = (body, url, options) => {
     mediaType: getMediaType(doc) || 'website',
     images: getImages(doc, url, options.imagesPropertyType),
     videos: getVideos(doc),
-  };
-};
+  }
+}
 
 const getTitle = (doc) => {
-  let title = doc('meta[property=\'og:title\']').attr('content');
+  let title = doc('meta[property=\'og:title\']').attr('content')
 
   if (!title) {
-    title = doc('title').text();
+    title = doc('title').text()
   }
 
-  return title;
-};
+  return title
+}
 
 const getDescription = (doc) => {
-  let description = doc('meta[name=description]').attr('content');
+  let description = doc('meta[name=description]').attr('content')
 
   if (description === undefined) {
-    description = doc('meta[name=Description]').attr('content');
+    description = doc('meta[name=Description]').attr('content')
   }
 
   if (description === undefined) {
-    description = doc('meta[property=\'og:description\']').attr('content');
+    description = doc('meta[property=\'og:description\']').attr('content')
   }
 
-  return description;
-};
+  return description
+}
 
 const getMediaType = (doc) => {
-  const node = doc('meta[name=medium]');
+  const node = doc('meta[name=medium]')
 
   if (node.length) {
-    const content = node.attr('content');
-    return content === 'image' ? 'photo' : content;
+    const content = node.attr('content')
+    return content === 'image' ? 'photo' : content
   }
-  return doc('meta[property=\'og:type\']').attr('content');
-};
+  return doc('meta[property=\'og:type\']').attr('content')
+}
 
 const getImages = (doc, rootUrl, imagesPropertyType) => {
   let images = [],
     nodes,
     src,
-    dic;
+    dic
 
-  nodes = doc(`meta[property='${imagesPropertyType || 'og'}:image']`);
+  nodes = doc(`meta[property='${imagesPropertyType || 'og'}:image']`)
 
   if (nodes.length) {
     nodes.each((index, node) => {
-      src = node.attribs.content;
+      src = node.attribs.content
       if (src) {
-        src = urlObj.resolve(rootUrl, src);
-        images.push(src);
+        src = urlObj.resolve(rootUrl, src)
+        images.push(src)
       }
-    });
+    })
   }
 
   if (images.length <= 0 && !imagesPropertyType) {
-    src = doc('link[rel=image_src]').attr('href');
+    src = doc('link[rel=image_src]').attr('href')
     if (src) {
-      src = urlObj.resolve(rootUrl, src);
-      images = [src];
+      src = urlObj.resolve(rootUrl, src)
+      images = [src]
     } else {
-      nodes = doc('img');
+      nodes = doc('img')
 
       if (nodes.length) {
-        dic = {};
-        images = [];
+        dic = {}
+        images = []
         nodes.each((index, node) => {
-          src = node.attribs.src;
+          src = node.attribs.src
           if (src && !dic[src]) {
-            dic[src] = 1;
-            // width = node.attribs.width;
-            // height = node.attribs.height;
-            images.push(urlObj.resolve(rootUrl, src));
+            dic[src] = 1
+            // width = node.attribs.width
+            // height = node.attribs.height
+            images.push(urlObj.resolve(rootUrl, src))
           }
-        });
+        })
       }
     }
   }
 
-  return images;
-};
+  return images
+}
 
 const getVideos = (doc) => {
-  const videos = [];
-  let nodeTypes;
-  let nodeSecureUrls;
-  let nodeType;
-  let nodeSecureUrl;
-  let video;
-  let videoType;
-  let videoSecureUrl;
-  let width;
-  let height;
-  let videoObj;
-  let index;
+  const videos = []
+  let nodeTypes
+  let nodeSecureUrls
+  let nodeType
+  let nodeSecureUrl
+  let video
+  let videoType
+  let videoSecureUrl
+  let width
+  let height
+  let videoObj
+  let index
 
-  const nodes = doc('meta[property=\'og:video\']');
-  const length = nodes.length;
+  const nodes = doc('meta[property=\'og:video\']')
+  const length = nodes.length
 
   if (length) {
-    nodeTypes = doc('meta[property=\'og:video:type\']');
-    nodeSecureUrls = doc('meta[property=\'og:video:secure_url\']');
-    width = doc('meta[property=\'og:video:width\']').attr('content');
-    height = doc('meta[property=\'og:video:height\']').attr('content');
+    nodeTypes = doc('meta[property=\'og:video:type\']')
+    nodeSecureUrls = doc('meta[property=\'og:video:secure_url\']')
+    width = doc('meta[property=\'og:video:width\']').attr('content')
+    height = doc('meta[property=\'og:video:height\']').attr('content')
 
     for (index = 0; index < length; index++) {
-      video = nodes[index].attribs.content;
+      video = nodes[index].attribs.content
 
-      nodeType = nodeTypes[index];
-      videoType = nodeType ? nodeType.attribs.content : null;
+      nodeType = nodeTypes[index]
+      videoType = nodeType ? nodeType.attribs.content : null
 
-      nodeSecureUrl = nodeSecureUrls[index];
-      videoSecureUrl = nodeSecureUrl ? nodeSecureUrl.attribs.content : null;
+      nodeSecureUrl = nodeSecureUrls[index]
+      videoSecureUrl = nodeSecureUrl ? nodeSecureUrl.attribs.content : null
 
       videoObj = {
         url: video,
@@ -157,14 +157,14 @@ const getVideos = (doc) => {
         type: videoType,
         width,
         height,
-      };
+      }
       if (videoType.indexOf('video/') === 0) {
-        videos.splice(0, 0, videoObj);
+        videos.splice(0, 0, videoObj)
       } else {
-        videos.push(videoObj);
+        videos.push(videoObj)
       }
     }
   }
 
-  return videos;
-};
+  return videos
+}

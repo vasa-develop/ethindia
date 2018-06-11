@@ -1,1 +1,1 @@
-export { promisify } from './promisify';
+export { promisify } from './promisify'

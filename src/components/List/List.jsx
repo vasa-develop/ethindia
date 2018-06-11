@@ -5,15 +5,31 @@ import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap
 
 import { connectContract } from '../../redux/modules'
 
+import InputModal from '../common/InputModal/InputModal'
+
 import './List.scss'
 
 class List extends Component {
   constructor(props) {
-    super(props);
+    super(props)
 
     this.state = {
-      dropdownOpen: {}
-    };
+      dropdownOpen: {},
+      topupCollateralAmount: 0,
+      modalAmountIsOpen: false,
+      currentData: null,
+    }
+
+    this.openModal = this.openModal.bind(this)
+    this.closeModal = this.closeModal.bind(this)
+  }
+
+  openModal(key) {
+    this.setState({ [key]: true })
+  }
+
+  closeModal(key) {
+    this.setState({ [key]: false, topupCollateralAmount: 0 })
   }
 
   getData(data) {
@@ -77,9 +93,13 @@ class List extends Component {
     }
   }
 
+  onSubmitTopupWithCollateral() {
+    //
+  }
+
   // Slots
 
-  onCancel(data, input) {
+  onCancel(data, param) {
 
     // 1. an array of addresses[6] in this order: lender, borrower, relayer, wrangler, collateralToken, loanToken
     const addresses = [
@@ -141,16 +161,31 @@ class List extends Component {
     LoanOfferRegistryContractInstance.computeOfferHash(addresses, values, onOrderHash)
   }
 
-  onLiquidatePosition(data, input) {
-    console.log(data, input)
+  onLiquidatePosition(data, param) {
+    console.log(data, param)
+    // Contract(
+    //   WranglerLoanRegistryABI,
+    //   loanContractInstance.owner())
+    //   .liquidate(address(loan), lenderAmount, borrowerAmount)
+    //   .send({ from: userAddress })
   }
 
-  onClosePosition(data, input) {
-    console.log(data, input)
+  onClosePosition(data, param) {
+    console.log(data, param)
+    // loan.close.send({from: userAddress})
+    data.origin.LoanContract.close(data.origin.userAddress, (err, result) => {
+      console.log(err, result)
+    })
   }
 
-  onTopupWithCollateral(data, input) {
-    console.log(data, input)
+  onTopupWithCollateral(data, param) {
+    console.log(data, param)
+    // loanContractInstance.topupCollateral(topupCollateralAmount).send({from: userAddress})
+    this.setState({
+      currentData: Object.assign(data),
+      param,
+      topupCollateralAmount: data.amount,
+    }, () => this.openModal('modalAmountIsOpen'))
   }
 
   // Action
@@ -163,6 +198,7 @@ class List extends Component {
   render() {
     const { data, classes } = this.props
     const filteredData = this.getData(data)
+    const { modalAmountIsOpen, topupCollateralAmount, currentData } = this.state
 
     return (
       <div className="ListWrapper">
@@ -224,6 +260,18 @@ class List extends Component {
             filteredData.length === 0 && <div class={`List ${classes}`}>{data.loading ? 'Loading' : 'No Data'}</div>
           }
         </div>
+        <InputModal
+          isOpen={modalAmountIsOpen}
+          title="Topup Collateral Amount"
+          onRequestClose={() => this.closeModal('modalAmountIsOpen')}
+          onChange={(e) => this.setState({ topupCollateralAmount: e.target.value })}
+          onSubmit={this.onSubmitTopupWithCollateral.bind(this)}
+          contentLabel="Topup Collateral Amount"
+          value={topupCollateralAmount}
+          max={currentData ? currentData.amount : 0}
+          suffix="DAI"
+          disabled={topupCollateralAmount > (currentData ? currentData.amount : 0)}
+        />
       </div>
     )
   }

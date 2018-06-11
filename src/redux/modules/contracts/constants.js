@@ -1,6 +1,4 @@
-import { LoanOfferRegisteryABI } from './ABIs/LoanOfferRegisteryABI'
-import { LoanRegistryABI } from './ABIs/LoanRegistryABI'
-import { LoanABI } from './ABIs/LoanABI'
+import * as ABIs from './ABIs'
 
 export const ContractAddresses = {
   WETH: {
@@ -19,14 +17,18 @@ export const ContractAddresses = {
   },
   LoanOfferRegistry: {
     42: '0x9f2d0e710754046c35fc7fc29b4ae12c7ac7568b',
-    def: LoanOfferRegisteryABI
+    def: ABIs.LoanOfferRegisteryABI
   },
   LoanRegistry: {
     42: '0xc31ea8c26a74490c70e98c0badf37bb7ec97cc0c',
-    def: LoanRegistryABI
+    def: ABIs.LoanRegistryABI
   },
   Loan: {
     42: '0x0000000000000000000000000000000000000000',
-    def: LoanABI
+    def: ABIs.LoanABI
+  },
+  WranglerLoanRegistry: {
+    42: '0x0000000000000000000000000000000000000000',
+    def: ABIs.WranglerLoanRegistryABI
   }
 }

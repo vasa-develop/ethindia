@@ -19,7 +19,7 @@ const middlewares = [
 ]
 
 const enhancers = [
-  applyMiddleware(...middlewares), // empty for now;
+  applyMiddleware(...middlewares), // empty for now
 ]
 
 // If Redux DevTools Extension is installed use it, otherwise use Redux compose
@@ -35,7 +35,7 @@ const store = createStore(
   rootReducer,
   persistedState,
   composeEnhancers(...enhancers),
-);
+)
 
 sagaMiddleware.run(sagas)
 

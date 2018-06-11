@@ -73,6 +73,7 @@ class Orders extends Component {
         contractFetchLoanOfferRegistry,
         contractFetchLoanRegistry,
         contractFetchLoan,
+        contractFetchWranglerLoanRegistry,
         tokenBalanceWeth,
         tokenBalanceDai,
         tokenBalanceLst,
@@ -137,6 +138,10 @@ class Orders extends Component {
             })
             .catch(e => { console.log(e) })
         })
+        .catch(e => { console.log(e) })
+
+      promisify(contractFetchWranglerLoanRegistry, { web3, network })
+        .then(res => { console.log(res) })
         .catch(e => { console.log(e) })
     }
   }
