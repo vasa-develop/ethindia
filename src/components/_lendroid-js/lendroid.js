@@ -65,6 +65,7 @@ export class Lendroid {
       this.orders.myOrders.lend = orders.filter(item => (item.lender === address))
       this.orders.myOrders.borrow = orders.filter(item => (item.borrower === address))
       this.orders.orders = orders.filter(item => (item.lender !== address && item.borrower !== address))
+      this.stateCallback()
     })
   }
 
