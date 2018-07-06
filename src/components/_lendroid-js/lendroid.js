@@ -6,6 +6,7 @@ import {
   FetchAllowanceByToken,
   FetchLoanPositions,
   FetchOrders,
+  CreateOrder,
   WrapETH,
   Allowance,
   GetTokenExchangeRate,
@@ -29,6 +30,7 @@ export class Lendroid {
     this.fetchBallanceByToken = this.fetchBallanceByToken.bind(this)
     this.fetchAllowanceByToken = this.fetchAllowanceByToken.bind(this)
     this.fetchLoanPositions = this.fetchLoanPositions.bind(this)
+    this.onCreateOrder = this.onCreateOrder.bind(this)
     this.onWrapETH = this.onWrapETH.bind(this)
     this.onAllowance = this.onAllowance.bind(this)
   }
@@ -55,8 +57,8 @@ export class Lendroid {
 
   fetchOrders() {
     const { address } = this.metamask
-
     this.loading.orders = true
+    this.stateCallback()
 
     FetchOrders((err, orders) => {
       this.loading.orders = false
@@ -65,7 +67,7 @@ export class Lendroid {
       this.orders.myOrders.lend = orders.filter(item => (item.lender === address))
       this.orders.myOrders.borrow = orders.filter(item => (item.borrower === address))
       this.orders.orders = orders.filter(item => (item.lender !== address && item.borrower !== address))
-      this.stateCallback()
+      setTimeout(() => this.stateCallback(), 1000)
     })
   }
 
@@ -146,6 +148,64 @@ export class Lendroid {
         }
       }
     })
+  }
+
+  fillZero(len = 40) {
+    return '0x' + (new Array(len)).fill(0).join('')
+  }
+
+  onCreateOrder(postData) {
+    const { web3, contracts, metamask } = this
+    const { address } = metamask
+
+    // 1. an array of addresses[6] in this order: lender, borrower, relayer, wrangler, collateralToken, loanToken
+    const addresses = [
+      postData.lender = postData.lender.length ? postData.lender : this.fillZero(),
+      postData.borrower = postData.borrower.length ? postData.borrower : this.fillZero(),
+      postData.relayer = postData.relayer.length ? postData.relayer : this.fillZero(),
+      postData.wrangler,
+      postData.collateralToken,
+      postData.loanToken
+    ]
+
+    // 2. an array of uints[9] in this order: loanAmountOffered, interestRatePerDay, loanDuration, offerExpiryTimestamp, relayerFeeLST, monitoringFeeLST, rolloverFeeLST, closureFeeLST, creatorSalt
+    const values = [
+      postData.loanAmountOffered = web3.toWei(postData.loanAmountOffered, 'ether'),
+      postData.interestRatePerDay = web3.toWei(postData.interestRatePerDay, 'ether'),
+      postData.loanDuration,
+      postData.offerExpiry,
+      postData.relayerFeeLST = web3.toWei(postData.relayerFeeLST, 'ether'),
+      postData.monitoringFeeLST = web3.toWei(postData.monitoringFeeLST, 'ether'),
+      postData.rolloverFeeLST = web3.toWei(postData.rolloverFeeLST, 'ether'),
+      postData.closureFeeLST = web3.toWei(postData.closureFeeLST, 'ether'),
+      postData.creatorSalt
+    ]
+
+    const LoanOfferRegistryContractInstance = contracts.contracts ? contracts.contracts.LoanOfferRegistry : null
+
+    const onSign = (orderHash) => {
+      web3.eth.sign(address, orderHash, (err, result) => {
+        if (err) return
+
+        postData.ecSignatureCreator = result
+        result = result.substr(2)
+
+        postData.rCreator = '0x' + result.slice(0, 64)
+        postData.sCreator = '0x' + result.slice(64, 128)
+        postData.vCreator = web3.toDecimal('0x' + result.slice(128, 130))
+
+        CreateOrder(postData, (err, result) => {
+          if (err) return Logger.error(LoggerContext.API_ERROR, err.message)
+          setTimeout(this.fetchOrders, 2000)
+        })
+      })
+    }
+
+    const onOrderHash = (err, result) => {
+      if (err) return
+      onSign(result)
+    }
+    LoanOfferRegistryContractInstance.computeOfferHash(addresses, values, onOrderHash)
   }
 
   onWrapETH(amount, isWrap) {

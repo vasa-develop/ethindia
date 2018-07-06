@@ -39,3 +39,9 @@ export function FetchOrders(callback) {
     callback(err, result.offers || [])
   })
 }
+
+export function CreateOrder(data, callback) {
+  apiPost('/offers', data, (err, result) => {
+    callback(err, result)
+  })
+}

@@ -181,6 +181,7 @@ class Orders extends Component {
       getPositions: LendroidJS.fetchLoanPositions,
 
       // Form Tab
+      onCreateOrder: LendroidJS.onCreateOrder,
       onWrapETH: LendroidJS.onWrapETH,
       onAllowance: LendroidJS.onAllowance,
     }

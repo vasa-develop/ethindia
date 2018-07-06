@@ -102,10 +102,6 @@ class FormTab extends Component {
     return r
   }
 
-  fillZero(len = 40) {
-    return '0x' + (new Array(len)).fill(0).join('')
-  }
-
   onSubmit(isLend) {
     return () => {
       const formData = this.state
@@ -131,53 +127,7 @@ class FormTab extends Component {
 
       delete postData.allowance
 
-      // 1. an array of addresses[6] in this order: lender, borrower, relayer, wrangler, collateralToken, loanToken
-      const addresses = [
-        postData.lender = postData.lender.length ? postData.lender : this.fillZero(),
-        postData.borrower = postData.borrower.length ? postData.borrower : this.fillZero(),
-        postData.relayer = postData.relayer.length ? postData.relayer : this.fillZero(),
-        postData.wrangler,
-        postData.collateralToken,
-        postData.loanToken
-      ]
-
-      // 2. an array of uints[9] in this order: loanAmountOffered, interestRatePerDay, loanDuration, offerExpiryTimestamp, relayerFeeLST, monitoringFeeLST, rolloverFeeLST, closureFeeLST, creatorSalt
-      const values = [
-        postData.loanAmountOffered = web3.toWei(postData.loanAmountOffered, 'ether'),
-        postData.interestRatePerDay = web3.toWei(postData.interestRatePerDay, 'ether'),
-        postData.loanDuration,
-        postData.offerExpiry,
-        postData.relayerFeeLST = web3.toWei(postData.relayerFeeLST, 'ether'),
-        postData.monitoringFeeLST = web3.toWei(postData.monitoringFeeLST, 'ether'),
-        postData.rolloverFeeLST = web3.toWei(postData.rolloverFeeLST, 'ether'),
-        postData.closureFeeLST = web3.toWei(postData.closureFeeLST, 'ether'),
-        postData.creatorSalt
-      ]
-
-      const LoanOfferRegistryContractInstance = contracts.contracts ? contracts.contracts.LoanOfferRegistry : null
-
-      const onSign = (orderHash) => {
-        web3.eth.sign(address, orderHash, (err, result) => {
-          if (err) return
-
-          postData.ecSignatureCreator = result
-          result = result.substr(2)
-
-          postData.rCreator = '0x' + result.slice(0, 64)
-          postData.sCreator = '0x' + result.slice(64, 128)
-          postData.vCreator = web3.toDecimal('0x' + result.slice(128, 130))
-
-          methods.apiPost('offers', postData, (result) => {
-            setTimeout(methods.getOffers, 1000)
-          })
-        })
-      }
-
-      const onOrderHash = (err, result) => {
-        if (err) return
-        onSign(result)
-      }
-      LoanOfferRegistryContractInstance.computeOfferHash(addresses, values, onOrderHash)
+      methods.onCreateOrder(postData)
     }
   }
 
