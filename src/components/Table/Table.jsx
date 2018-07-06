@@ -200,7 +200,6 @@ class Table extends Component {
     const { data, classes } = this.props
     const { postError, result, modalIsOpen, modalAmountIsOpen, currentData, param, fillLoanAmount, isLoading } = this.state
     const filteredData = this.getData(data)
-    const { web3 } = window
 
     return (
       <div className="TableWrapper">
@@ -314,6 +313,4 @@ class Table extends Component {
   }
 }
 
-export default compose(
-  connectContract(),
-)(Table)
+export default Table

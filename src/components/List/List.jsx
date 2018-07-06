@@ -285,6 +285,4 @@ class List extends Component {
   }
 }
 
-export default compose(
-  connectContract(),
-)(List)
+export default List

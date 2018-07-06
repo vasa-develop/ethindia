@@ -188,11 +188,25 @@ class Orders extends Component {
 
     return (
       <div className="OrdersWrapper">
-        <Header address={web3.selectedAccount} contracts={contracts} />
-        <FormTab methods={methods} address={web3.selectedAccount} contracts={contracts} loading={loading} />
-        <TableGroup methods={methods} address={web3.selectedAccount} data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }} loading={loading.orders} />
-        <ListGroup methods={methods} address={web3.selectedAccount} currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }} loading={loading.orders} style={{ marginBottom: 29 }} />
-        <ListGroup methods={methods} address={web3.selectedAccount} currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[4], right: Tables[5], data: positions }} loading={loading.positions} />
+        <Header
+          address={web3.selectedAccount} contracts={contracts}
+        />
+        <FormTab methods={methods}
+          address={web3.selectedAccount} contracts={contracts}
+          loading={loading} />
+        <TableGroup methods={methods}
+          address={web3.selectedAccount} contracts={contracts}
+          data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }}
+          loading={loading.orders} />
+        <ListGroup methods={methods}
+          address={web3.selectedAccount} contracts={contracts}
+          currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }}
+          loading={loading.orders}
+          style={{ marginBottom: 29 }} />
+        <ListGroup methods={methods}
+          address={web3.selectedAccount} contracts={contracts}
+          currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[4], right: Tables[5], data: positions }}
+          loading={loading.positions} />
       </div>
     )
   }
