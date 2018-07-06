@@ -1,9 +1,6 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import { compose } from 'recompose'
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
-
-import { connectContract } from '../../redux/modules'
 
 import InputModal from '../common/InputModal/InputModal'
 

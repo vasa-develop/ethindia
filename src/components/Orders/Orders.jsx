@@ -176,14 +176,17 @@ class Orders extends Component {
     const { currentWETHExchangeRate } = exchangeRates
     const positions = this.getPositionsData()
     const methods = {
-      apiPost: this.apiPost,
-      getOffers: LendroidJS.fetchOrders,
-      getPositions: LendroidJS.fetchLoanPositions,
-
       // Form Tab
       onCreateOrder: LendroidJS.onCreateOrder,
       onWrapETH: LendroidJS.onWrapETH,
       onAllowance: LendroidJS.onAllowance,
+
+      // Table & List
+      getOffers: LendroidJS.fetchOrders,
+      getPositions: LendroidJS.fetchLoanPositions,
+      onPostLoans: LendroidJS.onPostLoans,
+      onFillLoan: LendroidJS.onFillLoan,
+      onDeleteOrder: LendroidJS.onDeleteOrder,
     }
 
     return (
@@ -195,7 +198,7 @@ class Orders extends Component {
           address={web3.selectedAccount} contracts={contracts}
           loading={loading} />
         <TableGroup methods={methods}
-          address={web3.selectedAccount} contracts={contracts}
+          address={web3.selectedAccount}
           data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }}
           loading={loading.orders} />
         <ListGroup methods={methods}

@@ -5,12 +5,14 @@ import {
   FetchBallanceByToken,
   FetchAllowanceByToken,
   FetchLoanPositions,
+  FillLoan,
   FetchOrders,
   CreateOrder,
+  PostLoans,
   WrapETH,
   Allowance,
   GetTokenExchangeRate,
-  Logger, LoggerContext,
+  Logger, LoggerContext, DeleteOrder,
 } from './services'
 
 export class Lendroid {
@@ -32,8 +34,11 @@ export class Lendroid {
     this.fetchAllowanceByToken = this.fetchAllowanceByToken.bind(this)
     this.fetchLoanPositions = this.fetchLoanPositions.bind(this)
     this.onCreateOrder = this.onCreateOrder.bind(this)
+    this.onDeleteOrder = this.onDeleteOrder.bind(this)
     this.onWrapETH = this.onWrapETH.bind(this)
     this.onAllowance = this.onAllowance.bind(this)
+    this.onPostLoans = this.onPostLoans.bind(this)
+    this.onFillLoan = this.onFillLoan.bind(this)
   }
 
   init() {
@@ -65,9 +70,9 @@ export class Lendroid {
       this.loading.orders = false
       if (err) return Logger.error(LoggerContext.API_ERROR, err.message)
 
-      this.orders.myOrders.lend = orders.filter(item => (item.lender === address))
-      this.orders.myOrders.borrow = orders.filter(item => (item.borrower === address))
-      this.orders.orders = orders.filter(item => (item.lender !== address && item.borrower !== address))
+      this.orders.myOrders.lend = orders.offers.filter(item => (item.lender === address))
+      this.orders.myOrders.borrow = orders.offers.filter(item => (item.borrower === address))
+      this.orders.orders = orders.offers.filter(item => (item.lender !== address && item.borrower !== address))
       setTimeout(() => this.stateCallback(), 1000)
     })
   }
@@ -209,6 +214,10 @@ export class Lendroid {
     LoanOfferRegistryContractInstance.computeOfferHash(addresses, values, onOrderHash)
   }
 
+  onDeleteOrder(id, callback) {
+    DeleteOrder(this.apiEndpoint, id, callback)
+  }
+
   onWrapETH(amount, isWrap) {
     const { web3, contracts } = this
     const WETHContractInstance = contracts.contracts.WETH
@@ -253,6 +262,16 @@ export class Lendroid {
         })
       }, 3000)
     })
+  }
+
+  onPostLoans(data, callback) {
+    PostLoans(this.apiLoanRequests, data, callback)
+  }
+
+  onFillLoan(approval, callback) {
+    const { contracts } = this
+    const LoanOfferRegistryContractInstance = contracts.contracts.LoanOfferRegistry
+    FillLoan({ approval, LoanOfferRegistryContractInstance }, callback)
   }
 
   getETW() {

@@ -220,3 +220,17 @@ export function Allowance(payload, callback) {
     }
   }
 }
+
+export function FillLoan(payload, callback) {
+  const { approval, LoanOfferRegistryContractInstance } = payload
+
+  LoanOfferRegistryContractInstance.fill(
+    approval._addresses,
+    approval._values,
+    approval._vS,
+    approval._rS,
+    approval._sS,
+    approval._isOfferCreatorLender,
+    callback
+  )
+}

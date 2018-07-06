@@ -5,13 +5,13 @@ import {
 } from '../constants'
 
 export function FetchOrders(base, callback) {
-  apiGet(base, '/offers', (err, result) => {
-    callback(err, result.offers || [])
-  })
+  apiGet(base, '/offers', callback)
 }
 
 export function CreateOrder(base, data, callback) {
-  apiPost(base, '/offers', data, (err, result) => {
-    callback(err, result)
-  })
+  apiPost(base, '/offers', data, callback)
+}
+
+export function DeleteOrder(base, id, callback) {
+  apiDelete(base, `/offers/${id}`, callback)
 }

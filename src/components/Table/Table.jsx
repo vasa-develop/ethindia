@@ -2,9 +2,6 @@ import React, { Component } from 'react'
 import axios from 'axios'
 import moment from 'moment'
 import Modal from 'react-modal'
-import { compose } from 'recompose'
-
-import { connectContract } from '../../redux/modules'
 
 import InputModal from '../common/InputModal/InputModal'
 
@@ -103,58 +100,49 @@ class Table extends Component {
 
   onConfirm() {
     const { approval, currentData } = this.state
-    const { contracts, methods } = this.props
-    const LoanOfferRegistryContractInstance = contracts.contracts ? contracts.contracts.LoanOfferRegistry : null
+    const { methods } = this.props
     this.setState({
       isLoading: true
     }, () => {
-      LoanOfferRegistryContractInstance.fill(
-        approval._addresses,
-        approval._values,
-        approval._vS,
-        approval._rS,
-        approval._sS,
-        approval._isOfferCreatorLender,
-        (err, result) => {
-          if (err) {
-            this.closeModal('modalIsOpen')
-          } else {
-            this.closeModal('modalIsOpen')
-
-            let url = `http://localhost:8080/offers/${currentData.id}`
-            axios.delete(url)
-              .then(res => {
-                const result = res.data
-                console.log(result)
-                setTimeout(methods.getOffers, 1000)
-                setTimeout(methods.getPositions, 5000, { type: 'new', timestamp: Date.now() })
-              })
-          }
-          this.setState({
-            isLoading: false
+      methods.onFillLoan(approval, (err, result) => {
+        console.log('Fill Loan', err, result)
+        if (result) {
+          methods.onDeleteOrder(currentData.id, (err, res) => {
+            setTimeout(methods.getOffers, 1000)
+            setTimeout(methods.getPositions, 3000)
           })
-        })
+        }
+        this.setState({
+          isLoading: false
+        }, () => this.closeModal('modalIsOpen'))
+      })
     })
   }
 
   onSubmitOrder() {
     this.closeModal('modalAmountIsOpen')
 
-    const { address } = this.props
+    const { address, methods } = this.props
     const { currentData, fillLoanAmount } = this.state
     const { web3 } = window
     const _this = this
-    let url = 'http://127.0.0.1:5000/loan_requests'
 
     const postData = Object.assign({
       filler: address,
       fillLoanAmount: window.web3.toWei(fillLoanAmount, 'ether')
     }, currentData)
 
-    axios.post(url, postData)
-      .then(res => {
-        const approval = res.data.approval
-        const result = res.data.data
+    methods.onPostLoans(postData, (err, res) => {
+      if (err) {
+        return _this.setState({
+          postError: err
+        }, () => {
+          _this.openModal('modalIsOpen')
+        })
+      }
+      if (res) {
+        const approval = res.approval
+        const result = res.data
         Object.keys(result).forEach(key => {
           if (key === 'expiresAtTimestamp')
             result[key] = moment.utc(result[key] * 1000).format('YYYY-MM-DD HH:mm Z')
@@ -168,14 +156,8 @@ class Table extends Component {
         }, () => {
           _this.openModal('modalIsOpen')
         })
-      })
-      .catch(err => {
-        _this.setState({
-          postError: err
-        }, () => {
-          _this.openModal('modalIsOpen')
-        })
-      })
+      }
+    })
   }
 
   // Slots
