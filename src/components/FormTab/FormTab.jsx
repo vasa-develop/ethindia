@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import axios from 'axios'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import { compose } from 'recompose'
 
@@ -27,7 +26,6 @@ class FormTab extends Component {
       offerExpiry: 72,
       wrangler: 'Lendroid',
       allowance: 0,
-      ethToDai: 0,
 
       // Fee Form Inputs
       relayerFeeLST: 0.01,
@@ -53,79 +51,13 @@ class FormTab extends Component {
     }
   }
 
-  componentDidMount() {
-    this.getETD()
-  }
-
-  getETD() {
-    const url = 'https://api.coinmarketcap.com/v1/ticker/dai//?convert=ETH'
-    axios.get(url)
-      .then(res => {
-        const result = res.data[0]
-        this.setState({
-          ethToDai: 1 / result.price_eth
-        })
-      })
-  }
-
   fromBigToNumber(big) {
     if (!big.c) return 0
     return Number((big.c[0] / 10000).toString() + (big.c[1] || '').toString())
   }
 
-  getBalance(address, origin = null, compare = true) {
-    const { web3 } = window
-    const { isLoading } = this.state
-    isLoading['ETHBalance'] = true
-    this.setState({ isLoading })
-
-    const { contractETHBlance } = this.props
-    promisify(contractETHBlance, { web3, address })
-      .then(res => {
-        console.log(res)
-        const { isLoading } = this.state
-        isLoading['ETHBalance'] = false
-
-        this.setState({
-          isLoading
-        })
-      })
-      .catch(e => {
-        console.log(e)
-        if (e.message === 'No Update')
-          setTimeout(() => this.getBalance(address, origin, compare), 1000)
-      })
-  }
-
   getTokenName(token) {
     return token.substr(0, 1).toUpperCase() + token.substr(1).toLowerCase()
-  }
-
-  getTokenBalance(address, token, origin = null, compare = true) {
-    const { contracts } = this.props
-    const contractInstance = contracts.contracts ? contracts.contracts[token] : null
-    if (!contractInstance) return
-
-    const { isLoading } = this.state
-    isLoading[token + 'Balance'] = true
-    this.setState({ isLoading })
-
-    const tokenBalance = this.props['tokenBalance' + this.getTokenName(token)]
-    promisify(tokenBalance, { web3: window.web3, contractInstance, address, origin, compare })
-      .then(res => {
-        console.log(res)
-        const { isLoading } = this.state
-        isLoading[token + 'Balance'] = false
-
-        this.setState({
-          isLoading
-        })
-      })
-      .catch(e => {
-        console.log(e)
-        if (e.message === 'No Update')
-          setTimeout(() => this.getTokenBalance(address, token, origin, compare), 1000)
-      })
   }
 
   getTokenAllowance(address, token, origin = null) {
@@ -284,31 +216,34 @@ class FormTab extends Component {
   }
 
   onWrapETH() {
-    const { contracts, address } = this.props
+    // const { contracts, address } = this.props
+    // const { amount, operation } = this.state
+    // const WETHContractInstance = contracts.contracts ? contracts.contracts.WETH : null
+    // const ETHBalance = contracts.balances ? contracts.balances.ETH : 0
+    // const wETHBalance = contracts.balances ? contracts.balances.WETH : 0
+    // if (!WETHContractInstance) return
+
+    // const { web3 } = window
+    // const _this = this
+
+    // if (operation === 'Wrap') {
+    //   WETHContractInstance.deposit({ value: web3.toWei(amount) }, (err, result) => {
+    //     setTimeout(() => {
+    //       _this.getBalance(address, ETHBalance, false)
+    //       _this.getTokenBalance(address, 'WETH', wETHBalance, true)
+    //     }, 1000)
+    //   })
+    // } else {
+    //   WETHContractInstance.withdraw(web3.toWei(amount), {}, (err, result) => {
+    //     setTimeout(() => {
+    //       _this.getBalance(address, ETHBalance, true)
+    //       _this.getTokenBalance(address, 'WETH', wETHBalance, false)
+    //     }, 1000)
+    //   })
+    // }
+    const { methods } = this.props
     const { amount, operation } = this.state
-    const WETHContractInstance = contracts.contracts ? contracts.contracts.WETH : null
-    const ETHBalance = contracts.balances ? contracts.balances.ETH : 0
-    const wETHBalance = contracts.balances ? contracts.balances.WETH : 0
-    if (!WETHContractInstance) return
-
-    const { web3 } = window
-    const _this = this
-
-    if (operation === 'Wrap') {
-      WETHContractInstance.deposit({ value: web3.toWei(amount) }, (err, result) => {
-        setTimeout(() => {
-          _this.getBalance(address, ETHBalance, false)
-          _this.getTokenBalance(address, 'WETH', wETHBalance, true)
-        }, 1000)
-      })
-    } else {
-      WETHContractInstance.withdraw(web3.toWei(amount), {}, (err, result) => {
-        setTimeout(() => {
-          _this.getBalance(address, ETHBalance, true)
-          _this.getTokenBalance(address, 'WETH', wETHBalance, false)
-        }, 1000)
-      })
-    }
+    methods.onWrapETH(amount, operation === 'Wrap')
   }
 
   onAllowance() {
@@ -357,7 +292,7 @@ class FormTab extends Component {
   }
 
   render() {
-    const { contracts } = this.props
+    const { contracts, loading } = this.props
     const formData = this.state
     contracts.token = formData.token
 
@@ -541,7 +476,8 @@ class FormTab extends Component {
                               data={item}
                               onChange={this.onChange.bind(this)}
                               val={item.value ? (item.value(contracts)) : formData[item.key]}
-                              loading={item.loading ? formData.isLoading[item.loading] : false}
+                              // loading={item.loading ? formData.isLoading[item.loading] : false}
+                              loading={loading.wrapping}
                             />
                         }
                       </td>
@@ -606,6 +542,7 @@ class FormTab extends Component {
   }
 }
 
-export default compose(
-  connectContract(),
-)(FormTab)
+// export default compose(
+//   connectContract(),
+// )(FormTab)
+export default FormTab

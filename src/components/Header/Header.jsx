@@ -1,9 +1,4 @@
 import React, { Component } from 'react'
-import { compose } from 'recompose'
-
-import { connectContract } from '../../redux/modules'
-
-// import logo from '../../assets/images/Logo.svg'
 
 import './Header.scss'
 
@@ -56,6 +51,4 @@ class Header extends Component {
   }
 }
 
-export default compose(
-  connectContract(),
-)(Header)
+export default Header
