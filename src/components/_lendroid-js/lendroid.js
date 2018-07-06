@@ -16,6 +16,7 @@ import {
 export class Lendroid {
   constructor(initParams) {
     this.apiEndpoint = initParams.apiEndpoint || Constants.API_ENDPOINT
+    this.apiLoanRequests = initParams.apiLoanRequests || Constants.API_LOAN_REQUESTS
     this.web3 = initParams.web3
     this.metamask = initParams.metamask
     this.exchangeRates = Constants.DEFAULT_EXCHANGES
@@ -60,7 +61,7 @@ export class Lendroid {
     this.loading.orders = true
     this.stateCallback()
 
-    FetchOrders((err, orders) => {
+    FetchOrders(this.apiEndpoint, (err, orders) => {
       this.loading.orders = false
       if (err) return Logger.error(LoggerContext.API_ERROR, err.message)
 
@@ -194,7 +195,7 @@ export class Lendroid {
         postData.sCreator = '0x' + result.slice(64, 128)
         postData.vCreator = web3.toDecimal('0x' + result.slice(128, 130))
 
-        CreateOrder(postData, (err, result) => {
+        CreateOrder(this.apiEndpoint, postData, (err, result) => {
           if (err) return Logger.error(LoggerContext.API_ERROR, err.message)
           setTimeout(this.fetchOrders, 2000)
         })
