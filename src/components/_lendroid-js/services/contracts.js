@@ -192,9 +192,31 @@ export function WrapETH(payload, callback) {
       callback(err, hash)
     })
   } else {
-    WETHContractInstance.withdraw({ value: web3.toWei(amount) }, (err, hash) => {
+    WETHContractInstance.withdraw(web3.toWei(amount), {}, (err, hash) => {
       if (err) return callback(err)
       callback(err, hash)
     })
+  }
+}
+
+export function Allowance(payload, callback) {
+  const { web3, address, tokenContractInstance, tokenAllowance, newAllowance } = payload
+
+  const hashCallback = (err, hash) => {
+    if (err) return callback(err)
+    callback(err, hash)
+  }
+
+  if (
+    tokenAllowance === 0
+    || !tokenContractInstance.increaseApproval
+    || !tokenContractInstance.decreaseApproval) {
+    tokenContractInstance.approve(tokenContractInstance.address, web3.toWei(newAllowance), { from: address }, hashCallback)
+  } else {
+    if (newAllowance > tokenAllowance) {
+      tokenContractInstance.increaseApproval(tokenContractInstance.address, web3.toWei(newAllowance - tokenAllowance), { from: address }, hashCallback)
+    } else {
+      tokenContractInstance.decreaseApproval(tokenContractInstance.address, web3.toWei(tokenAllowance - newAllowance), { from: address }, hashCallback)
+    }
   }
 }

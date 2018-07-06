@@ -182,6 +182,7 @@ class Orders extends Component {
 
       // Form Tab
       onWrapETH: LendroidJS.onWrapETH,
+      onAllowance: LendroidJS.onAllowance,
     }
 
     return (

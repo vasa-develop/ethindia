@@ -1,12 +1,7 @@
 import React, { Component } from 'react'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
-import { compose } from 'recompose'
-
-import { connectContract } from '../../redux/modules'
-import { promisify } from '../../utilities'
 
 import FormInput from '../FormInput/FormInput'
-
 import { FormInputs, FeeFormInputs, WrapETHFormInputs, AllowanceFormInputs } from './Forms'
 
 import './FormTab.scss'
@@ -17,8 +12,6 @@ class FormTab extends Component {
     super(props)
 
     this.state = {
-      isLoading: {},
-
       // Lend/Borrow Form Inputs
       loanAmountOffered: 4.123,
       interestRatePerDay: 0.008,
@@ -58,33 +51,6 @@ class FormTab extends Component {
 
   getTokenName(token) {
     return token.substr(0, 1).toUpperCase() + token.substr(1).toLowerCase()
-  }
-
-  getTokenAllowance(address, token, origin = null) {
-    const { contracts } = this.props
-    const contractInstance = contracts.contracts ? contracts.contracts[token] : null
-    if (!contractInstance) return
-
-    const { isLoading } = this.state
-    isLoading[token + 'Allowance'] = true
-    this.setState({ isLoading })
-
-    const tokenAllowance = this.props['tokenAllowance' + this.getTokenName(token)]
-    promisify(tokenAllowance, { web3: window.web3, contractInstance, address, origin })
-      .then(res => {
-        console.log(res)
-        const { isLoading } = this.state
-        isLoading[token + 'Allowance'] = false
-
-        this.setState({
-          isLoading
-        })
-      })
-      .catch(e => {
-        console.log(e)
-        if (e.message === 'No Update')
-          setTimeout(() => this.getTokenAllowance(address, token, origin), 1000)
-      })
   }
 
   onChange(key, value, affection = null) {
@@ -216,62 +182,15 @@ class FormTab extends Component {
   }
 
   onWrapETH() {
-    // const { contracts, address } = this.props
-    // const { amount, operation } = this.state
-    // const WETHContractInstance = contracts.contracts ? contracts.contracts.WETH : null
-    // const ETHBalance = contracts.balances ? contracts.balances.ETH : 0
-    // const wETHBalance = contracts.balances ? contracts.balances.WETH : 0
-    // if (!WETHContractInstance) return
-
-    // const { web3 } = window
-    // const _this = this
-
-    // if (operation === 'Wrap') {
-    //   WETHContractInstance.deposit({ value: web3.toWei(amount) }, (err, result) => {
-    //     setTimeout(() => {
-    //       _this.getBalance(address, ETHBalance, false)
-    //       _this.getTokenBalance(address, 'WETH', wETHBalance, true)
-    //     }, 1000)
-    //   })
-    // } else {
-    //   WETHContractInstance.withdraw(web3.toWei(amount), {}, (err, result) => {
-    //     setTimeout(() => {
-    //       _this.getBalance(address, ETHBalance, true)
-    //       _this.getTokenBalance(address, 'WETH', wETHBalance, false)
-    //     }, 1000)
-    //   })
-    // }
     const { methods } = this.props
     const { amount, operation } = this.state
     methods.onWrapETH(amount, operation === 'Wrap')
   }
 
   onAllowance() {
-    const { contracts, address } = this.props
+    const { methods } = this.props
     const { newAllowance, token } = this.state
-    const tokenContractInstance = contracts.contracts ? contracts.contracts[token] : null
-    const tokenAllowance = contracts.allowances ? contracts.allowances[token] : 0
-    const { web3 } = window
-
-    if (!tokenContractInstance) return
-
-    const callback = (err, result) => {
-      if (err) return
-      this.getTokenAllowance(address, token, newAllowance)
-    }
-
-    if (
-      tokenAllowance === 0
-      || !tokenContractInstance.increaseApproval
-      || !tokenContractInstance.decreaseApproval) {
-      tokenContractInstance.approve(tokenContractInstance.address, web3.toWei(newAllowance), { from: address }, callback)
-    } else {
-      if (newAllowance > tokenAllowance) {
-        tokenContractInstance.increaseApproval(tokenContractInstance.address, web3.toWei(newAllowance - tokenAllowance), { from: address }, callback)
-      } else {
-        tokenContractInstance.decreaseApproval(tokenContractInstance.address, web3.toWei(tokenAllowance - newAllowance), { from: address }, callback)
-      }
-    }
+    methods.onAllowance(token, newAllowance)
   }
 
   onTabChange(tabIndex) {
@@ -335,7 +254,7 @@ class FormTab extends Component {
                           data={item}
                           onChange={this.onChange.bind(this)}
                           val={item.value ? (item.value(contracts)) : formData[item.key]}
-                          loading={item.loading ? formData.isLoading[item.loading] : false}
+                          loading={item.loading ? loading[item.loading] : false}
                         />
                       </td>
                     ))
@@ -402,7 +321,7 @@ class FormTab extends Component {
                           data={item}
                           onChange={this.onChange.bind(this)}
                           val={item.value ? (item.value(contracts)) : formData[item.key]}
-                          loading={item.loading ? formData.isLoading[item.loading] : false}
+                          loading={item.loading ? loading[item.loading] : false}
                         />
                       </td>
                     ))
@@ -436,7 +355,7 @@ class FormTab extends Component {
                           data={item}
                           onChange={this.onChange.bind(this)}
                           val={item.value ? (item.value(contracts)) : formData[item.key]}
-                          loading={item.loading ? formData.isLoading[item.loading] : false}
+                          loading={item.loading ? loading[item.loading] : false}
                         />
                       </td>
                     ))
@@ -476,8 +395,7 @@ class FormTab extends Component {
                               data={item}
                               onChange={this.onChange.bind(this)}
                               val={item.value ? (item.value(contracts)) : formData[item.key]}
-                              // loading={item.loading ? formData.isLoading[item.loading] : false}
-                              loading={loading.wrapping}
+                              loading={item.loading ? loading[item.loading] : false}
                             />
                         }
                       </td>
@@ -522,7 +440,7 @@ class FormTab extends Component {
                               data={item}
                               onChange={this.onChange.bind(this)}
                               val={item.value ? (item.value(contracts)) : formData[item.key]}
-                              loading={item.loading ? formData.isLoading[item.loading(formData.token, formData)] : false}
+                              loading={item.loading ? loading[item.loading] : false}
                             />
                         }
                       </td>
@@ -542,7 +460,4 @@ class FormTab extends Component {
   }
 }
 
-// export default compose(
-//   connectContract(),
-// )(FormTab)
 export default FormTab

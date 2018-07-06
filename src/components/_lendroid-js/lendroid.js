@@ -7,6 +7,7 @@ import {
   FetchLoanPositions,
   FetchOrders,
   WrapETH,
+  Allowance,
   GetTokenExchangeRate,
   Logger, LoggerContext,
 } from './services'
@@ -29,6 +30,7 @@ export class Lendroid {
     this.fetchAllowanceByToken = this.fetchAllowanceByToken.bind(this)
     this.fetchLoanPositions = this.fetchLoanPositions.bind(this)
     this.onWrapETH = this.onWrapETH.bind(this)
+    this.onAllowance = this.onAllowance.bind(this)
   }
 
   init() {
@@ -145,12 +147,11 @@ export class Lendroid {
     })
   }
 
-  onWrapETH(amount, isWrap, stateCallback) {
+  onWrapETH(amount, isWrap) {
     const { web3, contracts } = this
     const WETHContractInstance = contracts.contracts.WETH
     if (!WETHContractInstance) return
 
-    const _ = this
     WrapETH({ web3, amount, isWrap, WETHContractInstance }, (err, hash) => {
       if (err) return Logger.error(LoggerContext.CONTRACT_ERROR, err.message)
       this.loading.wrapping = true
@@ -160,8 +161,32 @@ export class Lendroid {
           if (err) return Logger.error(LoggerContext.CONTRACT_ERROR, err.message)
           if (res && res.status) {
             this.loading.wrapping = false
-            setTimeout(() => this.stateCallback(), 5000)
+            setTimeout(() => this.stateCallback(), 6000)
             clearInterval(wrapInterval)
+          }
+        })
+      }, 3000)
+    })
+  }
+
+  onAllowance(token, newAllowance) {
+    const { web3, contracts, metamask } = this
+    const { address } = metamask
+    const tokenContractInstance = contracts.contracts[token]
+    const tokenAllowance = contracts.allowances[token]
+    if (newAllowance === tokenAllowance) return
+
+    Allowance({ web3, address, tokenContractInstance, tokenAllowance, newAllowance }, (err, hash) => {
+      if (err) return Logger.error(LoggerContext.CONTRACT_ERROR, err.message)
+      this.loading.allowance = true
+      this.stateCallback()
+      const allowanceInterval = setInterval(() => {
+        web3.eth.getTransactionReceipt(hash, (err, res) => {
+          if (err) return Logger.error(LoggerContext.CONTRACT_ERROR, err.message)
+          if (res && res.status) {
+            this.loading.allowance = false
+            setTimeout(() => this.stateCallback(), 6000)
+            clearInterval(allowanceInterval)
           }
         })
       }, 3000)

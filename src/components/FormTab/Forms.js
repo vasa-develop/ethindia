@@ -82,7 +82,7 @@ export function FormInputs(isLend) {
       style: { paddingRight: 8 },
       value: (contracts) => (contracts.allowances ? (contracts.allowances[isLend ? 'DAI' : 'WETH'] || 0) : 0),
       readOnly: true,
-      loading: `${isLend ? 'DAI' : 'WETH'}Allowance`
+      loading: 'allowance'
     },
   ]
 }
@@ -144,7 +144,7 @@ export const WrapETHFormInputs = [
     }],
     readOnly: true,
     value: (contracts) => (contracts.balances ? (contracts.balances.ETH || 0) : 0),
-    loading: `ETHBalance`
+    loading: 'wrapping'
   }, {
     key: 'wETHBalance',
     label: 'WETH Balance',
@@ -157,7 +157,7 @@ export const WrapETHFormInputs = [
     }],
     readOnly: true,
     value: (contracts) => (contracts.balances ? (contracts.balances.WETH || 0) : 0),
-    loading: `WETHBalance`
+    loading: 'wrapping'
   }, {
     key: 'operation',
     label: 'Operation',
@@ -192,9 +192,7 @@ export const AllowanceFormInputs = [
     }],
     readOnly: true,
     value: (contracts) => (contracts.balances ? (contracts.balances[contracts.token] || 0) : 0),
-    loading: (token, formData) => {
-      return `${token}Balance`
-    }
+    loading: 'wrapping'
   }, {
     key: 'tokenAllowance',
     label: 'Token Allowance',
@@ -206,7 +204,7 @@ export const AllowanceFormInputs = [
     }],
     readOnly: true,
     value: (contracts) => (contracts.allowances ? (contracts.allowances[contracts.token] || 0) : 0),
-    loading: (token) => (`${token}Allowance`)
+    loading: 'allowance'
   }, {
     key: 'newAllowance',
     label: 'New Allowance',
