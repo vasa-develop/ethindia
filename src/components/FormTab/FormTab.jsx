@@ -44,11 +44,6 @@ class FormTab extends Component {
     }
   }
 
-  fromBigToNumber(big) {
-    if (!big.c) return 0
-    return Number((big.c[0] / 10000).toString() + (big.c[1] || '').toString())
-  }
-
   getTokenName(token) {
     return token.substr(0, 1).toUpperCase() + token.substr(1).toLowerCase()
   }

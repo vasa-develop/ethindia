@@ -186,7 +186,9 @@ class Orders extends Component {
       getPositions: LendroidJS.fetchLoanPositions,
       onPostLoans: LendroidJS.onPostLoans,
       onFillLoan: LendroidJS.onFillLoan,
+      onClosePosition: LendroidJS.onClosePosition,
       onDeleteOrder: LendroidJS.onDeleteOrder,
+      onCancelOrder: LendroidJS.onCancelOrder,
     }
 
     return (

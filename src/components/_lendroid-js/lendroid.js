@@ -6,9 +6,11 @@ import {
   FetchAllowanceByToken,
   FetchLoanPositions,
   FillLoan,
+  ClosePosition,
   FetchOrders,
   CreateOrder,
   PostLoans,
+  CancelOrder,
   WrapETH,
   Allowance,
   GetTokenExchangeRate,
@@ -39,6 +41,8 @@ export class Lendroid {
     this.onAllowance = this.onAllowance.bind(this)
     this.onPostLoans = this.onPostLoans.bind(this)
     this.onFillLoan = this.onFillLoan.bind(this)
+    this.onClosePosition = this.onClosePosition.bind(this)
+    this.onCancelOrder = this.onCancelOrder.bind(this)
   }
 
   init() {
@@ -230,7 +234,7 @@ export class Lendroid {
       const wrapInterval = setInterval(() => {
         web3.eth.getTransactionReceipt(hash, (err, res) => {
           if (err) return Logger.error(LoggerContext.CONTRACT_ERROR, err.message)
-          if (res && res.status) {
+          if (res) {
             this.loading.wrapping = false
             setTimeout(() => this.stateCallback(), 6000)
             clearInterval(wrapInterval)
@@ -272,6 +276,23 @@ export class Lendroid {
     const { contracts } = this
     const LoanOfferRegistryContractInstance = contracts.contracts.LoanOfferRegistry
     FillLoan({ approval, LoanOfferRegistryContractInstance }, callback)
+  }
+
+  onClosePosition(data, callback) {
+    ClosePosition({ data }, (err, result) => {
+      if (err) Logger.error(LoggerContext.CONTRACT_ERROR, err.message)
+      callback(err, result)
+    })
+  }
+
+  onCancelOrder(data, callback) {
+    const { web3, contracts } = this
+    const LoanOfferRegistryContractInstance = contracts.contracts.LoanOfferRegistry
+    const { currentWETHExchangeRate } = this.exchangeRates
+    CancelOrder({ web3, data, currentWETHExchangeRate, LoanOfferRegistryContractInstance }, (err, result) => {
+      if (err) Logger.error(LoggerContext.CONTRACT_ERROR, err.message)
+      callback(err, result)
+    })
   }
 
   getETW() {

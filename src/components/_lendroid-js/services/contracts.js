@@ -234,3 +234,54 @@ export function FillLoan(payload, callback) {
     callback
   )
 }
+
+export function ClosePosition(payload, callback) {
+  const { data } = payload
+
+  data.origin.LoanContract.close(data.origin.userAddress, (err, hash) => {
+    if (err) callback(null)
+    setTimeout(callback, 5000, null, hash)
+  })
+}
+
+export function CancelOrder(payload, callback) {
+  const { web3, data, currentWETHExchangeRate, LoanOfferRegistryContractInstance } = payload
+
+  // 1. an array of addresses[6] in this order: lender, borrower, relayer, wrangler, collateralToken, loanToken
+  const addresses = [
+    data.lender,
+    data.borrower,
+    data.relayer,
+    data.wrangler,
+    data.collateralToken,
+    data.loanToken
+  ]
+
+  // 2. an array of uints[9] in this order: loanAmountOffered, interestRatePerDay, loanDuration, offerExpiryTimestamp, relayerFeeLST, monitoringFeeLST, rolloverFeeLST, closureFeeLST, creatorSalt
+  const values = [
+    data.loanAmountOffered,
+    data.interestRatePerDay,
+    data.loanDuration,
+    data.offerExpiryTimestamp,
+    data.relayerFeeLST,
+    data.monitoringFeeLST,
+    data.rolloverFeeLST,
+    data.closureFeeLST,
+    data.creatorSalt
+  ]
+
+  const onFilledAmount = (err, result) => {
+    if (err) callback(null)
+    const filledAmount = web3.fromWei(result.toString(), 'ether')
+    const cancelledCollateralTokenAmount = data.loanAmountOffered * currentWETHExchangeRate - filledAmount
+
+    LoanOfferRegistryContractInstance.cancel(addresses, values, data.vCreator, data.rCreator, data.sCreator, cancelledCollateralTokenAmount, callback)
+  }
+
+  const onOrderHash = (err, result) => {
+    if (err) callback(null)
+    LoanOfferRegistryContractInstance.filled(result, onFilledAmount)
+  }
+
+  LoanOfferRegistryContractInstance.computeOfferHash(addresses, values, onOrderHash)
+}
