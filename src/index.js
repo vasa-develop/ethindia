@@ -7,15 +7,18 @@ import {
 } from 'react-router-dom'
 import { Web3Provider } from 'react-web3'
 import { Provider } from 'react-redux'
+// import { Lendroid } from 'lendroid'
 
 import App from './App'
-import { store } from './redux'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './index.scss'
 
+// const lib = new Lendroid({})
+// console.log(lib)
+
 ReactDOM.render((
-  <Provider store={store}>
+  <Provider>
     <Web3Provider>
       <HashRouter>
         <Switch>
@@ -23,5 +26,6 @@ ReactDOM.render((
         </Switch>
       </HashRouter>
     </Web3Provider>
+    {/* <App /> */}
   </Provider>
 ), document.getElementById('root'))
