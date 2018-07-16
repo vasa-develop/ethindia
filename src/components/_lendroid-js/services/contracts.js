@@ -200,7 +200,7 @@ export function WrapETH(payload, callback) {
 }
 
 export function Allowance(payload, callback) {
-  const { web3, address, tokenContractInstance, tokenAllowance, newAllowance } = payload
+  const { web3, address, tokenContractInstance, tokenAllowance, newAllowance, tokenTransferProxyContract } = payload
 
   const hashCallback = (err, hash) => {
     if (err) return callback(err)
@@ -211,12 +211,12 @@ export function Allowance(payload, callback) {
     tokenAllowance === 0
     || !tokenContractInstance.increaseApproval
     || !tokenContractInstance.decreaseApproval) {
-    tokenContractInstance.approve(tokenContractInstance.address, web3.toWei(newAllowance), { from: address }, hashCallback)
+    tokenContractInstance.approve(tokenTransferProxyContract.address, web3.toWei(newAllowance), { from: address }, hashCallback)
   } else {
     if (newAllowance > tokenAllowance) {
-      tokenContractInstance.increaseApproval(tokenContractInstance.address, web3.toWei(newAllowance - tokenAllowance), { from: address }, hashCallback)
+      tokenContractInstance.increaseApproval(tokenTransferProxyContract.address, web3.toWei(newAllowance - tokenAllowance), { from: address }, hashCallback)
     } else {
-      tokenContractInstance.decreaseApproval(tokenContractInstance.address, web3.toWei(tokenAllowance - newAllowance), { from: address }, hashCallback)
+      tokenContractInstance.decreaseApproval(tokenTransferProxyContract.address, web3.toWei(tokenAllowance - newAllowance), { from: address }, hashCallback)
     }
   }
 }

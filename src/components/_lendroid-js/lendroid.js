@@ -258,10 +258,17 @@ export class Lendroid {
     const { web3, contracts, metamask } = this
     const { address } = metamask
     const tokenContractInstance = contracts.contracts[token]
+    const tokenTransferProxyContract = contracts.contracts.TokenTransferProxy
     const tokenAllowance = contracts.allowances[token]
     if (newAllowance === tokenAllowance) return
 
-    Allowance({ web3, address, tokenContractInstance, tokenAllowance, newAllowance }, (err, hash) => {
+    Allowance({
+      web3,
+      tokenContractInstance,
+      tokenAllowance,
+      newAllowance,
+      tokenTransferProxyContract,
+    }, (err, hash) => {
       if (err) return Logger.error(LoggerContext.CONTRACT_ERROR, err.message)
       this.loading.allowance = true
       this.stateCallback()
@@ -270,7 +277,7 @@ export class Lendroid {
           if (err) return Logger.error(LoggerContext.CONTRACT_ERROR, err.message)
           if (res && res.status) {
             this.loading.allowance = false
-            setTimeout(() => this.stateCallback(), 6000)
+            setTimeout(() => this.stateCallback(), 8000)
             clearInterval(allowanceInterval)
           }
         })
