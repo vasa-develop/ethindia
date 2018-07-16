@@ -300,7 +300,7 @@ export function CancelOrder(payload, callback) {
     data.loanAmountOffered,
     data.interestRatePerDay,
     data.loanDuration,
-    data.offerExpiryTimestamp,
+    data.offerExpiry,
     data.relayerFeeLST,
     data.monitoringFeeLST,
     data.rolloverFeeLST,
@@ -308,17 +308,18 @@ export function CancelOrder(payload, callback) {
     data.creatorSalt
   ]
 
-  const onFilledAmount = (err, result) => {
+  const onFilledOrCancelledAmount = (err, result) => {
+    console.log(err, result)
     if (err) callback(null)
-    const filledAmount = web3.fromWei(result.toString(), 'ether')
-    const cancelledCollateralTokenAmount = data.loanAmountOffered * currentWETHExchangeRate - filledAmount
+    const cancelledOrFilledAmount = web3.fromWei(result.toString(), 'ether')
+    const cancelledCollateralTokenAmount = data.loanAmountOffered - cancelledOrFilledAmount
 
     LoanOfferRegistryContractInstance.cancel(addresses, values, data.vCreator, data.rCreator, data.sCreator, cancelledCollateralTokenAmount, callback)
   }
 
   const onOrderHash = (err, result) => {
     if (err) callback(null)
-    LoanOfferRegistryContractInstance.filled(result, onFilledAmount)
+    LoanOfferRegistryContractInstance.getFilledOrCancelledLoanAmount(result, onFilledOrCancelledAmount)
   }
 
   LoanOfferRegistryContractInstance.computeOfferHash(addresses, values, onOrderHash)
