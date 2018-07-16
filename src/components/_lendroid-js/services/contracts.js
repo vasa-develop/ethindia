@@ -163,7 +163,7 @@ export function FetchLoanPositions(payload, callback) {
 
       let status = 'Unknown'
 
-      switch(loanStatus) {
+      switch (Number(loanStatus)) {
         case Constants.LOAN_STATUS_ACTIVE: status = 'Active'; break
         case Constants.LOAN_STATUS_CLOSED: status = 'Closed'; break
         case Constants.LOAN_STATUS_LIQUIDATED: status = 'Liquidated'; break

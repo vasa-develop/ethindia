@@ -188,12 +188,12 @@ const CreateTables = (web3) => ([
         label: 'Term',
         key: 'term',
         filter: 'calcTerm',
-        style: { fontFamily: 'Space Mono', width: '21%' }
+        style: { fontFamily: 'Space Mono', width: '16%' }
       }, {
         label: 'Loan Health',
         key: 'health',
         suffix: '%',
-        style: { fontFamily: 'Space Mono', width: '16%' }
+        style: { fontFamily: 'Space Mono', width: '21%' }
       }, {
         label: 'Loan Status',
         key: 'status',
@@ -246,12 +246,12 @@ const CreateTables = (web3) => ([
         label: 'Term',
         key: 'term',
         filter: 'calcTerm',
-        style: { fontFamily: 'Space Mono', width: '21%' }
+        style: { fontFamily: 'Space Mono', width: '16%' }
       }, {
         label: 'Loan Health',
         key: 'health',
         suffix: '%',
-        style: { fontFamily: 'Space Mono', width: '16%' }
+        style: { fontFamily: 'Space Mono', width: '21%' }
       }, {
         label: 'Loan Status',
         key: 'status',
