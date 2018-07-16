@@ -46,10 +46,10 @@ export function FetchBallanceByToken(payload, callback) {
 }
 
 export function FetchAllowanceByToken(payload, callback) {
-  const { web3, address, contractInstance } = payload
+  const { web3, address, contractInstance, tokenTransferProxyContract } = payload
 
   if (!contractInstance.allowance) callback({ message: 'No allowance() in Contract Instance' })
-  contractInstance.allowance(address, contractInstance.address, (err, res) => {
+  contractInstance.allowance(address, tokenTransferProxyContract.address, (err, res) => {
     if (err) return callback(err)
     const value = web3.fromWei(res.toString(), 'ether')
     callback(null, { data: value })

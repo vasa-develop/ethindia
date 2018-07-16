@@ -109,9 +109,14 @@ export class Lendroid {
   fetchAllowanceByToken(token) {
     const { web3, metamask } = this
     const { address } = metamask
-    if (!this.contracts.contracts[token]) return
+    if (!this.contracts.contracts[token] || !this.contracts.contracts.TokenTransferProxy) return
 
-    FetchAllowanceByToken({ web3, contractInstance: this.contracts.contracts[token], address }, (err, res) => {
+    FetchAllowanceByToken({
+      web3,
+      address,
+      contractInstance: this.contracts.contracts[token],
+      tokenTransferProxyContract: this.contracts.contracts.TokenTransferProxy
+    }, (err, res) => {
       if (err) return Logger.error(LoggerContext.CONTRACT_ERROR, err.message)
       this.contracts.allowances[token] = res.data
       this.stateCallback()
@@ -134,18 +139,23 @@ export class Lendroid {
   }
 
   fetchContracts() {
-    Constants.ContractTokens.forEach(token => {
-      this.fetchContractByToken(token)
+    this.fetchContractByToken('TokenTransferProxy', () => {
+      Constants.ContractTokens.forEach(token => {
+        this.fetchContractByToken(token)
+      })
     })
   }
 
-  fetchContractByToken(token) {
+  fetchContractByToken(token, callback) {
     const { web3, metamask } = this
     const { network } = metamask
 
     FetchContractByToken(token, { web3, network }, (err, res) => {
       if (err) return Logger.error(LoggerContext.CONTRACT_ERROR, err.message)
       this.contracts.contracts[token] = res.data
+      if (callback) {
+        return callback();
+      }
 
       if (Constants.BallanceTokens.indexOf(token) !== -1) {
         this.fetchBallanceByToken(token)

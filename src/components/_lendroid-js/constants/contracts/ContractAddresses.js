@@ -30,6 +30,10 @@ export const ContractAddresses = {
   WranglerLoanRegistry: {
     42: '0x0000000000000000000000000000000000000000',
     def: ABIs.WranglerLoanRegistryABI
+  },
+  TokenTransferProxy: {
+    42: '0xcc94204e4a20c3c371e6bad853f04f079d4b1540',
+    def: ABIs.TokenTransferProxyABI
   }
 }
 
