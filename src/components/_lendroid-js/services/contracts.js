@@ -107,6 +107,12 @@ export function FetchLoanPositions(payload, callback) {
           resolve(web3.fromWei(result.toString(), 'ether'))
         })
       })
+      const loanStatus = await new Promise((resolve, reject) => {
+        LoanContract.status((err, result) => {
+          if (err) return reject(err)
+          resolve(web3.fromWei(result.toString(), 'ether'))
+        })
+      })
       const loanAmountOwed = await new Promise((resolve, reject) => {
         LoanContract.loanAmountOwed((err, result) => {
           if (err) return reject(err)
@@ -165,18 +171,22 @@ export function FetchLoanPositions(payload, callback) {
         borrower,
         wrangler,
         userAddress: address,
+        status: loanStatus,
         owner,
       }
     }
+    const activePositions = positions.filter(position => position.origin.status !== Constants.LOAN_STATUS_DEACTIVATED)
 
     callback(null, {
       positions: {
-        lent: positions
+        lent: activePositions
           .filter(position => (position.type === 'lent'))
-          .sort((a, b) => (b.origin.createdAtTimestamp - a.origin.createdAtTimestamp)),
-        borrowed: positions
+          .sort((a, b) => (b.origin.createdAtTimestamp - a.origin.createdAtTimestamp))
+          .slice(0, 10),
+        borrowed: activePositions
           .filter(position => (position.type === 'borrowed'))
-          .sort((a, b) => (b.origin.createdAtTimestamp - a.origin.createdAtTimestamp)),
+          .sort((a, b) => (b.origin.createdAtTimestamp - a.origin.createdAtTimestamp))
+          .slice(0, 10),
       },
       counts
     })
