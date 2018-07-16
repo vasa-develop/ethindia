@@ -161,6 +161,18 @@ export function FetchLoanPositions(payload, callback) {
       position.totalInterest = loanAmountOwed - loanAmountBorrowed
       position.term = (expiresAtTimestamp - Date.now()) / 3600
 
+      let status = 'Unknown'
+
+      switch(loanStatus) {
+        case Constants.LOAN_STATUS_ACTIVE: status = 'Active'; break
+        case Constants.LOAN_STATUS_CLOSED: status = 'Closed'; break
+        case Constants.LOAN_STATUS_LIQUIDATED: status = 'Liquidated'; break
+        case Constants.LOAN_STATUS_LIQUIDATING: status = 'Liquidating'; break
+        default: 'Unknown'
+      }
+
+      position.status = status
+
       position.origin = {
         loanAmountBorrowed,
         loanAmountOwed,
@@ -171,11 +183,11 @@ export function FetchLoanPositions(payload, callback) {
         borrower,
         wrangler,
         userAddress: address,
-        status: loanStatus,
+        loanStatus,
         owner,
       }
     }
-    const activePositions = positions.filter(position => position.origin.status !== Constants.LOAN_STATUS_DEACTIVATED)
+    const activePositions = positions.filter(position => position.origin.loanStatus !== Constants.LOAN_STATUS_DEACTIVATED)
 
     callback(null, {
       positions: {

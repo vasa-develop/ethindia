@@ -178,23 +178,27 @@ const CreateTables = (web3) => ([
         label: 'Amount',
         key: 'amount',
         precision: 2,
-        style: { fontFamily: 'Space Mono', width: '25%' }
+        style: { fontFamily: 'Space Mono', width: '21%' }
       }, {
         label: 'Total Interest ',
         key: 'totalInterest',
         precision: 5,
-        style: { fontFamily: 'Space Mono', width: '30%' }
+        style: { fontFamily: 'Space Mono', width: '26%' }
       }, {
         label: 'Term',
         key: 'term',
         filter: 'calcTerm',
-        style: { fontFamily: 'Space Mono', width: '25%' }
+        style: { fontFamily: 'Space Mono', width: '21%' }
       }, {
         label: 'Loan Health',
         key: 'health',
         suffix: '%',
-        style: { fontFamily: 'Space Mono', width: '20%' }
-      }
+        style: { fontFamily: 'Space Mono', width: '16%' }
+      }, {
+        label: 'Loan Status',
+        key: 'status',
+        style: { fontFamily: 'Space Mono', width: '16%' }
+      },
     ],
     data: {
       key: 'lent',
@@ -232,23 +236,27 @@ const CreateTables = (web3) => ([
         label: 'Amount',
         key: 'amount',
         precision: 2,
-        style: { fontFamily: 'Space Mono', width: '25%' }
+        style: { fontFamily: 'Space Mono', width: '21%' }
       }, {
         label: 'Total Interest ',
         key: 'totalInterest',
         precision: 5,
-        style: { fontFamily: 'Space Mono', width: '30%' }
+        style: { fontFamily: 'Space Mono', width: '26%' }
       }, {
         label: 'Term',
         key: 'term',
         filter: 'calcTerm',
-        style: { fontFamily: 'Space Mono', width: '25%' }
+        style: { fontFamily: 'Space Mono', width: '21%' }
       }, {
         label: 'Loan Health',
         key: 'health',
         suffix: '%',
-        style: { fontFamily: 'Space Mono', width: '20%' }
-      }
+        style: { fontFamily: 'Space Mono', width: '16%' }
+      }, {
+        label: 'Loan Status',
+        key: 'status',
+        style: { fontFamily: 'Space Mono', width: '16%' }
+      },
     ],
     data: {
       key: 'borrowed',

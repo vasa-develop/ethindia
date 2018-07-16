@@ -150,6 +150,7 @@ class List extends Component {
     const { data, classes } = this.props
     const filteredData = this.getData(data)
     const { modalAmountIsOpen, topupCollateralAmount, currentData } = this.state
+    console.log(filteredData)
 
     return (
       <div className="ListWrapper">
