@@ -212,6 +212,12 @@ const CreateTables = (web3) => ([
       label: '3-dot',
       type: 'dropdown',
       items: [
+        {
+          label: 'Liquidate',
+          slot: 'onLiquidatePosition',
+          param: { isLend: false },
+          disabled: checkLoanLiquidate,
+        },
       ]
     }
   }, {

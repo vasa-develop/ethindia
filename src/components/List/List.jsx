@@ -102,7 +102,7 @@ class List extends Component {
       (err, hash) => {
         if (err) return
         console.log(`Reload Loan with address of <${currentData.address}>`)
-        methods.getPositions(currentData.address)
+        setTimeout(methods.getPositions, 5000, currentData.address)
       }
     )
   }
@@ -124,16 +124,33 @@ class List extends Component {
   }
 
   onLiquidatePosition(data, param) {
+    const { methods } = this.props
     console.log(data, param)
     // Contract(
     //   WranglerLoanRegistryABI,
     //   loanContractInstance.owner())
     //   .liquidate(address(loan), lenderAmount, borrowerAmount)
     //   .send({ from: userAddress })
+    data.origin.LoanContract.liquidate(
+      data.origin.collateralToken,
+      { from: data.origin.userAddress },
+      (err, hash) => {
+        if (err) return
+        console.log(hash)
+        setTimeout(methods.getPositions, 5000, data.address)
+      }
+    )
   }
 
   onRepayLoan(data, param) {
+    const { methods } = this.props
     console.log(data, param)
+    // loan.close.send({from: userAddress})
+    methods.onClosePosition(data, (err, hash) => {
+      if (err) return
+      console.log(hash)
+      setTimeout(methods.getPositions, 5000)
+    })
   }
 
   onClosePosition(data, param) {
