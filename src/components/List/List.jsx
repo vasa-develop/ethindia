@@ -89,9 +89,22 @@ class List extends Component {
     this.closeModal('modalAmountIsOpen')
     // loanContractInstance.topupCollateral(topupCollateralAmount).send({from: userAddress})
 
-    const { address } = this.props
-    const { currentData, topupCollateralAmount } = this.state
+    const { address, methods } = this.props
+    const { currentData } = this.state
     const { web3 } = window
+    const data = currentData.origin;
+
+    const topUpCollateralAmount = web3.toWei(this.state.topupCollateralAmount, 'ether')
+    data.LoanContract.topUp(
+      data.collateralToken,
+      topUpCollateralAmount,
+      { from: data.userAddress },
+      (err, hash) => {
+        if (err) return
+        console.log(`Reload Loan with address of <${currentData.address}>`)
+        methods.getPositions(currentData.address)
+      }
+    )
   }
 
   // Slots
@@ -117,6 +130,10 @@ class List extends Component {
     //   loanContractInstance.owner())
     //   .liquidate(address(loan), lenderAmount, borrowerAmount)
     //   .send({ from: userAddress })
+  }
+
+  onRepayLoan(data, param) {
+    console.log(data, param)
   }
 
   onClosePosition(data, param) {
@@ -191,17 +208,21 @@ class List extends Component {
                     {
                       data.action.label === '3-dot'
                         ?
-                        <Dropdown isOpen={this.state.dropdownOpen[index]} toggle={this.toggle(index)}>
-                          <DropdownToggle style={data.action.style} className="close three-dot" />
-                          <DropdownMenu>
-                            {
-                              data.action.items.map(item => (
-                                <DropdownItem disabled={item.disabled(d)} onClick={() => this.onAction(item, d)}>{item.label}</DropdownItem>
-                              ))
-                            }
-                          </DropdownMenu>
-                        </Dropdown>
-                        // <button style={data.action.style} className="close three-dot"></button>
+                        data.action.items.filter(item => !item.disabled(d)).length > 0 ?
+                          <Dropdown isOpen={this.state.dropdownOpen[index]} toggle={this.toggle(index)}>
+                            <DropdownToggle style={data.action.style} className="close three-dot" />
+                            <DropdownMenu>
+                              {
+                                data.action.items
+                                  .filter(item => !item.disabled(d))
+                                  .map(item => (
+                                    <DropdownItem disabled={item.disabled(d)} onClick={() => this.onAction(item, d)}>{item.label}</DropdownItem>
+                                  ))
+                              }
+                            </DropdownMenu>
+                          </Dropdown>
+                          // <button style={data.action.style} className="close three-dot"></button>
+                          : null
                         :
                         <button style={data.action.style} className={data.action.key} onClick={() => this.onAction(data.action, d)}>{data.action.label}</button>
                     }

@@ -57,14 +57,14 @@ export function FetchAllowanceByToken(payload, callback) {
 }
 
 export function FetchLoanPositions(payload, callback) {
-  const { web3, address, LoanRegistry, Loan } = payload
+  const { web3, address, LoanRegistry, Loan, specificAddress, oldPostions } = payload
   const LoanABI = Loan.abi
 
   LoanRegistry.getLoanCounts(address, async (err, res) => {
     if (err) return callback(err)
 
     const counts = res.map(item => item.toNumber())
-    const positions = []
+    let positions = []
 
     for (let i = 0; i < counts[0]; i++) {
       const response = await new Promise((resolve, reject) => {
@@ -89,6 +89,10 @@ export function FetchLoanPositions(payload, callback) {
         type: 'borrowed',
         address: response
       })
+    }
+
+    if (specificAddress) {
+      postions = positions.filter(position => position.address !== specificAddress)
     }
 
     for (let i = 0; i < positions.length; i++) {
@@ -155,6 +159,12 @@ export function FetchLoanPositions(payload, callback) {
           resolve(result.toString())
         })
       })
+      const collateralToken = await new Promise((resolve, reject) => {
+        LoanContract.collateralToken((err, result) => {
+          if (err) return reject(err)
+          resolve(result.toString())
+        })
+      })
 
       position.loanNumber = address
       position.amount = loanAmountBorrowed
@@ -185,8 +195,14 @@ export function FetchLoanPositions(payload, callback) {
         userAddress: address,
         loanStatus,
         owner,
+        collateralToken,
       }
     }
+
+    if (specificAddress) {
+      positions = positions.concat(oldPostions.lent, oldPostions.borrowed);
+    }
+
     const activePositions = positions.filter(position => position.origin.loanStatus !== Constants.LOAN_STATUS_DEACTIVATED)
 
     callback(null, {

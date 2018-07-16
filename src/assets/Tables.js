@@ -7,7 +7,7 @@ const checkLoanLiquidate = (data) => {
 }
 
 const checkLoanClose = (data) => {
-  return data.origin.userAddress !== data.origin.borrower
+  return data.origin.userAddress !== data.origin.borrower && data.origin.expiresAtTimestamp < Date.now()
 }
 
 const CreateTables = (web3) => ([
@@ -212,17 +212,6 @@ const CreateTables = (web3) => ([
       label: '3-dot',
       type: 'dropdown',
       items: [
-        {
-          label: 'Liquidate',
-          slot: 'onLiquidatePosition',
-          param: { isLend: true },
-          disabled: checkLoanLiquidate,
-        }, {
-          label: 'Topup with collateral',
-          slot: 'onTopupWithCollateral',
-          param: { isLend: true },
-          disabled: checkLoanClose,
-        },
       ]
     }
   }, {
@@ -276,14 +265,14 @@ const CreateTables = (web3) => ([
           param: { isLend: false },
           disabled: checkLoanLiquidate,
         }, {
-          label: 'Topup with collateral',
+          label: 'Top up collateral',
           slot: 'onTopupWithCollateral',
           param: { isLend: true },
           disabled: checkLoanClose,
         }, {
-          label: 'Close',
-          slot: 'onClosePosition',
-          param: { isLend: false },
+          label: 'Repay Loan',
+          slot: 'onRepayLoan',
+          param: { isLend: true },
           disabled: checkLoanClose,
         },
       ]
