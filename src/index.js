@@ -5,7 +5,6 @@ import {
   Route,
   Switch
 } from 'react-router-dom'
-import { Web3Provider } from 'react-web3'
 import { Provider } from 'react-redux'
 
 import App from './App'
@@ -15,13 +14,10 @@ import './index.scss'
 
 ReactDOM.render((
   <Provider>
-    <Web3Provider>
-      <HashRouter>
-        <Switch>
-          <Route path="/" component={App} />
-        </Switch>
-      </HashRouter>
-    </Web3Provider>
-    {/* <App /> */}
+    <HashRouter>
+      <Switch>
+        <Route path="/" component={App} />
+      </Switch>
+    </HashRouter>
   </Provider>
 ), document.getElementById('root'))
