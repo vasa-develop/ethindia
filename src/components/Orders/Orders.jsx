@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import axios from 'axios'
 import PropTypes from 'prop-types'
 
-import { Lendroid } from '../_lendroid-js'
+import * as lendroid from 'lendroid'
 
 import TableGroup from '../TableGroup/TableGroup'
 import ListGroup from '../ListGroup/ListGroup'
@@ -27,7 +27,7 @@ class Orders extends Component {
 
     const { address, network } = props
     this.state = {
-      LendroidJS: new Lendroid({ web3: window.web3, metamask: { address, network } }),
+      LendroidJS: new lendroid.Lendroid({}), //new Lendroid({ web3: window.web3, metamask: { address, network } }),
       syncData: {},
     }
 
@@ -96,6 +96,7 @@ class Orders extends Component {
       onPostLoans: LendroidJS.onPostLoans,
       onFillLoan: LendroidJS.onFillLoan,
       onClosePosition: LendroidJS.onClosePosition,
+      onTopUpPosition: LendroidJS.onTopUpPosition,
       onDeleteOrder: LendroidJS.onDeleteOrder,
       onCancelOrder: LendroidJS.onCancelOrder,
     }
