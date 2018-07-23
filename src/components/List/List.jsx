@@ -93,7 +93,7 @@ class List extends Component {
     const { currentData } = this.state
     const { web3 } = window
     const data = currentData.origin;
-    const topUpCollateralAmount = web3.toWei(this.state.topupCollateralAmount, 'ether')
+    const topupCollateralAmount = web3.toWei(this.state.topupCollateralAmount, 'ether')
 
     methods.onTopUpPosition(data, topupCollateralAmount,
       (err, hash) => {
