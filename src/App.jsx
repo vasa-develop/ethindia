@@ -37,9 +37,12 @@ class App extends Component {
         else resolve(Number(result))
       })
     })
-    this.setState({
-      web3: { address, network }
-    })
+
+    if (address !== this.state.address || network !== this.state.network) {
+      this.setState({
+        web3: { address, network }
+      })
+    }
   }
 
   render() {
@@ -51,11 +54,11 @@ class App extends Component {
           <Switch>
             {
               web3.network > 0 ?
-              <Route exact path='/'
-                render={() => <Orders address={web3.address} network={web3.network} />}
-              />
-              :
-              <div>No Metamask Detected</div>
+                <Route exact path='/'
+                  render={() => <Orders address={web3.address} network={web3.network} />}
+                />
+                :
+                <div>No Metamask Detected</div>
             }
           </Switch>
         </div>
