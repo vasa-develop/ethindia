@@ -115,8 +115,8 @@ class FormTab extends Component {
       postData.borrower = !isLend ? address : ''
 
       postData.creatorSalt = '0x' + this.randHex(40)
-      postData.collateralToken = contracts.contracts ? contracts.contracts.WETH.address : ''
-      postData.loanToken = contracts.contracts ? contracts.contracts.DAI.address : ''
+      postData.collateralToken = contracts.contracts ? contracts.contracts.WETH._address : ''
+      postData.loanToken = contracts.contracts ? contracts.contracts.DAI._address : ''
       postData.relayer = ''
       postData.collateralAmount = web3.toWei(0, 'ether')
 

@@ -93,12 +93,9 @@ class List extends Component {
     const { currentData } = this.state
     const { web3 } = window
     const data = currentData.origin;
+    const topupCollateralAmount = web3.toWei(this.state.topupCollateralAmount, 'ether')
 
-    const topUpCollateralAmount = web3.toWei(this.state.topupCollateralAmount, 'ether')
-    data.LoanContract.topUp(
-      data.collateralToken,
-      topUpCollateralAmount,
-      { from: data.userAddress },
+    methods.onTopUpPosition(data, topupCollateralAmount,
       (err, hash) => {
         if (err) return
         console.log(`Reload Loan with address of <${currentData.address}>`)
@@ -184,7 +181,6 @@ class List extends Component {
     const { data, classes } = this.props
     const filteredData = this.getData(data)
     const { modalAmountIsOpen, topupCollateralAmount, currentData } = this.state
-    console.log(filteredData)
 
     return (
       <div className="ListWrapper">

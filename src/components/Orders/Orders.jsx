@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import PropTypes from 'prop-types'
 
-import { Lendroid } from '../_lendroid-js'
+import * as lendroid from 'lendroid'
 
 import TableGroup from '../TableGroup/TableGroup'
 import ListGroup from '../ListGroup/ListGroup'
@@ -18,18 +17,14 @@ import './Orders.scss'
 const Tables = CreateTables(window.web3)
 
 class Orders extends Component {
-  static propTypes = {
-    contracts: PropTypes.object.isRequired
-  }
-
   constructor(props) {
     super(props)
 
     const { address, network } = props
     this.state = {
-      LendroidJS: new Lendroid({ web3: window.web3, metamask: { address, network } }),
-      syncData: {},
+      LendroidJS: new lendroid.Lendroid({ metamask: { address, network } }),
     }
+    this.state.LendroidJS.reset({ address, network }, () => this.forceUpdate())
 
     this.apiPost = this.apiPost.bind(this)
   }
@@ -76,7 +71,7 @@ class Orders extends Component {
   }
 
   render() {
-    const { web3 } = this.context
+    const { address } = this.props
     const { LendroidJS } = this.state
     const { loading, orders, exchangeRates, contracts } = LendroidJS
     const offers = orders.orders
@@ -96,6 +91,7 @@ class Orders extends Component {
       onPostLoans: LendroidJS.onPostLoans,
       onFillLoan: LendroidJS.onFillLoan,
       onClosePosition: LendroidJS.onClosePosition,
+      onTopUpPosition: LendroidJS.onTopUpPosition,
       onDeleteOrder: LendroidJS.onDeleteOrder,
       onCancelOrder: LendroidJS.onCancelOrder,
     }
@@ -103,31 +99,27 @@ class Orders extends Component {
     return (
       <div className="OrdersWrapper">
         <Header
-          address={web3.selectedAccount} contracts={contracts}
+          address={address} contracts={contracts}
         />
         <FormTab methods={methods}
-          address={web3.selectedAccount} contracts={contracts}
+          address={address} contracts={contracts}
           loading={loading} />
         <TableGroup methods={methods}
-          address={web3.selectedAccount}
+          address={address}
           data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }}
           loading={loading.orders} />
         <ListGroup methods={methods}
-          address={web3.selectedAccount} contracts={contracts}
+          address={address} contracts={contracts}
           currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }}
           loading={loading.orders}
           style={{ marginBottom: 29 }} />
         <ListGroup methods={methods}
-          address={web3.selectedAccount} contracts={contracts}
+          address={address} contracts={contracts}
           currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[4], right: Tables[5], data: positions }}
           loading={loading.positions} />
       </div>
     )
   }
-}
-
-Orders.contextTypes = {
-  web3: PropTypes.object
 }
 
 export default Orders
