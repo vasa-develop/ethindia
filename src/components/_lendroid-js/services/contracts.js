@@ -276,7 +276,7 @@ export function FillLoan(payload, callback) {
 export function ClosePosition(payload, callback) {
   const { data } = payload
 
-  data.origin.LoanContract.close(data.origin.userAddress, (err, hash) => {
+  data.origin.LoanContract.close(data.origin.collateralToken, (err, hash) => {
     if (err) callback(null)
     setTimeout(callback, 5000, null, hash)
   })

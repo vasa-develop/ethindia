@@ -15,25 +15,25 @@ export const ContractAddresses = {
     42: '0xC4375B7De8af5a38a93548eb8453a498222C4fF2',
     def: ABIs.DAIABI
   },
-  LoanOfferRegistry: {
-    42: '0xfc3215de7e7a013d242bc8b0ae1a41f63539e6ec',
-    def: ABIs.LoanOfferRegisteryABI
+  TokenTransferProxy: {
+    42: '0xf1dbcef9820a758eead322f525e38c9289dc09d0',
+    def: ABIs.TokenTransferProxyABI
   },
   LoanRegistry: {
-    42: '0xc31ea8c26a74490c70e98c0badf37bb7ec97cc0c',
+    42: '0x01473ca00ecf85679651b8bb0bde4d4d255a73e5',
     def: ABIs.LoanRegistryABI
+  },
+  LoanOfferRegistry: {
+    42: '0x8251b8e11448f0ca454786b59e87d35ae30ab504',
+    def: ABIs.LoanOfferRegisteryABI
+  },
+  WranglerLoanRegistry: {
+    42: '0x2f95d4cdad3a040c066babc832891a8677d95d3f',
+    def: ABIs.WranglerLoanRegistryABI
   },
   Loan: {
     42: '0x0000000000000000000000000000000000000000',
     def: ABIs.LoanABI
-  },
-  WranglerLoanRegistry: {
-    42: '0x0000000000000000000000000000000000000000',
-    def: ABIs.WranglerLoanRegistryABI
-  },
-  TokenTransferProxy: {
-    42: '0xcc94204e4a20c3c371e6bad853f04f079d4b1540',
-    def: ABIs.TokenTransferProxyABI
   }
 }
 
