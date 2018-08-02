@@ -150,6 +150,18 @@ class List extends Component {
     })
   }
 
+  onCleanContract(data, param) {
+    const { methods } = this.props
+    console.log(data, param)
+    // WranglerLoanRegistry.releaseContract(loan.address, {from: address})
+    methods.onCleanContract(data, (err, hash) => {
+      if (err) return
+      console.log(hash)
+      setTimeout(methods.getPositions, 5000)
+    })
+
+  }
+
   onClosePosition(data, param) {
     const { methods } = this.props
     console.log(data, param)

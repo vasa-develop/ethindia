@@ -10,6 +10,10 @@ const checkLoanClose = (data) => {
   return data.origin.userAddress !== data.origin.borrower && data.origin.expiresAtTimestamp < Date.now()
 }
 
+const checkLoanClosed = (data) => {
+  return data.origin.userAddress !== data.origin.borrower && data.status === 'Closed'
+}
+
 const CreateTables = (web3) => ([
   {
     title: 'Lend Order Book',
@@ -280,6 +284,11 @@ const CreateTables = (web3) => ([
           slot: 'onRepayLoan',
           param: { isLend: true },
           disabled: checkLoanClose,
+        }, {
+          label: 'Clean Contract',
+          slot: 'onCleanContract',
+          param: { isLend: true },
+          disabled: checkLoanClosed,
         },
       ]
     }

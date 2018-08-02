@@ -91,6 +91,7 @@ class Orders extends Component {
       onPostLoans: LendroidJS.onPostLoans,
       onFillLoan: LendroidJS.onFillLoan,
       onClosePosition: LendroidJS.onClosePosition,
+      onCleanContract: LendroidJS.onCleanContract,
       onTopUpPosition: LendroidJS.onTopUpPosition,
       onDeleteOrder: LendroidJS.onDeleteOrder,
       onCancelOrder: LendroidJS.onCancelOrder,
