@@ -3,13 +3,39 @@ import React, { Component } from 'react'
 import './FormInput.scss'
 
 class FormInput extends Component {
-  onChange(index) {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentInput: null,
+      currentValue: 0,
+    }
+  }
+
+  onBlur(index) {
     return (e) => {
       const { data, val, onChange } = this.props
       const values = this.getValues(data, val)
       values[index + 1] = this.doubleDot(e.target.value)
       onChange(data.key, this.getValue(values), data.affection)
+      this.setState({
+        currentInput: null,
+      })
     }
+  }
+
+  onFocus(item, index, value) {
+    return e => {
+      this.setState({
+        currentInput: JSON.stringify(item) + index,
+        currentValue: value,
+      });
+    }
+  }
+
+  onChange(e) {
+    this.setState({
+      currentValue: e.target.value,
+    })
   }
 
   doubleDot(value) {
@@ -65,32 +91,42 @@ class FormInput extends Component {
 
   render() {
     const { data, val, loading } = this.props
+    const { currentInput, currentValue } = this.state;
     const values = this.getValues(data, val)
     const inputCount = values[0]
 
     return (
       <div className="FormInputWrapper">
         {
-          data.inputs.map((item, index) => (
-            <div className={`FormInput ${item.arrow ? 'Arrow' : ''}`} style={{ width: `calc(${100 / inputCount}% - ${inputCount > 0 ? '5px' : '0px'})` }}>
-              {
-                loading
-                  ?
-                  <div className="Loading">
-                    <div className="Loader" />
-                  </div>
-                  :
-                  null
-              }
-              <input value={values[index + 1]} onChange={this.onChange(index)} min="0" max={item.max} readOnly={data.readOnly} />
-              {
-                item.arrow || !item.suffix ? null
-                  : <div class="Suffix">{item.suffix}</div>
-              }
-              <div className="after" onClick={this.onStep(index, true)} />
-              <div className="before" onClick={this.onStep(index, false)} />
-            </div>
-          ))
+          data.inputs.map((item, index) => {
+            const id = JSON.stringify(item) + index
+            const value = currentInput === id ? currentValue : values[index + 1]
+            return (
+              <div className={`FormInput ${item.arrow ? 'Arrow' : ''}`} style={{ width: `calc(${100 / inputCount}% - ${inputCount > 0 ? '5px' : '0px'})` }}>
+                {
+                  loading
+                    ?
+                    <div className="Loading">
+                      <div className="Loader" />
+                    </div>
+                    :
+                    null
+                }
+                <input
+                  value={value}
+                  onFocus={this.onFocus(item, index, values[index + 1])}
+                  onChange={this.onChange.bind(this)}
+                  onBlur={this.onBlur(index)}
+                  min="0" max={item.max} readOnly={data.readOnly} />
+                {
+                  item.arrow || !item.suffix ? null
+                    : <div class="Suffix">{item.suffix}</div>
+                }
+                <div className="after" onClick={this.onStep(index, true)} />
+                <div className="before" onClick={this.onStep(index, false)} />
+              </div>
+            )
+          })
         }
       </div>
     )
