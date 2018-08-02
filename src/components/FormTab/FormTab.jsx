@@ -61,7 +61,7 @@ class FormTab extends Component {
   }
 
   isValid(isLend = true) {
-    const { contracts } = this.props
+    const { contracts, currentDAIExchangeRate } = this.props
     const formData = this.state
     contracts.loanAmountOffered = formData.loanAmountOffered
 
@@ -70,7 +70,7 @@ class FormTab extends Component {
       if (item.required && Number(formData[item.key]) === 0) {
         valid = false
       } else if (item.validation) {
-        if (!item.validation(contracts)) valid = false
+        if (!item.validation(contracts, currentDAIExchangeRate)) valid = false
       }
     })
     return valid

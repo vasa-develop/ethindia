@@ -13,7 +13,7 @@ export function FormInputs(isLend) {
         unit: 1
       }],
       required: true,
-      validation: (contracts) => (contracts.loanAmountOffered <= (contracts.allowances ? (contracts.allowances[isLend ? 'DAI' : 'WETH'] || 0) : 0))
+      validation: (contracts, rate = 1) => ((contracts.loanAmountOffered / (isLend ? 1 : rate)) <= (contracts.allowances ? (contracts.allowances[isLend ? 'DAI' : 'WETH'] || 0) : 0))
     }, {
       key: 'interestRatePerDay',
       label: 'Daily Rate',

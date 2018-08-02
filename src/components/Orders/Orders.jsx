@@ -77,7 +77,7 @@ class Orders extends Component {
     const offers = orders.orders
     const myLendOffers = orders.myOrders.lend
     const myBorrowOffers = orders.myOrders.borrow
-    const { currentWETHExchangeRate } = exchangeRates
+    const { currentWETHExchangeRate, currentDAIExchangeRate } = exchangeRates
     const positions = this.getPositionsData()
     const methods = {
       // Form Tab
@@ -104,6 +104,7 @@ class Orders extends Component {
         />
         <FormTab methods={methods}
           address={address} contracts={contracts}
+          currentDAIExchangeRate={currentDAIExchangeRate}
           loading={loading} />
         <TableGroup methods={methods}
           address={address}
