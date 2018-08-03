@@ -3,15 +3,15 @@ const fillZero = (len = 40) => {
 }
 
 const checkLoanLiquidate = (data) => {
-  return data.origin.userAddress !== data.origin.wrangler
+  return data.origin.userAddress.toLowerCase() !== data.origin.wrangler.toLowerCase()
 }
 
 const checkLoanClose = (data) => {
-  return data.origin.userAddress !== data.origin.borrower && data.origin.expiresAtTimestamp < Date.now()
+  return !((data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.origin.expiresAtTimestamp > Date.now())
 }
 
 const checkLoanClosed = (data) => {
-  return data.origin.userAddress !== data.origin.borrower && data.status === 'Closed'
+  return !((data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.status === 'Closed')
 }
 
 const CreateTables = (web3) => ([
