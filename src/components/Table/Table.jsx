@@ -120,44 +120,52 @@ class Table extends Component {
   }
 
   onSubmitOrder() {
-    this.closeModal('modalAmountIsOpen')
+    this.setState({
+      isLoading: true
+    }, () => {
+      setTimeout(() => {
+        const { address, methods } = this.props
+        const { currentData, fillLoanAmount } = this.state
+        const { web3 } = window
+        const _this = this
 
-    const { address, methods } = this.props
-    const { currentData, fillLoanAmount } = this.state
-    const { web3 } = window
-    const _this = this
+        const postData = Object.assign({
+          filler: address,
+          fillLoanAmount: window.web3.toWei(fillLoanAmount, 'ether')
+        }, currentData)
 
-    const postData = Object.assign({
-      filler: address,
-      fillLoanAmount: window.web3.toWei(fillLoanAmount, 'ether')
-    }, currentData)
-
-    methods.onPostLoans(postData, (err, res) => {
-      if (err) {
-        return _this.setState({
-          postError: err
-        }, () => {
-          _this.openModal('modalIsOpen')
+        methods.onPostLoans(postData, (err, res) => {
+          if (err) {
+            return _this.setState({
+              postError: err,
+              isLoading: false,
+            }, () => {
+              _this.closeModal('modalAmountIsOpen')
+              _this.openModal('modalIsOpen')
+            })
+          }
+          if (res) {
+            const approval = res.approval
+            const result = res.data
+            Object.keys(result).forEach(key => {
+              if (key === 'expiresAtTimestamp')
+                result[key] = moment.utc(result[key] * 1000).format('YYYY-MM-DD HH:mm Z')
+              else if (result[key].toString().indexOf('0x') !== 0 && key !== 'nonce')
+                result[key] = web3.fromWei(result[key].toString(), 'ether')
+            })
+            _this.setState({
+              postError: null,
+              result,
+              approval,
+              isLoading: false,
+            }, () => {
+              _this.closeModal('modalAmountIsOpen')
+              _this.openModal('modalIsOpen')
+            })
+          }
         })
-      }
-      if (res) {
-        const approval = res.approval
-        const result = res.data
-        Object.keys(result).forEach(key => {
-          if (key === 'expiresAtTimestamp')
-            result[key] = moment.utc(result[key] * 1000).format('YYYY-MM-DD HH:mm Z')
-          else if (result[key].toString().indexOf('0x') !== 0 && key !== 'nonce')
-            result[key] = web3.fromWei(result[key].toString(), 'ether')
-        })
-        _this.setState({
-          postError: null,
-          result,
-          approval,
-        }, () => {
-          _this.openModal('modalIsOpen')
-        })
-      }
-    })
+      }, 500)
+    });
   }
 
   // Slots
@@ -289,6 +297,7 @@ class Table extends Component {
           max={currentData ? currentData.loanAmount : 0}
           suffix={param.isLend ? 'DAI' : 'DAI'}
           disabled={fillLoanAmount > (currentData ? currentData.loanAmount : 0)}
+          isLoading={isLoading}
         />
       </div >
     )

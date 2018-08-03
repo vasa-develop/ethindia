@@ -31,6 +31,12 @@ class InputModal extends Component {
           style={customStyles}
           contentLabel={props.contentLabel}
         >
+          {
+            props.isLoading &&
+            <div className="Loading">
+              <div className="Loader" />
+            </div>
+          }
           <h2>{props.title}</h2>
           <button onClick={props.onRequestClose}></button>
           <div className="ModalBody">
