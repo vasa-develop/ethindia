@@ -243,7 +243,7 @@ class FormTab extends Component {
               <div className="Label">Wrangler</div>
               <select>
                 <option disabled>Wrangler Name</option>
-                <option default>Lendroid</option>
+                <option default>Default Simple Wrangler</option>
               </select>
             </div>
             <table cellspacing="15">
