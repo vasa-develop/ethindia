@@ -233,15 +233,15 @@ class List extends Component {
                     {
                       data.action.label === '3-dot'
                         ?
-                        data.action.items.filter(item => !item.disabled(d)).length > 0 ?
+                        data.action.items.filter(item => item.enabled(d)).length > 0 ?
                           <Dropdown isOpen={this.state.dropdownOpen[index]} toggle={this.toggle(index)}>
                             <DropdownToggle style={data.action.style} className="close three-dot" />
                             <DropdownMenu>
                               {
                                 data.action.items
-                                  .filter(item => !item.disabled(d))
+                                  .filter(item => item.enabled(d))
                                   .map(item => (
-                                    <DropdownItem disabled={item.disabled(d)} onClick={() => this.onAction(item, d)}>{item.label}</DropdownItem>
+                                    <DropdownItem onClick={() => this.onAction(item, d)}>{item.label}</DropdownItem>
                                   ))
                               }
                             </DropdownMenu>

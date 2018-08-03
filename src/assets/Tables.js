@@ -3,15 +3,15 @@ const fillZero = (len = 40) => {
 }
 
 const checkLoanLiquidate = (data) => {
-  return data.origin.userAddress.toLowerCase() !== data.origin.wrangler.toLowerCase()
+  return data.origin.userAddress.toLowerCase() === data.origin.wrangler.toLowerCase()
 }
 
 const checkLoanClose = (data) => {
-  return !((data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.origin.expiresAtTimestamp > Date.now())
+  return (data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.origin.expiresAtTimestamp > Date.now()
 }
 
 const checkLoanClosed = (data) => {
-  return !((data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.status === 'Closed')
+  return (data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.status === 'Closed'
 }
 
 const CreateTables = (web3) => ([
@@ -220,7 +220,7 @@ const CreateTables = (web3) => ([
           label: 'Liquidate',
           slot: 'onLiquidatePosition',
           param: { isLend: false },
-          disabled: checkLoanLiquidate,
+          enabled: checkLoanLiquidate,
         },
       ]
     }
@@ -273,22 +273,22 @@ const CreateTables = (web3) => ([
           label: 'Liquidate',
           slot: 'onLiquidatePosition',
           param: { isLend: false },
-          disabled: checkLoanLiquidate,
+          enabled: checkLoanLiquidate,
         }, {
           label: 'Top up collateral',
           slot: 'onTopupWithCollateral',
           param: { isLend: true },
-          disabled: checkLoanClose,
+          enabled: checkLoanClose,
         }, {
           label: 'Repay Loan',
           slot: 'onRepayLoan',
           param: { isLend: true },
-          disabled: checkLoanClose,
+          enabled: checkLoanClose,
         }, {
           label: 'Clean Contract',
           slot: 'onCleanContract',
           param: { isLend: true },
-          disabled: checkLoanClosed,
+          enabled: checkLoanClosed,
         },
       ]
     }
