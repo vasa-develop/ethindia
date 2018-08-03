@@ -93,10 +93,10 @@ const CreateTables = (web3) => ([
     title: 'MY LEND ORDERS',
     headers: [
       {
-        label: 'Loan Number',
-        key: 'lender',
-        style: { fontFamily: 'Space Mono', width: '100%' }
-      }, {
+      //   label: 'Loan Number',
+      //   key: 'lender',
+      //   style: { fontFamily: 'Space Mono', width: '100%' }
+      // }, {
         label: 'Amount',
         key: 'loanAmount',
         precision: 2,
@@ -134,10 +134,10 @@ const CreateTables = (web3) => ([
     title: 'MY BORROW ORDERS',
     headers: [
       {
-        label: 'Loan Number',
-        key: 'borrower',
-        style: { fontFamily: 'Space Mono', width: '100%' }
-      }, {
+      //   label: 'Loan Number',
+      //   key: 'borrower',
+      //   style: { fontFamily: 'Space Mono', width: '100%' }
+      // }, {
         label: 'Amount',
         key: 'loanAmount',
         precision: 2,
@@ -176,7 +176,7 @@ const CreateTables = (web3) => ([
     headers: [
       {
         label: 'Loan Number',
-        key: 'loanNumber',
+        key: 'address',
         style: { fontFamily: 'Space Mono', width: '100%' }
       }, {
         label: 'Amount',
@@ -229,7 +229,7 @@ const CreateTables = (web3) => ([
     headers: [
       {
         label: 'Loan Number',
-        key: 'loanNumber',
+        key: 'address',
         style: { fontFamily: 'Space Mono', width: '100%' }
       }, {
         label: 'Amount',

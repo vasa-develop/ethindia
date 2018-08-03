@@ -287,7 +287,7 @@ class Table extends Component {
           contentLabel={`Amount to ${param.isLend ? 'Fill' : 'Select'}`}
           value={fillLoanAmount}
           max={currentData ? currentData.loanAmount : 0}
-          suffix={param.isLend ? 'DAI' : 'WETH'}
+          suffix={param.isLend ? 'DAI' : 'DAI'}
           disabled={fillLoanAmount > (currentData ? currentData.loanAmount : 0)}
         />
       </div >
