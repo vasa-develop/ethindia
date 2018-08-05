@@ -288,11 +288,11 @@ class Table extends Component {
         </Modal>
         <InputModal
           isOpen={modalAmountIsOpen}
-          title={`Amount to ${param.isLend ? 'Fill' : 'Select'}`}
+          title={`Amount to ${param.isLend ? 'Borrow' : 'Lend'}`}
           onRequestClose={() => this.closeModal('modalAmountIsOpen')}
           onChange={(e) => this.setState({ fillLoanAmount: e.target.value })}
           onSubmit={this.onSubmitOrder.bind(this)}
-          contentLabel={`Amount to ${param.isLend ? 'Fill' : 'Select'}`}
+          contentLabel={`Amount to ${param.isLend ? 'Borrow' : 'Lend'}`}
           value={fillLoanAmount}
           max={currentData ? currentData.loanAmount : 0}
           suffix={param.isLend ? 'DAI' : 'DAI'}

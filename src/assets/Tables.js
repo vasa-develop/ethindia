@@ -3,15 +3,15 @@ const fillZero = (len = 40) => {
 }
 
 const checkLoanLiquidate = (data) => {
-  return data.origin.userAddress.toLowerCase() === data.origin.wrangler.toLowerCase()
+  return data.origin.userAddress.toLowerCase() !== data.origin.wrangler.toLowerCase()
 }
 
 const checkLoanClose = (data) => {
-  return (data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.origin.expiresAtTimestamp > Date.now()
+  return !((data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.origin.expiresAtTimestamp > Date.now())
 }
 
 const checkLoanClosed = (data) => {
-  return (data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.status === 'Closed'
+  return !((data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.status === 'Closed')
 }
 
 const CreateTables = (web3) => ([
@@ -48,7 +48,7 @@ const CreateTables = (web3) => ([
       )
     },
     action: {
-      label: 'Fill',
+      label: 'Borrow',
       slot: 'onOrder',
       param: { isLend: true }
     }
@@ -85,7 +85,7 @@ const CreateTables = (web3) => ([
       )
     },
     action: {
-      label: 'Select',
+      label: 'Lend',
       slot: 'onOrder',
       param: { isLend: false }
     }
@@ -93,10 +93,6 @@ const CreateTables = (web3) => ([
     title: 'MY LEND ORDERS',
     headers: [
       {
-      //   label: 'Loan Number',
-      //   key: 'lender',
-      //   style: { fontFamily: 'Space Mono', width: '100%' }
-      // }, {
         label: 'Amount',
         key: 'loanAmount',
         precision: 2,
@@ -134,10 +130,6 @@ const CreateTables = (web3) => ([
     title: 'MY BORROW ORDERS',
     headers: [
       {
-      //   label: 'Loan Number',
-      //   key: 'borrower',
-      //   style: { fontFamily: 'Space Mono', width: '100%' }
-      // }, {
         label: 'Amount',
         key: 'loanAmount',
         precision: 2,
@@ -176,7 +168,7 @@ const CreateTables = (web3) => ([
     headers: [
       {
         label: 'Loan Number',
-        key: 'address',
+        key: 'loanNumber',
         style: { fontFamily: 'Space Mono', width: '100%' }
       }, {
         label: 'Amount',
@@ -220,7 +212,7 @@ const CreateTables = (web3) => ([
           label: 'Liquidate',
           slot: 'onLiquidatePosition',
           param: { isLend: false },
-          enabled: checkLoanLiquidate,
+          disabled: checkLoanLiquidate,
         },
       ]
     }
@@ -229,7 +221,7 @@ const CreateTables = (web3) => ([
     headers: [
       {
         label: 'Loan Number',
-        key: 'address',
+        key: 'loanNumber',
         style: { fontFamily: 'Space Mono', width: '100%' }
       }, {
         label: 'Amount',
@@ -273,22 +265,22 @@ const CreateTables = (web3) => ([
           label: 'Liquidate',
           slot: 'onLiquidatePosition',
           param: { isLend: false },
-          enabled: checkLoanLiquidate,
+          disabled: checkLoanLiquidate,
         }, {
           label: 'Top up collateral',
           slot: 'onTopupWithCollateral',
           param: { isLend: true },
-          enabled: checkLoanClose,
+          disabled: checkLoanClose,
         }, {
           label: 'Repay Loan',
           slot: 'onRepayLoan',
           param: { isLend: true },
-          enabled: checkLoanClose,
+          disabled: checkLoanClose,
         }, {
           label: 'Clean Contract',
           slot: 'onCleanContract',
           param: { isLend: true },
-          enabled: checkLoanClosed,
+          disabled: checkLoanClosed,
         },
       ]
     }
