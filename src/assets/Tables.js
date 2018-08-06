@@ -2,16 +2,16 @@ const fillZero = (len = 40) => {
   return '0x' + (new Array(len)).fill(0).join('')
 }
 
-const checkLoanLiquidate = (data) => {
-  return data.origin.userAddress.toLowerCase() !== data.origin.wrangler.toLowerCase()
+const checkLoanCanBeLiquidated = (data) => {
+  return ((data.origin.lender && data.origin.userAddress.toLowerCase() === data.origin.lender.toLowerCase()) || data.origin.userAddress.toLowerCase() === data.origin.wrangler.toLowerCase()) && data.status === 'Open'
 }
 
-const checkLoanClose = (data) => {
-  return !((data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.origin.expiresAtTimestamp > Date.now())
+const checkLoanCanBeClosed = (data) => {
+  return (data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.status === 'Open'
 }
 
-const checkLoanClosed = (data) => {
-  return !((data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.status === 'Closed')
+const checkLoanCanBeCleaned = (data) => {
+  return (data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.status === 'Closed'
 }
 
 const CreateTables = (web3) => ([
@@ -212,7 +212,7 @@ const CreateTables = (web3) => ([
           label: 'Liquidate',
           slot: 'onLiquidatePosition',
           param: { isLend: false },
-          disabled: checkLoanLiquidate,
+          enabled: checkLoanCanBeLiquidated,
         },
       ]
     }
@@ -265,22 +265,22 @@ const CreateTables = (web3) => ([
           label: 'Liquidate',
           slot: 'onLiquidatePosition',
           param: { isLend: false },
-          disabled: checkLoanLiquidate,
+          enabled: checkLoanCanBeLiquidated,
         }, {
           label: 'Top up collateral',
           slot: 'onTopupWithCollateral',
           param: { isLend: true },
-          disabled: checkLoanClose,
+          enabled: checkLoanCanBeClosed,
         }, {
           label: 'Repay Loan',
           slot: 'onRepayLoan',
           param: { isLend: true },
-          disabled: checkLoanClose,
+          enabled: checkLoanCanBeClosed,
         }, {
           label: 'Clean Contract',
           slot: 'onCleanContract',
           param: { isLend: true },
-          disabled: checkLoanClosed,
+          enabled: checkLoanCanBeCleaned,
         },
       ]
     }
