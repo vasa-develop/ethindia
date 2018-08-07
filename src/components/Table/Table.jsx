@@ -171,7 +171,7 @@ class Table extends Component {
   // Slots
 
   onOrder(data, param) {
-    const amount = window.web3.fromWei(data.loanAmountOffered, 'ether')
+    const amount = window.web3.fromWei(data.loanAmount, 'ether')
     this.setState({
       currentData: Object.assign({ loanAmount: amount }, data),
       param,
