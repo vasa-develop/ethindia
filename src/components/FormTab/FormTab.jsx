@@ -121,6 +121,7 @@ class FormTab extends Component {
       postData.collateralAmount = web3.toWei(0, 'ether')
 
       delete postData.allowance
+      postData.offerExpiry = parseInt(postData.offerExpiry / 1000).toString();
 
       methods.onCreateOrder(postData)
     }

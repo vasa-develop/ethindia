@@ -3,7 +3,7 @@ const fillZero = (len = 40) => {
 }
 
 const checkLoanCanBeLiquidated = (data) => {
-  return ((data.origin.lender && data.origin.userAddress.toLowerCase() === data.origin.lender.toLowerCase()) || data.origin.userAddress.toLowerCase() === data.origin.wrangler.toLowerCase()) && data.status === 'Open'
+  return ((data.origin.lender && data.origin.userAddress.toLowerCase() === data.origin.lender.toLowerCase()) || data.origin.userAddress.toLowerCase() === data.origin.wrangler.toLowerCase()) && data.status === 'Active'
 }
 
 const checkLoanCanBeClosed = (data) => {
