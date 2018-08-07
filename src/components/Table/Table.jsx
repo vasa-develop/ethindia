@@ -107,7 +107,7 @@ class Table extends Component {
       methods.onFillLoan(approval, (err, result) => {
         console.log('Fill Loan', err, result)
         if (result) {
-          methods.onDeleteOrder(currentData.id, (err, res) => {
+          methods.onFillOrderServer(currentData.id, approval["_values"][12], (err, res) => {
             setTimeout(methods.getOffers, 1000)
             setTimeout(methods.getPositions, 3000)
           })

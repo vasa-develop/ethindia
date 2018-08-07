@@ -7,7 +7,7 @@ const checkLoanCanBeLiquidated = (data) => {
 }
 
 const checkLoanCanBeClosed = (data) => {
-  return (data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.status === 'Open'
+  return (data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.status === 'Active'
 }
 
 const checkLoanCanBeCleaned = (data) => {

@@ -93,6 +93,7 @@ class Orders extends Component {
       onClosePosition: LendroidJS.onClosePosition,
       onCleanContract: LendroidJS.onCleanContract,
       onTopUpPosition: LendroidJS.onTopUpPosition,
+      onFillOrderServer: LendroidJS.onFillOrderServer,
       onDeleteOrder: LendroidJS.onDeleteOrder,
       onCancelOrder: LendroidJS.onCancelOrder,
     }
