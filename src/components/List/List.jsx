@@ -178,7 +178,7 @@ class List extends Component {
     this.setState({
       currentData: Object.assign(data),
       param,
-      topupCollateralAmount: data.amount,
+      topupCollateralAmount: 0,
     }, () => this.openModal('modalAmountIsOpen'))
   }
 

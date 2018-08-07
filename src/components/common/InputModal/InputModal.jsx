@@ -60,9 +60,9 @@ class InputModal extends Component {
               </div>
               <div className="Buttons">
                 <div
-                  className={`Confirm ${props.disabled ? 'Disabled' : ''}`}
-                  disabled={props.disabled ? true : false}
-                  onClick={props.onSubmit}
+                  className={`Confirm ${(props.disabled || props.value <= 0) ? 'Disabled' : ''}`}
+                  disabled={(props.disabled || props.value <= 0) ? true : false}
+                  onClick={(props.disabled || props.value <= 0) ? null : props.onSubmit}
                 >Submit</div>
               </div>
             </div>
