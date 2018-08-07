@@ -171,11 +171,11 @@ class Table extends Component {
   // Slots
 
   onOrder(data, param) {
-    const amount = window.web3.fromWei(data.loanAmount, 'ether')
+    // const amount = window.web3.fromWei(data.loanAmount, 'ether')
     this.setState({
-      currentData: Object.assign({ loanAmount: amount }, data),
+      currentData: Object.assign({ loanAmount: data.loanAmount }, data),
       param,
-      fillLoanAmount: amount,
+      fillLoanAmount: data.loanAmount,
     }, () => this.openModal('modalAmountIsOpen'))
   }
 
