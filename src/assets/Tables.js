@@ -153,7 +153,7 @@ const CreateTables = (web3) => ([
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
             item.totalInterest = web3.fromWei(item.loanAmountOffered, 'ether') * web3.fromWei(item.interestRatePerDay, 'ether')
-            item.loanAmount = web3.fromWei(item.loanAmountOffered, 'ether')
+            item.loanAmount = item.loanAmountFilled ? web3.fromWei(web3.toWei(new web3.BigNumber(web3.fromWei(item.loanAmountOffered, 'ether')).sub(new web3.BigNumber(web3.fromWei(item.loanAmountFilled, 'ether'))), 'ether'), 'ether') : web3.fromWei(item.loanAmountOffered, 'ether')
             return item
           })
       )
