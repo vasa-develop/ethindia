@@ -128,15 +128,11 @@ class List extends Component {
     //   loanContractInstance.owner())
     //   .liquidate(address(loan), lenderAmount, borrowerAmount)
     //   .send({ from: userAddress })
-    data.origin.LoanContract.liquidate(
-      data.origin.collateralToken,
-      { from: data.origin.userAddress },
-      (err, hash) => {
-        if (err) return
-        console.log(hash)
-        setTimeout(methods.getPositions, 5000, data.address)
-      }
-    )
+    methods.onLiquidatePosition(data, (err, hash) => {
+      if (err) return
+      console.log(hash)
+      setTimeout(methods.getPositions, 5000, data.address)
+    })
   }
 
   onRepayLoan(data, param) {
