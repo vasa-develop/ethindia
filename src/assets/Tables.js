@@ -42,7 +42,7 @@ const CreateTables = (web3Utils) => ([
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
             item.interestRate = web3Utils.fromWei(item.interestRatePerDay)
-            item.loanAmount = web3Utils.substract(item.loanAmountOffered, item.loanAmountFilled || 0)
+            item.loanAmount = web3Utils.substractBN(item.loanAmountOffered, item.loanAmountFilled || 0)
             return item
           })
       )
@@ -79,7 +79,7 @@ const CreateTables = (web3Utils) => ([
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
             item.interestRate = web3Utils.fromWei(item.interestRatePerDay)
-            item.loanAmount = web3Utils.substract(item.loanAmountOffered, item.loanAmountFilled || 0)
+            item.loanAmount = web3Utils.substractBN(item.loanAmountOffered, item.loanAmountFilled || 0)
             return item
           })
       )
@@ -116,7 +116,7 @@ const CreateTables = (web3Utils) => ([
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
             item.totalInterest = web3Utils.fromWei(item.loanAmountOffered) * web3Utils.fromWei(item.interestRatePerDay)
-            item.loanAmount = web3Utils.substract(item.loanAmountOffered, item.loanAmountFilled || 0)
+            item.loanAmount = web3Utils.substractBN(item.loanAmountOffered, item.loanAmountFilled || 0)
             return item
           })
       )
@@ -153,7 +153,7 @@ const CreateTables = (web3Utils) => ([
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
             item.totalInterest = web3Utils.fromWei(item.loanAmountOffered) * web3Utils.fromWei(item.interestRatePerDay)
-            item.loanAmount = web3Utils.substract(item.loanAmountOffered, item.loanAmountFilled || 0)
+            item.loanAmount = web3Utils.substractBN(item.loanAmountOffered, item.loanAmountFilled || 0)
             return item
           })
       )

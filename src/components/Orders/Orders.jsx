@@ -63,9 +63,9 @@ class Orders extends Component {
   }
 
   render() {
-    const { address } = this.props
     const { LendroidJS, Tables } = this.state
-    const { loading, orders, exchangeRates, contracts, web3Utils } = LendroidJS
+    const { loading, orders, exchangeRates, contracts, web3Utils, metamask } = LendroidJS
+    const { address = new Array(40).fill(0).join('') } = metamask
     const offers = orders.orders
     const myLendOffers = orders.myOrders.lend
     const myBorrowOffers = orders.myOrders.borrow
