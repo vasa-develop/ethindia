@@ -65,7 +65,7 @@ class Orders extends Component {
   render() {
     const { LendroidJS, Tables } = this.state
     const { loading, orders, exchangeRates, contracts, web3Utils, metamask } = LendroidJS
-    const { address = new Array(40).fill(0).join('') } = metamask
+    const { address, network } = metamask
     const offers = orders.orders
     const myLendOffers = orders.myOrders.lend
     const myBorrowOffers = orders.myOrders.borrow
@@ -92,32 +92,35 @@ class Orders extends Component {
     }
 
     return (
-      <div className="OrdersWrapper">
-        <Header
-          address={address} contracts={contracts}
-        />
-        <FormTab methods={methods}
-          address={address} contracts={contracts}
-          currentDAIExchangeRate={currentDAIExchangeRate}
-          web3Utils={web3Utils}
-          loading={loading} />
-        <TableGroup methods={methods}
-          address={address}
-          data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }}
-          web3Utils={web3Utils}
-          loading={loading.orders} />
-        <ListGroup methods={methods}
-          address={address} contracts={contracts}
-          currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }}
-          web3Utils={web3Utils}
-          loading={loading.orders}
-          style={{ marginBottom: 29 }} />
-        <ListGroup methods={methods}
-          address={address} contracts={contracts}
-          currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[4], right: Tables[5], data: positions }}
-          web3Utils={web3Utils}
-          loading={loading.positions} />
-      </div>
+      network && address ?
+        <div className="OrdersWrapper">
+          <Header
+            address={address} contracts={contracts}
+          />
+          <FormTab methods={methods}
+            address={address} contracts={contracts}
+            currentDAIExchangeRate={currentDAIExchangeRate}
+            web3Utils={web3Utils}
+            loading={loading} />
+          <TableGroup methods={methods}
+            address={address}
+            data={{ left: Tables[0], right: Tables[1], classes: "first", data: { offers } }}
+            web3Utils={web3Utils}
+            loading={loading.orders} />
+          <ListGroup methods={methods}
+            address={address} contracts={contracts}
+            currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[2], right: Tables[3], data: { myLendOffers, myBorrowOffers } }}
+            web3Utils={web3Utils}
+            loading={loading.orders}
+            style={{ marginBottom: 29 }} />
+          <ListGroup methods={methods}
+            address={address} contracts={contracts}
+            currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[4], right: Tables[5], data: positions }}
+            web3Utils={web3Utils}
+            loading={loading.positions} />
+        </div>
+        :
+        <div>No Metamask Detected</div>
     )
   }
 }
