@@ -3,10 +3,7 @@ const fillZero = (len = 40) => {
 }
 
 const checkLoanCanBeLiquidated = (data) => {
-  return (
-    (data.origin.lender && data.origin.userAddress.toLowerCase() === data.origin.lender.toLowerCase())
-    || data.origin.userAddress.toLowerCase() === data.origin.wrangler.toLowerCase()
-  ) && data.status === 'Active'
+  return data.origin.expiresAtTimestamp > Date.now() && data.status === 'Active'
 }
 
 const checkLoanCanBeClosed = (data) => {
@@ -265,11 +262,6 @@ const CreateTables = (web3) => ([
       type: 'dropdown',
       items: [
         {
-          label: 'Liquidate',
-          slot: 'onLiquidatePosition',
-          param: { isLend: false },
-          enabled: checkLoanCanBeLiquidated,
-        }, {
           label: 'Top up collateral',
           slot: 'onTopupWithCollateral',
           param: { isLend: true },
