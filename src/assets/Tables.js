@@ -3,7 +3,7 @@ const fillZero = (len = 40) => {
 }
 
 const checkLoanCanBeLiquidated = (data) => {
-  return data.origin.expiresAtTimestamp > Date.now() && data.status === 'Active'
+  return data.origin.expiresAtTimestamp < Date.now() && data.status === 'Active'
 }
 
 const checkLoanCanBeClosed = (data) => {
