@@ -89,11 +89,10 @@ class List extends Component {
     this.closeModal('modalAmountIsOpen')
     // loanContractInstance.topupCollateral(topupCollateralAmount).send({from: userAddress})
 
-    const { address, methods } = this.props
+    const { methods, web3Utils } = this.props
     const { currentData } = this.state
-    const { web3 } = window
     const data = currentData.origin;
-    const topupCollateralAmount = web3.toWei(this.state.topupCollateralAmount, 'ether')
+    const topupCollateralAmount = web3Utils.toWei(this.state.topupCollateralAmount)
 
     methods.onTopUpPosition(data, topupCollateralAmount,
       (err, hash) => {

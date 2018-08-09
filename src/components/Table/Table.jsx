@@ -124,14 +124,13 @@ class Table extends Component {
       isLoading: true
     }, () => {
       setTimeout(() => {
-        const { address, methods } = this.props
+        const { address, methods, web3Utils } = this.props
         const { currentData, fillLoanAmount } = this.state
-        const { web3 } = window
         const _this = this
 
         const postData = Object.assign({
           filler: address,
-          fillLoanAmount: window.web3.toWei(fillLoanAmount, 'ether')
+          fillLoanAmount: web3Utils.toWei(fillLoanAmount)
         }, currentData)
 
         methods.onPostLoans(postData, (err, res) => {
@@ -151,7 +150,7 @@ class Table extends Component {
               if (key === 'expiresAtTimestamp')
                 result[key] = moment.utc(result[key] * 1000).format('YYYY-MM-DD HH:mm Z')
               else if (result[key].toString().indexOf('0x') !== 0 && key !== 'nonce')
-                result[key] = web3.fromWei(result[key].toString(), 'ether')
+                result[key] = web3Utils.fromWei(result[key])
             })
             _this.setState({
               postError: null,
@@ -171,7 +170,6 @@ class Table extends Component {
   // Slots
 
   onOrder(data, param) {
-    // const amount = window.web3.fromWei(data.loanAmount, 'ether')
     this.setState({
       currentData: Object.assign({ loanAmount: data.loanAmount }, data),
       param,

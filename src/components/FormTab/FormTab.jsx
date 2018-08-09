@@ -100,8 +100,7 @@ class FormTab extends Component {
   onSubmit(isLend) {
     return () => {
       const formData = this.state
-      const { address, methods, contracts } = this.props
-      const { web3 } = window
+      const { address, methods, contracts, web3Utils } = this.props
       const postData = {}
 
       FormInputs(isLend).forEach(item => {
@@ -118,7 +117,7 @@ class FormTab extends Component {
       postData.collateralToken = contracts.contracts ? contracts.contracts.WETH._address : ''
       postData.loanToken = contracts.contracts ? contracts.contracts.DAI._address : ''
       postData.relayer = ''
-      postData.collateralAmount = web3.toWei(0, 'ether')
+      postData.collateralAmount = web3Utils.toWei(0)
 
       delete postData.allowance
       postData.offerExpiry = parseInt(postData.offerExpiry / 1000).toString();

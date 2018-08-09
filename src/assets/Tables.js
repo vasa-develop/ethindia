@@ -14,7 +14,7 @@ const checkLoanCanBeCleaned = (data) => {
   return (data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.status === 'Closed'
 }
 
-const CreateTables = (web3) => ([
+const CreateTables = (web3Utils) => ([
   {
     title: 'Lend Order Book',
     headers: [
@@ -41,8 +41,8 @@ const CreateTables = (web3) => ([
           .filter(item => (item.lender && item.lender !== fillZero()))
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
-            item.interestRate = web3.fromWei(item.interestRatePerDay, 'ether')
-            item.loanAmount = item.loanAmountFilled ? web3.fromWei(web3.toWei(new web3.BigNumber(web3.fromWei(item.loanAmountOffered, 'ether')).sub(new web3.BigNumber(web3.fromWei(item.loanAmountFilled, 'ether'))), 'ether'), 'ether') : web3.fromWei(item.loanAmountOffered, 'ether')
+            item.interestRate = web3Utils.fromWei(item.interestRatePerDay)
+            item.loanAmount = web3Utils.substract(item.loanAmountOffered, item.loanAmountFilled || 0)
             return item
           })
       )
@@ -78,8 +78,8 @@ const CreateTables = (web3) => ([
           .filter(item => (item.borrower && item.borrower !== fillZero()))
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
-            item.interestRate = web3.fromWei(item.interestRatePerDay, 'ether')
-            item.loanAmount = item.loanAmountFilled ? web3.fromWei(web3.toWei(new web3.BigNumber(web3.fromWei(item.loanAmountOffered, 'ether')).sub(new web3.BigNumber(web3.fromWei(item.loanAmountFilled, 'ether'))), 'ether'), 'ether') : web3.fromWei(item.loanAmountOffered, 'ether')
+            item.interestRate = web3Utils.fromWei(item.interestRatePerDay)
+            item.loanAmount = web3Utils.substract(item.loanAmountOffered, item.loanAmountFilled || 0)
             return item
           })
       )
@@ -115,8 +115,8 @@ const CreateTables = (web3) => ([
         d
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
-            item.totalInterest = web3.fromWei(item.loanAmountOffered, 'ether') * web3.fromWei(item.interestRatePerDay, 'ether')
-            item.loanAmount = item.loanAmountFilled ? web3.fromWei(web3.toWei(new web3.BigNumber(web3.fromWei(item.loanAmountOffered, 'ether')).sub(new web3.BigNumber(web3.fromWei(item.loanAmountFilled, 'ether'))), 'ether'), 'ether') : web3.fromWei(item.loanAmountOffered, 'ether')
+            item.totalInterest = web3Utils.fromWei(item.loanAmountOffered) * web3Utils.fromWei(item.interestRatePerDay)
+            item.loanAmount = web3Utils.substract(item.loanAmountOffered, item.loanAmountFilled || 0)
             return item
           })
       )
@@ -152,8 +152,8 @@ const CreateTables = (web3) => ([
         d
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
-            item.totalInterest = web3.fromWei(item.loanAmountOffered, 'ether') * web3.fromWei(item.interestRatePerDay, 'ether')
-            item.loanAmount = item.loanAmountFilled ? web3.fromWei(web3.toWei(new web3.BigNumber(web3.fromWei(item.loanAmountOffered, 'ether')).sub(new web3.BigNumber(web3.fromWei(item.loanAmountFilled, 'ether'))), 'ether'), 'ether') : web3.fromWei(item.loanAmountOffered, 'ether')
+            item.totalInterest = web3Utils.fromWei(item.loanAmountOffered) * web3Utils.fromWei(item.interestRatePerDay)
+            item.loanAmount = web3Utils.substract(item.loanAmountOffered, item.loanAmountFilled || 0)
             return item
           })
       )
