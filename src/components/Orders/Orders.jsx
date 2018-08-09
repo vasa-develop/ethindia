@@ -20,21 +20,11 @@ class Orders extends Component {
   constructor(props) {
     super(props)
 
-    const { address, network } = props
     this.state = {
-      LendroidJS: new lendroid.Lendroid({ metamask: { address, network } }),
+      LendroidJS: new lendroid.Lendroid({ stateCallback: () => this.forceUpdate() }),
     }
-    this.state.LendroidJS.reset({ address, network }, () => this.forceUpdate())
 
     this.apiPost = this.apiPost.bind(this)
-  }
-
-  componentWillReceiveProps(newProps) {
-    const { address, network } = this.props
-
-    if (newProps.address !== address || newProps.network !== network) {
-      this.state.LendroidJS.reset({ address: newProps.address, network: newProps.network }, () => this.forceUpdate())
-    }
   }
 
   getPositionsData() {
