@@ -1,9 +1,6 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import { compose } from 'recompose'
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
-
-import { connectContract } from '../../redux/modules'
 
 import InputModal from '../common/InputModal/InputModal'
 
@@ -80,11 +77,6 @@ class List extends Component {
     return 'red'
   }
 
-  fromBigToNumber(big) {
-    if (!big.c) return 0
-    return Number((big.c[0] / 10000).toString() + (big.c[1] || '').toString())
-  }
-
   toggle(key) {
     return () => {
       const { dropdownOpen } = this.state
@@ -97,91 +89,82 @@ class List extends Component {
     this.closeModal('modalAmountIsOpen')
     // loanContractInstance.topupCollateral(topupCollateralAmount).send({from: userAddress})
 
-    const { address } = this.props
-    const { currentData, topupCollateralAmount } = this.state
-    const { web3 } = window
+    const { methods, web3Utils } = this.props
+    const { currentData } = this.state
+    const data = currentData.origin;
+    const topupCollateralAmount = web3Utils.toWei(this.state.topupCollateralAmount)
+
+    methods.onTopUpPosition(data, topupCollateralAmount,
+      (err, hash) => {
+        if (err) return
+        console.log(`Reload Loan with address of <${currentData.address}>`)
+        setTimeout(methods.getPositions, 5000, currentData.address)
+      }
+    )
   }
 
   // Slots
 
   onCancel(data, param) {
+    const { methods } = this.props
 
-    // 1. an array of addresses[6] in this order: lender, borrower, relayer, wrangler, collateralToken, loanToken
-    const addresses = [
-      data.lender,
-      data.borrower,
-      data.relayer,
-      data.wrangler,
-      data.collateralToken,
-      data.loanToken
-    ]
-
-    // 2. an array of uints[9] in this order: loanAmountOffered, interestRatePerDay, loanDuration, offerExpiryTimestamp, relayerFeeLST, monitoringFeeLST, rolloverFeeLST, closureFeeLST, creatorSalt
-    const values = [
-      data.loanAmountOffered,
-      data.interestRatePerDay,
-      data.loanDuration,
-      data.offerExpiryTimestamp,
-      data.relayerFeeLST,
-      data.monitoringFeeLST,
-      data.rolloverFeeLST,
-      data.closureFeeLST,
-      data.creatorSalt
-    ]
-
-    // 3. vCreator
-    // 4. rCreator
-    // 5. sCreator
-    // 6. a uint value cancelledCollateralTokenAmount which is calculated as follows:
-    // orderHash = contract.computeOfferHash(address[6], uints[9]) // Refer 1 and 2 immediately above for input details
-    // filledAmount = contract.filled(orderHash)
-    // cancelledCollateralTokenAmount = (order.loanAmountOffered * currentWETHExchangeRate) - (filledAmount)
-    const { contracts, currentWETHExchangeRate, methods } = this.props
-    const LoanOfferRegistryContractInstance = contracts.contracts ? contracts.contracts.LoanOfferRegistry : null
-
-    const onCancel = (err, result) => {
+    const cancelCallback = (err, result) => {
       if (err) return
-      console.log(result)
 
-      let url = `http://localhost:8080/offers/${data.id}`
-      axios.delete(url)
-        .then(res => {
-          console.log(res.data)
-          setTimeout(methods.getOffers, 1000)
-        })
+      methods.onDeleteOrder(data.id, (err, res) => {
+        setTimeout(methods.getOffers, 1000)
+      })
     }
 
-    const onFilledAmount = (err, result) => {
-      const filledAmount = this.fromBigToNumber(result)
-      const cancelledCollateralTokenAmount = data.loanAmountOffered * currentWETHExchangeRate - filledAmount
-
-      LoanOfferRegistryContractInstance.cancel(addresses, values, data.vCreator, data.rCreator, data.sCreator, cancelledCollateralTokenAmount, onCancel)
-    }
-
-    const onOrderHash = (err, result) => {
-      if (err) return
-      LoanOfferRegistryContractInstance.filled(result, onFilledAmount)
-    }
-
-    LoanOfferRegistryContractInstance.computeOfferHash(addresses, values, onOrderHash)
+    methods.onCancelOrder(data, cancelCallback)
   }
 
   onLiquidatePosition(data, param) {
+    const { methods } = this.props
     console.log(data, param)
     // Contract(
     //   WranglerLoanRegistryABI,
     //   loanContractInstance.owner())
     //   .liquidate(address(loan), lenderAmount, borrowerAmount)
     //   .send({ from: userAddress })
+    methods.onLiquidatePosition(data, (err, hash) => {
+      if (err) return
+      console.log(hash)
+      setTimeout(methods.getPositions, 5000, data.address)
+    })
+  }
+
+  onRepayLoan(data, param) {
+    const { methods } = this.props
+    console.log(data, param)
+    // loan.close.send({from: userAddress})
+    methods.onClosePosition(data, (err, hash) => {
+      if (err) return
+      console.log(hash)
+      setTimeout(methods.getPositions, 5000)
+    })
+  }
+
+  onCleanContract(data, param) {
+    const { methods } = this.props
+    console.log(data, param)
+    // WranglerLoanRegistry.releaseContract(loan.address, {from: address})
+    methods.onCleanContract(data, (err, hash) => {
+      if (err) return
+      console.log(hash)
+      setTimeout(methods.getPositions, 5000)
+    })
+
   }
 
   onClosePosition(data, param) {
     const { methods } = this.props
     console.log(data, param)
     // loan.close.send({from: userAddress})
-    data.origin.LoanContract.close(data.origin.userAddress, (err, result) => {
+    methods.onClosePosition(data, (err, hash) => {
       if (err) return
-      setTimeout(methods.getPositions, 5000, { type: 'close', address: data.loanNumber })
+      console.log(hash)
+      setTimeout(methods.getPositions, 5000)
     })
   }
 
@@ -190,7 +173,7 @@ class List extends Component {
     this.setState({
       currentData: Object.assign(data),
       param,
-      topupCollateralAmount: data.amount,
+      topupCollateralAmount: 0,
     }, () => this.openModal('modalAmountIsOpen'))
   }
 
@@ -245,17 +228,21 @@ class List extends Component {
                     {
                       data.action.label === '3-dot'
                         ?
-                        <Dropdown isOpen={this.state.dropdownOpen[index]} toggle={this.toggle(index)}>
-                          <DropdownToggle style={data.action.style} className="close three-dot" />
-                          <DropdownMenu>
-                            {
-                              data.action.items.map(item => (
-                                <DropdownItem disabled={item.disabled(d)} onClick={() => this.onAction(item, d)}>{item.label}</DropdownItem>
-                              ))
-                            }
-                          </DropdownMenu>
-                        </Dropdown>
-                        // <button style={data.action.style} className="close three-dot"></button>
+                        data.action.items.filter(item => item.enabled(d)).length > 0 ?
+                          <Dropdown isOpen={this.state.dropdownOpen[index]} toggle={this.toggle(index)}>
+                            <DropdownToggle style={data.action.style} className="close three-dot" />
+                            <DropdownMenu>
+                              {
+                                data.action.items
+                                  .filter(item => item.enabled(d))
+                                  .map(item => (
+                                    <DropdownItem onClick={() => this.onAction(item, d)}>{item.label}</DropdownItem>
+                                  ))
+                              }
+                            </DropdownMenu>
+                          </Dropdown>
+                          // <button style={data.action.style} className="close three-dot"></button>
+                          : null
                         :
                         <button style={data.action.style} className={data.action.key} onClick={() => this.onAction(data.action, d)}>{data.action.label}</button>
                     }
@@ -285,6 +272,4 @@ class List extends Component {
   }
 }
 
-export default compose(
-  connectContract(),
-)(List)
+export default List

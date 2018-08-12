@@ -31,6 +31,12 @@ class InputModal extends Component {
           style={customStyles}
           contentLabel={props.contentLabel}
         >
+          {
+            props.isLoading &&
+            <div className="Loading">
+              <div className="Loader" />
+            </div>
+          }
           <h2>{props.title}</h2>
           <button onClick={props.onRequestClose}></button>
           <div className="ModalBody">
@@ -54,9 +60,9 @@ class InputModal extends Component {
               </div>
               <div className="Buttons">
                 <div
-                  className={`Confirm ${props.disabled ? 'Disabled' : ''}`}
-                  disabled={props.disabled ? true : false}
-                  onClick={props.onSubmit}
+                  className={`Confirm ${(props.disabled || props.value <= 0) ? 'Disabled' : ''}`}
+                  disabled={(props.disabled || props.value <= 0) ? true : false}
+                  onClick={(props.disabled || props.value <= 0) ? null : props.onSubmit}
                 >Submit</div>
               </div>
             </div>

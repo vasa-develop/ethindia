@@ -2,15 +2,19 @@ const fillZero = (len = 40) => {
   return '0x' + (new Array(len)).fill(0).join('')
 }
 
-const checkLoanLiquidate = (data) => {
-  return data.origin.userAddress !== data.origin.wrangler
+const checkLoanCanBeLiquidated = (data) => {
+  return data.origin.expiresAtTimestamp < Date.now() && data.status === 'Active'
 }
 
-const checkLoanClose = (data) => {
-  return data.origin.userAddress !== data.origin.borrower
+const checkLoanCanBeClosed = (data) => {
+  return (data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.status === 'Active'
 }
 
-const CreateTables = (web3) => ([
+const checkLoanCanBeCleaned = (data) => {
+  return (data.origin.userAddress.toLowerCase() === data.origin.borrower.toLowerCase()) && data.status === 'Closed'
+}
+
+const CreateTables = (web3Utils) => ([
   {
     title: 'Lend Order Book',
     headers: [
@@ -37,14 +41,14 @@ const CreateTables = (web3) => ([
           .filter(item => (item.lender && item.lender !== fillZero()))
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
-            item.interestRate = web3.fromWei(item.interestRatePerDay, 'ether')
-            item.loanAmount = web3.fromWei(item.loanAmountOffered, 'ether')
+            item.interestRate = web3Utils.fromWei(item.interestRatePerDay)
+            item.loanAmount = web3Utils.substractBN(item.loanAmountOffered, item.loanAmountFilled || 0)
             return item
           })
       )
     },
     action: {
-      label: 'Fill',
+      label: 'Borrow',
       slot: 'onOrder',
       param: { isLend: true }
     }
@@ -74,14 +78,14 @@ const CreateTables = (web3) => ([
           .filter(item => (item.borrower && item.borrower !== fillZero()))
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
-            item.interestRate = web3.fromWei(item.interestRatePerDay, 'ether')
-            item.loanAmount = web3.fromWei(item.loanAmountOffered, 'ether')
+            item.interestRate = web3Utils.fromWei(item.interestRatePerDay)
+            item.loanAmount = web3Utils.substractBN(item.loanAmountOffered, item.loanAmountFilled || 0)
             return item
           })
       )
     },
     action: {
-      label: 'Select',
+      label: 'Lend',
       slot: 'onOrder',
       param: { isLend: false }
     }
@@ -89,10 +93,6 @@ const CreateTables = (web3) => ([
     title: 'MY LEND ORDERS',
     headers: [
       {
-        label: 'Loan Number',
-        key: 'lender',
-        style: { fontFamily: 'Space Mono', width: '100%' }
-      }, {
         label: 'Amount',
         key: 'loanAmount',
         precision: 2,
@@ -115,8 +115,8 @@ const CreateTables = (web3) => ([
         d
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
-            item.totalInterest = web3.fromWei(item.loanAmountOffered, 'ether') * web3.fromWei(item.interestRatePerDay, 'ether')
-            item.loanAmount = web3.fromWei(item.loanAmountOffered, 'ether')
+            item.totalInterest = web3Utils.fromWei(item.loanAmountOffered) * web3Utils.fromWei(item.interestRatePerDay)
+            item.loanAmount = web3Utils.substractBN(item.loanAmountOffered, item.loanAmountFilled || 0)
             return item
           })
       )
@@ -130,10 +130,6 @@ const CreateTables = (web3) => ([
     title: 'MY BORROW ORDERS',
     headers: [
       {
-        label: 'Loan Number',
-        key: 'borrower',
-        style: { fontFamily: 'Space Mono', width: '100%' }
-      }, {
         label: 'Amount',
         key: 'loanAmount',
         precision: 2,
@@ -156,8 +152,8 @@ const CreateTables = (web3) => ([
         d
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
-            item.totalInterest = web3.fromWei(item.loanAmountOffered, 'ether') * web3.fromWei(item.interestRatePerDay, 'ether')
-            item.loanAmount = web3.fromWei(item.loanAmountOffered, 'ether')
+            item.totalInterest = web3Utils.fromWei(item.loanAmountOffered) * web3Utils.fromWei(item.interestRatePerDay)
+            item.loanAmount = web3Utils.substractBN(item.loanAmountOffered, item.loanAmountFilled || 0)
             return item
           })
       )
@@ -178,23 +174,27 @@ const CreateTables = (web3) => ([
         label: 'Amount',
         key: 'amount',
         precision: 2,
-        style: { fontFamily: 'Space Mono', width: '25%' }
+        style: { fontFamily: 'Space Mono', width: '21%' }
       }, {
         label: 'Total Interest ',
         key: 'totalInterest',
         precision: 5,
-        style: { fontFamily: 'Space Mono', width: '30%' }
+        style: { fontFamily: 'Space Mono', width: '26%' }
       }, {
         label: 'Term',
         key: 'term',
         filter: 'calcTerm',
-        style: { fontFamily: 'Space Mono', width: '25%' }
+        style: { fontFamily: 'Space Mono', width: '16%' }
       }, {
         label: 'Loan Health',
         key: 'health',
         suffix: '%',
-        style: { fontFamily: 'Space Mono', width: '20%' }
-      }
+        style: { fontFamily: 'Space Mono', width: '21%' }
+      }, {
+        label: 'Loan Status',
+        key: 'status',
+        style: { fontFamily: 'Space Mono', width: '16%' }
+      },
     ],
     data: {
       key: 'lent',
@@ -211,13 +211,8 @@ const CreateTables = (web3) => ([
         {
           label: 'Liquidate',
           slot: 'onLiquidatePosition',
-          param: { isLend: true },
-          disabled: checkLoanLiquidate,
-        }, {
-          label: 'Topup with collateral',
-          slot: 'onTopupWithCollateral',
-          param: { isLend: true },
-          disabled: checkLoanClose,
+          param: { isLend: false },
+          enabled: checkLoanCanBeLiquidated,
         },
       ]
     }
@@ -232,23 +227,27 @@ const CreateTables = (web3) => ([
         label: 'Amount',
         key: 'amount',
         precision: 2,
-        style: { fontFamily: 'Space Mono', width: '25%' }
+        style: { fontFamily: 'Space Mono', width: '21%' }
       }, {
         label: 'Total Interest ',
         key: 'totalInterest',
         precision: 5,
-        style: { fontFamily: 'Space Mono', width: '30%' }
+        style: { fontFamily: 'Space Mono', width: '26%' }
       }, {
         label: 'Term',
         key: 'term',
         filter: 'calcTerm',
-        style: { fontFamily: 'Space Mono', width: '25%' }
+        style: { fontFamily: 'Space Mono', width: '16%' }
       }, {
         label: 'Loan Health',
         key: 'health',
         suffix: '%',
-        style: { fontFamily: 'Space Mono', width: '20%' }
-      }
+        style: { fontFamily: 'Space Mono', width: '21%' }
+      }, {
+        label: 'Loan Status',
+        key: 'status',
+        style: { fontFamily: 'Space Mono', width: '16%' }
+      },
     ],
     data: {
       key: 'borrowed',
@@ -263,20 +262,20 @@ const CreateTables = (web3) => ([
       type: 'dropdown',
       items: [
         {
-          label: 'Liquidate',
-          slot: 'onLiquidatePosition',
-          param: { isLend: false },
-          disabled: checkLoanLiquidate,
-        }, {
-          label: 'Topup with collateral',
+          label: 'Top up collateral',
           slot: 'onTopupWithCollateral',
           param: { isLend: true },
-          disabled: checkLoanClose,
+          enabled: checkLoanCanBeClosed,
         }, {
-          label: 'Close',
-          slot: 'onClosePosition',
-          param: { isLend: false },
-          disabled: checkLoanClose,
+          label: 'Repay Loan',
+          slot: 'onRepayLoan',
+          param: { isLend: true },
+          enabled: checkLoanCanBeClosed,
+        }, {
+          label: 'Clean Contract',
+          slot: 'onCleanContract',
+          param: { isLend: true },
+          enabled: checkLoanCanBeCleaned,
         },
       ]
     }

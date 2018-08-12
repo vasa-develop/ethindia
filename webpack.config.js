@@ -17,7 +17,11 @@ module.exports = {
       {
         test: /\.js$/, loader: 'babel-loader',
         query: {
-          plugins: ['transform-class-properties']
+          plugins: [
+            'transform-class-properties',
+            'transform-es3-member-expression-literals',
+            'transform-es3-property-literals'
+          ]
         }
       },
       {
@@ -48,20 +52,20 @@ module.exports = {
     extensions: ['.js', '.jsx', '.css', '.scss'],
   },
   plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      mangle: true,
-      compress: {
-        warnings: false, // Suppress uglification warnings
-        pure_getters: true,
-        unsafe: true,
-        unsafe_comps: true,
-        screw_ie8: true
-      },
-      output: {
-        comments: false,
-      },
-      exclude: [/\.min\.js$/gi] // skip pre-minified libs
-    }),
+    // new webpack.optimize.UglifyJsPlugin({
+    //   mangle: true,
+    //   compress: {
+    //     warnings: false, // Suppress uglification warnings
+    //     pure_getters: true,
+    //     unsafe: true,
+    //     unsafe_comps: true,
+    //     screw_ie8: true
+    //   },
+    //   output: {
+    //     comments: false,
+    //   },
+    //   exclude: [/\.min\.js$/gi] // skip pre-minified libs
+    // }),
     new ExtractTextPlugin({
       filename: 'styles.css',
       allChunks: true

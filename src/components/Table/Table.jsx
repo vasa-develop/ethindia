@@ -2,9 +2,6 @@ import React, { Component } from 'react'
 import axios from 'axios'
 import moment from 'moment'
 import Modal from 'react-modal'
-import { compose } from 'recompose'
-
-import { connectContract } from '../../redux/modules'
 
 import InputModal from '../common/InputModal/InputModal'
 
@@ -103,89 +100,80 @@ class Table extends Component {
 
   onConfirm() {
     const { approval, currentData } = this.state
-    const { contracts, methods } = this.props
-    const LoanOfferRegistryContractInstance = contracts.contracts ? contracts.contracts.LoanOfferRegistry : null
+    const { methods } = this.props
     this.setState({
       isLoading: true
     }, () => {
-      LoanOfferRegistryContractInstance.fill(
-        approval._addresses,
-        approval._values,
-        approval._vS,
-        approval._rS,
-        approval._sS,
-        approval._isOfferCreatorLender,
-        (err, result) => {
-          if (err) {
-            this.closeModal('modalIsOpen')
-          } else {
-            this.closeModal('modalIsOpen')
-
-            let url = `http://localhost:8080/offers/${currentData.id}`
-            axios.delete(url)
-              .then(res => {
-                const result = res.data
-                console.log(result)
-                setTimeout(methods.getOffers, 1000)
-                setTimeout(methods.getPositions, 5000, { type: 'new', timestamp: Date.now() })
-              })
-          }
-          this.setState({
-            isLoading: false
+      methods.onFillLoan(approval, (err, result) => {
+        console.log('Fill Loan', err, result)
+        if (result) {
+          methods.onFillOrderServer(currentData.id, approval["_values"][12], (err, res) => {
+            setTimeout(methods.getOffers, 1000)
+            setTimeout(methods.getPositions, 3000)
           })
-        })
+        }
+        this.setState({
+          isLoading: false
+        }, () => this.closeModal('modalIsOpen'))
+      })
     })
   }
 
   onSubmitOrder() {
-    this.closeModal('modalAmountIsOpen')
+    this.setState({
+      isLoading: true
+    }, () => {
+      setTimeout(() => {
+        const { address, methods, web3Utils } = this.props
+        const { currentData, fillLoanAmount } = this.state
+        const _this = this
 
-    const { address } = this.props
-    const { currentData, fillLoanAmount } = this.state
-    const { web3 } = window
-    const _this = this
-    let url = 'http://127.0.0.1:5000/loan_requests'
+        const postData = Object.assign({
+          filler: address,
+          fillLoanAmount: web3Utils.toWei(fillLoanAmount)
+        }, currentData)
 
-    const postData = Object.assign({
-      filler: address,
-      fillLoanAmount: window.web3.toWei(fillLoanAmount, 'ether')
-    }, currentData)
-
-    axios.post(url, postData)
-      .then(res => {
-        const approval = res.data.approval
-        const result = res.data.data
-        Object.keys(result).forEach(key => {
-          if (key === 'expiresAtTimestamp')
-            result[key] = moment.utc(result[key] * 1000).format('YYYY-MM-DD HH:mm Z')
-          else if (result[key].toString().indexOf('0x') !== 0 && key !== 'nonce')
-            result[key] = web3.fromWei(result[key].toString(), 'ether')
+        methods.onPostLoans(postData, (err, res) => {
+          if (err) {
+            return _this.setState({
+              postError: err,
+              isLoading: false,
+            }, () => {
+              _this.closeModal('modalAmountIsOpen')
+              _this.openModal('modalIsOpen')
+            })
+          }
+          if (res) {
+            const approval = res.approval
+            const result = res.data
+            Object.keys(result).forEach(key => {
+              if (key === 'expiresAtTimestamp')
+                result[key] = moment.utc(result[key] * 1000).format('YYYY-MM-DD HH:mm Z')
+              else if (result[key].toString().indexOf('0x') !== 0 && key !== 'nonce')
+                result[key] = web3Utils.fromWei(result[key])
+            })
+            _this.setState({
+              postError: null,
+              result,
+              approval,
+              isLoading: false,
+            }, () => {
+              _this.closeModal('modalAmountIsOpen')
+              _this.openModal('modalIsOpen')
+            })
+          }
         })
-        _this.setState({
-          postError: null,
-          result,
-          approval,
-        }, () => {
-          _this.openModal('modalIsOpen')
-        })
-      })
-      .catch(err => {
-        _this.setState({
-          postError: err
-        }, () => {
-          _this.openModal('modalIsOpen')
-        })
-      })
+      }, 500)
+    });
   }
 
   // Slots
 
   onOrder(data, param) {
-    const amount = window.web3.fromWei(data.loanAmountOffered, 'ether')
     this.setState({
-      currentData: Object.assign({ loanAmount: amount }, data),
+      currentData: Object.assign({ loanAmount: data.loanAmount }, data),
       param,
-      fillLoanAmount: amount,
+      fillLoanAmount: data.loanAmount,
     }, () => this.openModal('modalAmountIsOpen'))
   }
 
@@ -200,7 +188,6 @@ class Table extends Component {
     const { data, classes } = this.props
     const { postError, result, modalIsOpen, modalAmountIsOpen, currentData, param, fillLoanAmount, isLoading } = this.state
     const filteredData = this.getData(data)
-    const { web3 } = window
 
     return (
       <div className="TableWrapper">
@@ -299,21 +286,20 @@ class Table extends Component {
         </Modal>
         <InputModal
           isOpen={modalAmountIsOpen}
-          title={`Amount to ${param.isLend ? 'Fill' : 'Select'}`}
+          title={`Amount to ${param.isLend ? 'Borrow' : 'Lend'}`}
           onRequestClose={() => this.closeModal('modalAmountIsOpen')}
           onChange={(e) => this.setState({ fillLoanAmount: e.target.value })}
           onSubmit={this.onSubmitOrder.bind(this)}
-          contentLabel={`Amount to ${param.isLend ? 'Fill' : 'Select'}`}
+          contentLabel={`Amount to ${param.isLend ? 'Borrow' : 'Lend'}`}
           value={fillLoanAmount}
           max={currentData ? currentData.loanAmount : 0}
-          suffix={param.isLend ? 'DAI' : 'WETH'}
+          suffix={param.isLend ? 'DAI' : 'DAI'}
           disabled={fillLoanAmount > (currentData ? currentData.loanAmount : 0)}
+          isLoading={isLoading}
         />
       </div >
     )
   }
 }
 
-export default compose(
-  connectContract(),
-)(Table)
+export default Table

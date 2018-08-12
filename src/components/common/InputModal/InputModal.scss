@@ -18,6 +18,14 @@
     .Label {
       line-height: 35px;
     }
+
+    .FormInputWrapper {
+      width: 50%;
+
+      .FormInput {
+        width: 100%;
+      }
+    }
   }
 
   .ModalBody {
