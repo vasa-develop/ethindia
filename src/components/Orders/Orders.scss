@@ -1,4 +1,10 @@
-.OrdersWrapper > div:not(.HeaderWrapper) {
-  max-width: 1042px;
-  margin: 0 auto 50px;
+.OrdersWrapper {
+  background: rgba(246, 246, 246, 1.0);
+
+  > div:not(.HeaderWrapper):not(.Loading) {
+    max-width: 1180px;
+    border-radius: 8px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }

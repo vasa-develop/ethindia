@@ -1,19 +1,31 @@
-const Tables = [
+const fillZero = (len = 40) => {
+  return '0x' + (new Array(len)).fill(0).join('')
+}
+
+const checkLoanLiquidate = (data) => {
+  return data.origin.userAddress !== data.origin.wrangler
+}
+
+const checkLoanClose = (data) => {
+  return data.origin.userAddress !== data.origin.borrower
+}
+
+const CreateTables = (web3) => ([
   {
     title: 'Lend Order Book',
     headers: [
       {
         label: 'Amount',
-        key: 'loanAmountOffered',
+        key: 'loanAmount',
         precision: 3,
-        style: { textAlign: 'right' }
+        style: { textAlign: 'center' }
       }, {
         label: 'Term',
         key: 'loanDuration',
         filter: 'calcTerm'
       }, {
         label: 'Rate',
-        key: 'interestRatePerDay',
+        key: 'interestRate',
         precision: 3,
         suffix: '%'
       }
@@ -22,19 +34,26 @@ const Tables = [
       key: 'offers',
       filter: (d) => (
         d
-          .filter(item => (item.lender && item.lender.length > 0))
+          .filter(item => (item.lender && item.lender !== fillZero()))
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
+          .map(item => {
+            item.interestRate = web3.fromWei(item.interestRatePerDay, 'ether')
+            item.loanAmount = web3.fromWei(item.loanAmountOffered, 'ether')
+            return item
+          })
       )
     },
     action: {
       label: 'Fill',
+      slot: 'onOrder',
+      param: { isLend: true }
     }
   }, {
     title: 'Borrow Order Book',
     headers: [
       {
         label: 'Rate',
-        key: 'interestRatePerDay',
+        key: 'interestRate',
         precision: 3,
         suffix: '%'
       }, {
@@ -43,22 +62,28 @@ const Tables = [
         filter: 'calcTerm'
       }, {
         label: 'Amount',
-        key: 'loanAmountOffered',
+        key: 'loanAmount',
         precision: 3,
-        style: { textAlign: 'right' }
+        style: { textAlign: 'center' }
       }
     ],
     data: {
       key: 'offers',
       filter: (d) => (
         d
-          .filter(item => (item.borrower && item.borrower.length > 0))
+          .filter(item => (item.borrower && item.borrower !== fillZero()))
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
+          .map(item => {
+            item.interestRate = web3.fromWei(item.interestRatePerDay, 'ether')
+            item.loanAmount = web3.fromWei(item.loanAmountOffered, 'ether')
+            return item
+          })
       )
     },
     action: {
       label: 'Select',
-      style: { backgroundColor: '#f7f8f9' }
+      slot: 'onOrder',
+      param: { isLend: false }
     }
   }, {
     title: 'MY LEND ORDERS',
@@ -66,20 +91,22 @@ const Tables = [
       {
         label: 'Loan Number',
         key: 'lender',
-        filter: 'shortAddress',
-        style: { fontFamily: "Space Mono" }
+        style: { fontFamily: 'Space Mono', width: '100%' }
       }, {
         label: 'Amount',
-        key: 'loanAmountOffered',
+        key: 'loanAmount',
         precision: 2,
+        style: { fontFamily: 'Space Mono', width: '33%' }
       }, {
         label: 'Total Interest ',
         key: 'totalInterest',
         precision: 5,
+        style: { fontFamily: 'Space Mono', width: '40%' }
       }, {
         label: 'Term',
         key: 'loanDuration',
-        filter: 'calcTerm'
+        filter: 'calcTerm',
+        style: { fontFamily: 'Space Mono', width: '27%' }
       }
     ],
     data: {
@@ -88,13 +115,16 @@ const Tables = [
         d
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
-            item.totalInterest = item.loanAmountOffered * item.interestRatePerDay
+            item.totalInterest = web3.fromWei(item.loanAmountOffered, 'ether') * web3.fromWei(item.interestRatePerDay, 'ether')
+            item.loanAmount = web3.fromWei(item.loanAmountOffered, 'ether')
             return item
           })
       )
     },
     action: {
-      label: 'Cancel',
+      key: 'close',
+      slot: 'onCancel',
+      param: { isLend: true }
     }
   }, {
     title: 'MY BORROW ORDERS',
@@ -102,20 +132,22 @@ const Tables = [
       {
         label: 'Loan Number',
         key: 'borrower',
-        filter: 'shortAddress',
-        style: { fontFamily: "Space Mono" }
+        style: { fontFamily: 'Space Mono', width: '100%' }
       }, {
         label: 'Amount',
-        key: 'loanAmountOffered',
+        key: 'loanAmount',
         precision: 2,
+        style: { fontFamily: 'Space Mono', width: '33%' }
       }, {
         label: 'Total Interest ',
         key: 'totalInterest',
         precision: 5,
+        style: { fontFamily: 'Space Mono', width: '40%' }
       }, {
         label: 'Term',
         key: 'loanDuration',
-        filter: 'calcTerm'
+        filter: 'calcTerm',
+        style: { fontFamily: 'Space Mono', width: '27%' }
       }
     ],
     data: {
@@ -124,14 +156,16 @@ const Tables = [
         d
           .sort((a, b) => (new Date(a.created_at).getTime() < new Date(b.created_at).getTime() ? 1 : -1))
           .map(item => {
-            item.totalInterest = item.loanAmountOffered * item.interestRatePerDay
+            item.totalInterest = web3.fromWei(item.loanAmountOffered, 'ether') * web3.fromWei(item.interestRatePerDay, 'ether')
+            item.loanAmount = web3.fromWei(item.loanAmountOffered, 'ether')
             return item
           })
       )
     },
     action: {
-      label: 'Cancel',
-      style: { backgroundColor: '#f7f8f9' }
+      key: 'close',
+      slot: 'onCancel',
+      param: { isLend: false }
     }
   }, {
     title: 'MY LEND POSITIONS',
@@ -139,32 +173,53 @@ const Tables = [
       {
         label: 'Loan Number',
         key: 'loanNumber',
-        filter: 'shortAddress',
-        style: { fontFamily: "Space Mono", textAlign: 'right' }
+        style: { fontFamily: 'Space Mono', width: '100%' }
       }, {
         label: 'Amount',
         key: 'amount',
         precision: 2,
+        style: { fontFamily: 'Space Mono', width: '25%' }
       }, {
         label: 'Total Interest ',
         key: 'totalInterest',
+        precision: 5,
+        style: { fontFamily: 'Space Mono', width: '30%' }
       }, {
         label: 'Term',
         key: 'term',
-        filter: 'calcTerm'
+        filter: 'calcTerm',
+        style: { fontFamily: 'Space Mono', width: '25%' }
       }, {
-        label: 'Health',
+        label: 'Loan Health',
         key: 'health',
-        suffix: '%'
+        suffix: '%',
+        style: { fontFamily: 'Space Mono', width: '20%' }
       }
     ],
-    data: [
-      { loanNumber: '0x27...1A9Z', amount: 13.83, totalInterest: 0.11064, term: 156, health: 200 },
-      { loanNumber: '0x32...136B', amount: 64.4, totalInterest: 0.5796, term: 216 },
-      { loanNumber: '0x18...4567', amount: 13.85, totalInterest: 0.11064, term: 156, health: 100 },
-    ],
+    data: {
+      key: 'lent',
+      test: [
+        { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 13.83, totalInterest: 0.11064, term: 156, health: 80 },
+        { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 64.4, totalInterest: 0.5796, term: 216, health: 45 },
+        { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 13.85, totalInterest: 0.11064, term: 156, health: 90 },
+      ]
+    },
     action: {
       label: '3-dot',
+      type: 'dropdown',
+      items: [
+        {
+          label: 'Liquidate',
+          slot: 'onLiquidatePosition',
+          param: { isLend: true },
+          disabled: checkLoanLiquidate,
+        }, {
+          label: 'Topup with collateral',
+          slot: 'onTopupWithCollateral',
+          param: { isLend: true },
+          disabled: checkLoanClose,
+        },
+      ]
     }
   }, {
     title: 'MY BORROW POSITIONS',
@@ -172,35 +227,60 @@ const Tables = [
       {
         label: 'Loan Number',
         key: 'loanNumber',
-        filter: 'shortAddress',
-        style: { fontFamily: "Space Mono", textAlign: 'right' }
+        style: { fontFamily: 'Space Mono', width: '100%' }
       }, {
         label: 'Amount',
         key: 'amount',
         precision: 2,
+        style: { fontFamily: 'Space Mono', width: '25%' }
       }, {
         label: 'Total Interest ',
         key: 'totalInterest',
+        precision: 5,
+        style: { fontFamily: 'Space Mono', width: '30%' }
       }, {
         label: 'Term',
         key: 'term',
-        filter: 'calcTerm'
+        filter: 'calcTerm',
+        style: { fontFamily: 'Space Mono', width: '25%' }
       }, {
-        label: 'Health',
+        label: 'Loan Health',
         key: 'health',
-        suffix: '%'
+        suffix: '%',
+        style: { fontFamily: 'Space Mono', width: '20%' }
       }
     ],
-    data: [
-      { loanNumber: '0x27...1A9Z', amount: 13.83, totalInterest: 0.11064, term: 156, health: 200 },
-      { loanNumber: '0x32...136B', amount: 64.4, totalInterest: 0.5796, term: 216 },
-      { loanNumber: '0x18...4567', amount: 13.85, totalInterest: 0.11064, term: 156, health: 100 },
-    ],
+    data: {
+      key: 'borrowed',
+      test: [
+        { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 13.83, totalInterest: 0.11064, term: 156, health: 84 },
+        { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 64.4, totalInterest: 0.5796, term: 216, health: 45 },
+        { loanNumber: '0x7faeddf6825824f133831811771b74aff7a4be6c', amount: 13.85, totalInterest: 0.11064, term: 156, health: 65 },
+      ]
+    },
     action: {
       label: '3-dot',
-      style: { backgroundColor: '#f7f8f9' }
+      type: 'dropdown',
+      items: [
+        {
+          label: 'Liquidate',
+          slot: 'onLiquidatePosition',
+          param: { isLend: false },
+          disabled: checkLoanLiquidate,
+        }, {
+          label: 'Topup with collateral',
+          slot: 'onTopupWithCollateral',
+          param: { isLend: true },
+          disabled: checkLoanClose,
+        }, {
+          label: 'Close',
+          slot: 'onClosePosition',
+          param: { isLend: false },
+          disabled: checkLoanClose,
+        },
+      ]
     }
   },
-]
+])
 
-export default Tables
+export default CreateTables

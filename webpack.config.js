@@ -1,6 +1,6 @@
-const webpack = require('webpack');
-const path = require('path');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const webpack = require('webpack')
+const path = require('path')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 module.exports = {
   entry: './src/index.js',
@@ -34,11 +34,11 @@ module.exports = {
         test: /\.css?$/, loader: "style-loader!css-loader"
       },
       {
-        test: /\.(eot|svg|ttf|woff|woff2)$/,
+        test: /\.(eot|svg|ttf|woff|woff2|otf)$/,
         loader: 'url-loader'
       },
       {
-        test: /.(jpg|png|svg)$/,
+        test: /.(jpg|png)$/,
         loader: 'url-loader',
         options: { limit: 25000, },
       },

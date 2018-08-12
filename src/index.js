@@ -6,13 +6,16 @@ import {
   Switch
 } from 'react-router-dom'
 import { Web3Provider } from 'react-web3'
+import { Provider } from 'react-redux'
 
 import App from './App'
+import { store } from './redux'
 
+import 'bootstrap/dist/css/bootstrap.min.css'
 import './index.scss'
 
 ReactDOM.render((
-  <div>
+  <Provider store={store}>
     <Web3Provider>
       <HashRouter>
         <Switch>
@@ -20,5 +23,5 @@ ReactDOM.render((
         </Switch>
       </HashRouter>
     </Web3Provider>
-  </div>
+  </Provider>
 ), document.getElementById('root'))

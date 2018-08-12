@@ -1,68 +1,87 @@
 .HeaderWrapper {
-  margin-bottom: 30px;
+  background: -moz-linear-gradient(0deg, #8256e9 0%, #a67bf2 100%);
+  background: -webkit-gradient(linear, left top, right top, color-stop(0%, #8256e9), color-stop(100%, #a67bf2));
+  background: -webkit-linear-gradient(0deg, #8256e9 0%, #a67bf2 100%);
+  background: -o-linear-gradient(0deg, #8256e9 0%, #a67bf2 100%);
+  background: -ms-linear-gradient(0deg, #8256e9 0%, #a67bf2 100%);
+  background: linear-gradient(90deg, #8256e9 0%, #a67bf2 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=  '#8256e9', endColorstr='#a67bf2',GradientType=1 );
 
-  .Banner {
-    background: white;
+  .Inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 531px;
 
-    .Inner {
-      padding: 0 20px;
-      max-width: 1042px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 70px;
+    .Logo {
+      text-align: center;
+      text-transform: uppercase;
+      color: white;
+      font-size: 61px;
+      font-weight: bolder;
+      position: relative;
 
-      .Logo {
-        width: 30px;
-        height: 30px;
-        background: #a6b2c4;
-        border-radius: 50%;
-        padding: 6px;
-        display: flex;
-
-        img {
-          height: 100%;
-          width: 100%;
-          filter: invert(1);
-        }
-
-        .Title {
-          line-height: 18px;
-          margin-left: 20px;
-          font-size: 18px;
-          font-weight: 600;
-          color: #a6b2c4;
-        }
+      img {
+        height: 100%;
+        width: 100%;
       }
+    }
 
-      .Header {
-        display: flex;
-        justify-content: space-between;
-        flex-direction: column;
+    .Header {
+      .Info {
+        margin-top: 40px;
 
-        .Info {
-          display: flex;
-
-          .Label {
-            text-transform: uppercase;
-            font-size: 12px;
-            font-weight: 600;
-            line-height: 17px;
-            color: #AAB2C0;
-          }
+        &.Address {
+          margin-top: 70px;
 
           .Value {
-            margin-left: 15px;
-            font-size: 11px;
-            line-height: 15px;
-            color: #97A3B4;
+            background: -moz-linear-gradient(0deg, #9871ee 0%, #a67ef0 100%);
+            background: -webkit-gradient(linear, left top, right top, color-stop(0%, #9871ee), color-stop(100%, #a67ef0));
+            background: -webkit-linear-gradient(0deg, #9871ee 0%, #a67ef0 100%);
+            background: -o-linear-gradient(0deg, #9871ee 0%, #a67ef0 100%);
+            background: -ms-linear-gradient(0deg, #9871ee 0%, #a67ef0 100%);
+            background: linear-gradient(90deg, #9871ee 0%, #a67ef0 100%);
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=  '#9871ee', endColorstr='#a67ef0',GradientType=1 );
+            line-height: 70px;
+            width: 600px;
+            border-radius: 8px;
+            margin-top: 13px;
 
-            span {
-              text-transform: uppercase;
-              font-size: 12px;
-              font-weight: 600;
-              line-height: 17px;
+            font-size: 16px;
+            color: white;
+            text-align: center;
+            letter-spacing: 2.74px;
+            box-shadow: 0 10px 20px rgba(132, 83, 243, 0.3);
+          }
+        }
+
+        .Label {
+          text-transform: uppercase;
+          margin: 0;
+          font-size: 12px;
+          color: white;
+          text-align: center;
+          line-height: 14px;
+          height: 14px;
+        }
+
+        &:not(.Address) {
+          display: flex;
+          justify-content: space-between;
+          padding: 0 15px;
+
+          .SubInfo {
+            .Label {
+              text-align: left;
+            }
+
+            .Value {
+              margin-top: 3px;
+              font-size: 24px;
+              color: white;
+              text-align: left;
+              line-height: 29px;
             }
           }
         }
