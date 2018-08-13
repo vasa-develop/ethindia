@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 
-import * as lendroid from 'lendroid'
+import { Lendroid } from 'lendroid'
 
 import TableGroup from '../TableGroup/TableGroup'
 import ListGroup from '../ListGroup/ListGroup'
@@ -18,7 +18,7 @@ class Orders extends Component {
   constructor(props) {
     super(props)
 
-    const LendroidJS = new lendroid.Lendroid({ stateCallback: () => this.forceUpdate() });
+    const LendroidJS = new Lendroid({ stateCallback: () => this.forceUpdate() })
     this.state = {
       LendroidJS,
       Tables: CreateTables(LendroidJS.web3Utils),
@@ -66,18 +66,15 @@ class Orders extends Component {
     const { LendroidJS, Tables } = this.state
     const { loading, orders, exchangeRates, contracts, web3Utils, metamask = {} } = LendroidJS
     const { address, network } = metamask
+    const { currentWETHExchangeRate, currentDAIExchangeRate } = exchangeRates
     const offers = orders.orders
     const myLendOffers = orders.myOrders.lend
     const myBorrowOffers = orders.myOrders.borrow
-    const { currentWETHExchangeRate, currentDAIExchangeRate } = exchangeRates
     const positions = this.getPositionsData()
     const methods = {
-      // Form Tab
       onCreateOrder: LendroidJS.onCreateOrder,
       onWrapETH: LendroidJS.onWrapETH,
       onAllowance: LendroidJS.onAllowance,
-
-      // Table & List
       getOffers: LendroidJS.fetchOrders,
       getPositions: LendroidJS.fetchLoanPositions,
       onPostLoans: LendroidJS.onPostLoans,
