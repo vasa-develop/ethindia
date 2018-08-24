@@ -20,8 +20,6 @@ class Orders extends Component {
 
     const LendroidJS = new Lendroid({
       stateCallback: () => this.forceUpdate(),
-      apiEndpoint: 'http://192.168.1.117:8080',
-      apiLoanRequests: 'http://192.168.1.117:5080',
     })
     this.state = {
       LendroidJS,
