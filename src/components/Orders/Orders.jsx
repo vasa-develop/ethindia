@@ -18,7 +18,11 @@ class Orders extends Component {
   constructor(props) {
     super(props)
 
-    const LendroidJS = new Lendroid({ stateCallback: () => this.forceUpdate() })
+    const LendroidJS = new Lendroid({
+      stateCallback: () => this.forceUpdate(),
+      apiEndpoint: 'http://192.168.1.117:8080',
+      apiLoanRequests: 'http://192.168.1.117:5080',
+    })
     this.state = {
       LendroidJS,
       Tables: CreateTables(LendroidJS.web3Utils),
@@ -112,7 +116,7 @@ class Orders extends Component {
             style={{ marginBottom: 29 }} />
           <ListGroup methods={methods}
             address={address} contracts={contracts}
-            currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[4], right: Tables[5], data: positions }}
+            currentWETHExchangeRate={currentWETHExchangeRate} data={{ left: Tables[4], right: Tables[5], data: positions, classes: 'Positions' }}
             web3Utils={web3Utils}
             loading={loading.positions} />
         </div>

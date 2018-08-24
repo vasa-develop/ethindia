@@ -22,7 +22,7 @@ const CreateTables = (web3Utils) => ([
         label: 'Amount',
         key: 'loanAmount',
         precision: 3,
-        style: { textAlign: 'center' }
+        style: { textAlign: 'left' }
       }, {
         label: 'Term',
         key: 'loanDuration',
@@ -59,7 +59,8 @@ const CreateTables = (web3Utils) => ([
         label: 'Rate',
         key: 'interestRate',
         precision: 3,
-        suffix: '%'
+        suffix: '%',
+        style: { textAlign: 'left' }
       }, {
         label: 'Term',
         key: 'loanDuration',
@@ -68,7 +69,6 @@ const CreateTables = (web3Utils) => ([
         label: 'Amount',
         key: 'loanAmount',
         precision: 3,
-        style: { textAlign: 'center' }
       }
     ],
     data: {
@@ -174,26 +174,21 @@ const CreateTables = (web3Utils) => ([
         label: 'Amount',
         key: 'amount',
         precision: 2,
-        style: { fontFamily: 'Space Mono', width: '21%' }
       }, {
         label: 'Total Interest ',
         key: 'totalInterest',
         precision: 5,
-        style: { fontFamily: 'Space Mono', width: '26%' }
       }, {
         label: 'Term',
         key: 'term',
         filter: 'calcTerm',
-        style: { fontFamily: 'Space Mono', width: '16%' }
       }, {
         label: 'Loan Health',
         key: 'health',
         suffix: '%',
-        style: { fontFamily: 'Space Mono', width: '21%' }
       }, {
         label: 'Loan Status',
         key: 'status',
-        style: { fontFamily: 'Space Mono', width: '16%' }
       },
     ],
     data: {
@@ -227,26 +222,21 @@ const CreateTables = (web3Utils) => ([
         label: 'Amount',
         key: 'amount',
         precision: 2,
-        style: { fontFamily: 'Space Mono', width: '21%' }
       }, {
         label: 'Total Interest ',
         key: 'totalInterest',
         precision: 5,
-        style: { fontFamily: 'Space Mono', width: '26%' }
       }, {
         label: 'Term',
         key: 'term',
         filter: 'calcTerm',
-        style: { fontFamily: 'Space Mono', width: '16%' }
       }, {
         label: 'Loan Health',
         key: 'health',
         suffix: '%',
-        style: { fontFamily: 'Space Mono', width: '21%' }
       }, {
         label: 'Loan Status',
         key: 'status',
-        style: { fontFamily: 'Space Mono', width: '16%' }
       },
     ],
     data: {
