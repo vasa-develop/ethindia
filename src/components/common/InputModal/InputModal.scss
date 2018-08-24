@@ -1,4 +1,16 @@
 .ReactModal__Content {
+  width: 100%;
+  max-width: 500px;
+  padding: 30px 20px 0 !important;
+  @media (max-width: 1024px) {
+    max-width: 400px;
+    padding: 20px 10px 0 !important;
+  }
+  @media (max-width: 425px) {
+    width: 300px;
+    max-width: 90%;
+  }
+
   .Error {
     color: red;
   }
@@ -6,6 +18,12 @@
   h2 {
     // text-transform: uppercase;
     padding: 0 20px;
+    @media (max-width: 1024px) {
+      font-size: 2em;
+    }
+    @media (max-width: 425px) {
+      font-size: 1.2em;
+    }
   }
 
   .FillLoanAmount {
@@ -29,7 +47,6 @@
   }
 
   .ModalBody {
-    min-height: 200px;
     display: flex;
     align-items: center;
     justify-content: center;

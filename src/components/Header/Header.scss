@@ -13,6 +13,14 @@
     justify-content: center;
     flex-direction: column;
     height: 531px;
+    @media (max-width: 1024px) {
+      height: 100%;
+      padding: 90px 0 50px;
+    }
+    @media (max-width: 425px) {
+      height: 100vh;
+      padding: 0;
+    }
 
     .Logo {
       text-align: center;
@@ -21,6 +29,9 @@
       font-size: 61px;
       font-weight: bolder;
       position: relative;
+      @media (max-width: 1024px) {
+        font-size: 3em;
+      }
 
       img {
         height: 100%;
@@ -29,11 +40,21 @@
     }
 
     .Header {
+      @media (max-width: 1024px) {
+        width: 100%;
+      }
+
       .Info {
         margin-top: 40px;
+        @media (max-width: 1024px) {
+          margin-top: 2em;
+        }
 
         &.Address {
           margin-top: 70px;
+          @media (max-width: 1024px) {
+            margin-top: 2em;
+          }
 
           .Value {
             background: -moz-linear-gradient(0deg, #9871ee 0%, #a67ef0 100%);
@@ -53,6 +74,23 @@
             text-align: center;
             letter-spacing: 2.74px;
             box-shadow: 0 10px 20px rgba(132, 83, 243, 0.3);
+            @media (max-width: 1024px) {
+              line-height: 50px;
+              width: 100%;
+              max-width: 80%;
+              margin: 13px 10% 0;
+              font-size: 0.8em;
+              padding: 0 10px;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+            @media (max-width: 425px) {
+              max-width: 95%;
+              margin: 13px 2.5% 0;
+              letter-spacing: 2.74px;
+              letter-spacing: 1.5px;
+            }
           }
         }
 
@@ -70,6 +108,14 @@
           display: flex;
           justify-content: space-between;
           padding: 0 15px;
+          @media (max-width: 1024px) {
+            max-width: 80%;
+            margin: 32px 10% 0;
+          }
+          @media (max-width: 425px) {
+            max-width: 95%;
+            margin: 13px 2.5% 0;
+          }
 
           .SubInfo {
             .Label {
@@ -82,6 +128,12 @@
               color: white;
               text-align: left;
               line-height: 29px;
+              @media (max-width: 1024px) {
+                font-size: 1em;
+              }
+              @media (max-width: 425px) {
+                font-size: 0.8em;
+              }
             }
           }
         }
