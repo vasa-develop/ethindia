@@ -13,6 +13,11 @@
     justify-content: center;
     flex-direction: column;
     height: 531px;
+    @media (max-width: 768px) {
+      height: 100%;
+      min-height: 100vh;
+      padding: 30px 0;
+    }
 
     .Logo {
       text-align: center;
@@ -21,6 +26,9 @@
       font-size: 61px;
       font-weight: bolder;
       position: relative;
+      @media (max-width: 768px) {
+        font-size: 3em;
+      }
 
       img {
         height: 100%;
@@ -29,11 +37,21 @@
     }
 
     .Header {
+      @media (max-width: 768px) {
+        width: 100%;
+      }
+
       .Info {
         margin-top: 40px;
+        @media (max-width: 768px) {
+          margin-top: 2em;
+        }
 
         &.Address {
           margin-top: 70px;
+          @media (max-width: 768px) {
+            margin-top: 2em;
+          }
 
           .Value {
             background: -moz-linear-gradient(0deg, #9871ee 0%, #a67ef0 100%);
@@ -53,6 +71,16 @@
             text-align: center;
             letter-spacing: 2.74px;
             box-shadow: 0 10px 20px rgba(132, 83, 243, 0.3);
+            @media (max-width: 768px) {
+              line-height: 50px;
+              max-width: 95%;
+              margin: 13px 2.5% 0;
+              font-size: 0.8em;
+              padding: 0 10px;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
           }
         }
 
@@ -82,6 +110,9 @@
               color: white;
               text-align: left;
               line-height: 29px;
+              @media (max-width: 768px) {
+                font-size: 1em;
+              }
             }
           }
         }
