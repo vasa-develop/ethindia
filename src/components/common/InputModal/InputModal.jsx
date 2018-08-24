@@ -15,8 +15,6 @@ const customStyles = {
     bottom: 'auto',
     marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
-    padding: '30px 20px 0',
-    minWidth: 500,
   }
 }
 

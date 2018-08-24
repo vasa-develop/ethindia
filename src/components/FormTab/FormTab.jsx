@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
+import FadeIn from 'react-fade-in'
 
 import FormInput from '../FormInput/FormInput'
 import { FormInputs, FeeFormInputs, WrapETHFormInputs, AllowanceFormInputs } from './Forms'
@@ -13,18 +14,18 @@ class FormTab extends Component {
 
     this.state = {
       // Lend/Borrow Form Inputs
-      loanAmountOffered: 4.123,
+      loanAmountOffered: 1.0,
       interestRatePerDay: 0.008,
-      loanDuration: 12 * 3600,
-      offerExpiry: 72,
+      loanDuration: 60 * 3600,
+      offerExpiry: 720,
       wrangler: 'Lendroid',
       allowance: 0,
 
       // Fee Form Inputs
-      relayerFeeLST: 0.01,
-      monitoringFeeLST: 0.01,
-      rolloverFeeLST: 0.01,
-      closureFeeLST: 0.01,
+      relayerFeeLST: 0.0,
+      monitoringFeeLST: 0.0,
+      rolloverFeeLST: 0.0,
+      closureFeeLST: 0.0,
 
       // Wrap/Unwrap ETH Form Inputs
       ETHBalance: 0,
@@ -41,7 +42,14 @@ class FormTab extends Component {
       tokenContractInstance: null,
 
       tabIndex: 0,
+      showFeeForm: true,
     }
+
+    this.onChange = this.onChange.bind(this)
+    this.renderInputs = this.renderInputs.bind(this)
+    this.renderFeeForm = this.renderFeeForm.bind(this)
+    this.onWrapETH = this.onWrapETH.bind(this)
+    this.onAllowance = this.onAllowance.bind(this)
   }
 
   getTokenName(token) {
@@ -155,10 +163,75 @@ class FormTab extends Component {
     }
   }
 
-  render() {
+  renderInputs(formInputs) {
     const { contracts, loading } = this.props
     const formData = this.state
     contracts.token = formData.token
+
+    return formInputs.map(item => (
+      <td style={item.style}>
+        {
+          item.key === "operation" ? <div className="FormInputWrapper">
+            <div className="InputLabel">{item.label}</div>
+            <select value={formData.operation} onChange={this.onChangeSync(item)}>
+              <option disabled>Select Operation</option>
+              <option>Wrap</option>
+              <option>Unwrap</option>
+            </select>
+          </div>
+            :
+            item.key === "token" ? <div className="FormInputWrapper">
+              <div className="InputLabel">{item.label}</div>
+              <select value={formData.token} onChange={this.onChangeSync(item)}>
+                <option disabled>Select Token</option>
+                <option>WETH</option>
+                <option>DAI</option>
+                <option>LST</option>
+              </select>
+            </div>
+              :
+              <FormInput
+                data={item}
+                onChange={this.onChange.bind(this)}
+                val={item.value ? (item.value(contracts)) : formData[item.key]}
+                loading={item.loading ? loading[item.loading] : false}
+              />
+        }
+      </td>
+    ))
+  }
+
+  renderFeeForm(showFeeForm) {
+    return <table cellspacing="15" className={`FeeForm ${showFeeForm ? 'Show' : 'Hide'}`}>
+      <tbody>
+        <tr>
+          {this.renderInputs(FeeFormInputs)}
+          <td colspan="2" className="Empty"></td>
+        </tr>
+      </tbody>
+    </table>
+  }
+
+  renderWrangler() {
+    return <div className="Wrangler">
+      <div className="Label">Wrangler</div>
+      <select>
+        <option disabled>Wrangler Name</option>
+        <option default>Default Simple Wrangler</option>
+      </select>
+    </div>
+  }
+
+  renderButton(title, valid, onClick) {
+    return <td className="ButtonWrapper">
+      <div className={`FormInput Button ${valid ? '' : 'Disabled'}`} onClick={onClick}>
+        <div className="left" /> {title}
+      </div>
+    </td>
+  }
+
+  render() {
+    const { showFeeForm } = this.state
 
     return (
       <div className="TabWrapper">
@@ -172,232 +245,64 @@ class FormTab extends Component {
           </TabList>
 
           <TabPanel>
-            <div className="Wrangler">
-              <div className="Label">Wrangler</div>
-              <select>
-                <option disabled>Wrangler Name</option>
-                <option default>Default Simple Wrangler</option>
-              </select>
-            </div>
-            <table cellspacing="15">
-              <thead>
-                <tr>
-                  {
-                    FormInputs(true).map(item => (
-                      <th width={item.width}>{item.label}</th>
-                    ))
-                  }
-                  <th width="100"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  {
-                    FormInputs(true).map(item => (
-                      <td style={item.style}>
-                        <FormInput
-                          data={item}
-                          onChange={this.onChange.bind(this)}
-                          val={item.value ? (item.value(contracts)) : formData[item.key]}
-                          loading={item.loading ? loading[item.loading] : false}
-                        />
-                      </td>
-                    ))
-                  }
-                  <td>
-                    <div className={`FormInput Button ${this.isValid(true) ? '' : 'Disabled'}`} onClick={this.onSubmit(true)}>
-                      <div className="left" />
-                      Order
-                </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <table cellspacing="15">
-              <thead>
-                <tr>
-                  {
-                    FeeFormInputs.map(item => (
-                      <th width={item.width}>{item.label}</th>
-                    ))
-                  }
-                  <th width="250" colspan="2"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  {
-                    FeeFormInputs.map(item => (
-                      <td>
-                        <FormInput data={item} onChange={this.onChange.bind(this)} val={item.value ? (item.value(contracts)) : formData[item.key]} />
-                      </td>
-                    ))
-                  }
-                  <td colspan="2"></td>
-                </tr>
-              </tbody>
-            </table>
+            <FadeIn>
+              {this.renderWrangler()}
+              <table cellspacing="15">
+                <tbody>
+                  <tr>
+                    {this.renderInputs(FormInputs(true))}
+                    {this.renderButton('Order', this.isValid(true), this.onSubmit(true))}
+                  </tr>
+                </tbody>
+              </table>
+              <div
+                className="HandleFeeForm"
+                onClick={e => this.setState({ showFeeForm: !showFeeForm })}>
+                {`${showFeeForm ? 'Hide' : 'Show'} Fee Form`}</div>
+              {this.renderFeeForm(showFeeForm)}
+            </FadeIn>
           </TabPanel>
           <TabPanel>
-            <div className="Wrangler">
-              <div className="Label">Wrangler</div>
-              <select>
-                <option disabled>Wrangler Name</option>
-                <option default>Default Simple Wrangler</option>
-              </select>
-            </div>
-            <table cellspacing="15">
-              <thead>
-                <tr>
-                  {
-                    FormInputs(false).map(item => (
-                      <th width={item.width}>{item.label}</th>
-                    ))
-                  }
-                  <th width="100"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  {
-                    FormInputs(false).map(item => (
-                      <td style={item.style}>
-                        <FormInput
-                          data={item}
-                          onChange={this.onChange.bind(this)}
-                          val={item.value ? (item.value(contracts)) : formData[item.key]}
-                          loading={item.loading ? loading[item.loading] : false}
-                        />
-                      </td>
-                    ))
-                  }
-                  <td>
-                    <div className={`FormInput Button ${this.isValid(false) ? '' : 'Disabled'}`} onClick={this.onSubmit(false)}>
-                      <div className="left" />
-                      Order
-                </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <table cellspacing="15">
-              <thead>
-                <tr>
-                  {
-                    FeeFormInputs.map(item => (
-                      <th width={item.width}>{item.label}</th>
-                    ))
-                  }
-                  <th width="250" colspan="2"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  {
-                    FeeFormInputs.map(item => (
-                      <td>
-                        <FormInput
-                          data={item}
-                          onChange={this.onChange.bind(this)}
-                          val={item.value ? (item.value(contracts)) : formData[item.key]}
-                          loading={item.loading ? loading[item.loading] : false}
-                        />
-                      </td>
-                    ))
-                  }
-                  <td colspan="2"></td>
-                </tr>
-              </tbody>
-            </table>
+            <FadeIn>
+              {this.renderWrangler()}
+              <table cellspacing="15">
+                <tbody>
+                  <tr>
+                    {this.renderInputs(FormInputs(false))}
+                    {this.renderButton('Order', this.isValid(false), this.onSubmit(false))}
+                  </tr>
+                </tbody>
+              </table>
+              <div
+                className="HandleFeeForm"
+                onClick={e => this.setState({ showFeeForm: !showFeeForm })}>
+                {`${showFeeForm ? 'Hide' : 'Show'} Fee Form`}</div>
+              {this.renderFeeForm(showFeeForm)}
+            </FadeIn>
           </TabPanel>
           <TabPanel>
-            <table cellspacing="15" className="WrapETHTable">
-              <thead>
-                <tr>
-                  {
-                    WrapETHFormInputs.map(item => (
-                      <th width={item.width}>{item.label}</th>
-                    ))
-                  }
-                  <th width="100"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  {
-                    WrapETHFormInputs.map(item => (
-                      <td style={item.style}>
-                        {
-                          item.key === "operation"
-                            ?
-                            <select value={formData.operation} onChange={this.onChangeSync(item)}>
-                              <option disabled>Select Operation</option>
-                              <option>Wrap</option>
-                              <option>Unwrap</option>
-                            </select>
-                            :
-                            <FormInput
-                              data={item}
-                              onChange={this.onChange.bind(this)}
-                              val={item.value ? (item.value(contracts)) : formData[item.key]}
-                              loading={item.loading ? loading[item.loading] : false}
-                            />
-                        }
-                      </td>
-                    ))
-                  }
-                  <td>
-                    <div className={`FormInput Button ${this.isValidForm(WrapETHFormInputs) ? '' : 'Disabled'}`} onClick={this.onWrapETH.bind(this)}>
-                      <div className="left" />Submit</div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <FadeIn>
+              <table cellspacing="15" className="WrapETHTable">
+                <tbody>
+                  <tr>
+                    {this.renderInputs(WrapETHFormInputs)}
+                    {this.renderButton('Submit', this.isValidForm(WrapETHFormInputs), this.onWrapETH)}
+                  </tr>
+                </tbody>
+              </table>
+            </FadeIn>
           </TabPanel>
           <TabPanel>
-            <table cellspacing="15" className="AllowanceTable">
-              <thead>
-                <tr>
-                  {
-                    AllowanceFormInputs.map(item => (
-                      <th width={item.width}>{item.label}</th>
-                    ))
-                  }
-                  <th width="100"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  {
-                    AllowanceFormInputs.map(item => (
-                      <td style={item.style}>
-                        {
-                          item.key === "token"
-                            ?
-                            <select value={formData.token} onChange={this.onChangeSync(item)}>
-                              <option disabled>Select Token</option>
-                              <option>WETH</option>
-                              <option>DAI</option>
-                              <option>LST</option>
-                            </select>
-                            :
-                            <FormInput
-                              data={item}
-                              onChange={this.onChange.bind(this)}
-                              val={item.value ? (item.value(contracts)) : formData[item.key]}
-                              loading={item.loading ? loading[item.loading] : false}
-                            />
-                        }
-                      </td>
-                    ))
-                  }
-                  <td>
-                    <div className={`FormInput Button ${this.isValidForm(AllowanceFormInputs) ? '' : 'Disabled'}`} onClick={this.onAllowance.bind(this)}>
-                      <div className="left" />Submit</div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <FadeIn>
+              <table cellspacing="15" className="AllowanceTable">
+                <tbody>
+                  <tr>
+                    {this.renderInputs(AllowanceFormInputs)}
+                    {this.renderButton('Submit', this.isValidForm(AllowanceFormInputs), this.onAllowance)}
+                  </tr>
+                </tbody>
+              </table>
+            </FadeIn>
           </TabPanel>
         </Tabs >
       </div >
