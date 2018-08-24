@@ -4,17 +4,18 @@
   padding: 62px 30px 30px;
   background: white;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  @media (max-width: 1024px) {
-    display: none;
+  @media (max-width: 425px) {
+    padding: 42px 15px 15px;
+    font-size: 1.2em;
   }
 
   .Title {
-    opacity: .8;
+    opacity: 0.8;
     font-family: "SFProText-Bold", Helvetica, Arial, serif;
     font-size: 24px;
     color: black;
     text-align: center;
-    letter-spacing: .17px;
+    letter-spacing: 0.17px;
     line-height: 29px;
   }
 
@@ -36,13 +37,13 @@
       font-family: "SFProText-Medium", Helvetica, Arial, serif;
       font-size: 18px;
       text-align: center;
-      letter-spacing: .12px;
+      letter-spacing: 0.12px;
       line-height: 91px;
       width: 200px;
       border-radius: 50px;
       right: -2px;
       color: rgba(0, 0, 0, 0.39);
-      transition: all .2s;
+      transition: all 0.2s;
 
       &.Bar {
         background: -moz-linear-gradient(0deg, #8458ea 0%, #a57af2 100%);
@@ -91,33 +92,65 @@
 
   table {
     width: 100%;
-    margin-top: 15px;
     table-layout: fixed;
+    margin-top: 0;
 
-    &:first-child {
-      margin-top: 0;
-    }
-
-    thead {
-      th {
-        font-size: 12px;
-        color: rgba(0, 0, 0, 0.3);
-        text-align: left;
-        line-height: 14px;
-        text-transform: uppercase;
+    &.FeeForm {
+      margin-top: 15px;
+      display: table !important;
+      @media (max-width: 1024px) {
+        &.Hide {
+          display: none !important;
+        }
       }
     }
 
     tbody {
+      tr {
+        @media (max-width: 1024px) {
+          display: block;
+        }
+      }
+
       td {
         padding-right: 20px;
-        padding-top: 10px;
+        padding-top: 0;
         line-height: 22px;
         font-size: 13px;
         color: #002257;
+        @media (max-width: 1024px) {
+          display: inline-block;
+          width: 50%;
+          padding-right: 10px;
+          margin-bottom: 10px;
+
+          &:nth-child(even) {
+            padding-right: 0;
+            padding-left: 10px;
+          }
+
+          &.Empty {
+            display: none;
+          }
+
+          &.ButtonWrapper {
+            width: 100%;
+            padding: 0 25% !important;
+          }
+        }
+        @media (max-width: 425px) {
+          width: 100%;
+          padding: 0 !important;
+
+          &.ButtonWrapper {
+            width: 100%;
+            padding: 0 !important;
+          }
+        }
 
         &:last-child {
           padding-right: 0;
+          vertical-align: bottom;
         }
 
         .FormInput {
@@ -172,6 +205,9 @@
               position: absolute;
               left: -6px;
               top: 17px;
+              @media (max-width: 1024px) {
+                display: none;
+              }
             }
           }
         }
@@ -193,5 +229,15 @@
         }
       }
     }
+  }
+}
+
+.HandleFeeForm {
+  color: #8559ea;
+  text-decoration: underline;
+  font-size: 10px;
+  display: none;
+  @media (max-width: 1024px) {
+    display: block;
   }
 }

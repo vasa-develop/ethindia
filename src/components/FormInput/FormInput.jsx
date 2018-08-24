@@ -97,37 +97,40 @@ class FormInput extends Component {
 
     return (
       <div className="FormInputWrapper">
-        {
-          data.inputs.map((item, index) => {
-            const id = JSON.stringify(item) + index
-            const value = currentInput === id ? currentValue : values[index + 1]
-            return (
-              <div className={`FormInput ${item.arrow ? 'Arrow' : ''}`} style={{ width: `calc(${100 / inputCount}% - ${inputCount > 0 ? '5px' : '0px'})` }}>
-                {
-                  loading
-                    ?
-                    <div className="Loading">
-                      <div className="Loader" />
-                    </div>
-                    :
-                    null
-                }
-                <input
-                  value={value}
-                  onFocus={this.onFocus(item, index, values[index + 1])}
-                  onChange={this.onChange.bind(this)}
-                  onBlur={this.onBlur(index)}
-                  min="0" max={item.max} readOnly={data.readOnly} />
-                {
-                  item.arrow || !item.suffix ? null
-                    : <div class="Suffix">{item.suffix}</div>
-                }
-                <div className="after" onClick={this.onStep(index, true)} />
-                <div className="before" onClick={this.onStep(index, false)} />
-              </div>
-            )
-          })
-        }
+        <div className="InputLabel">{data.label}</div>
+        <div className="FormInputs">
+          {
+            data.inputs.map((item, index) => {
+              const id = JSON.stringify(item) + index
+              const value = currentInput === id ? currentValue : values[index + 1]
+              return (
+                <div className={`FormInput ${item.arrow ? 'Arrow' : ''}`} style={{ width: `calc(${100 / inputCount}% - ${inputCount > 1 ? '5px' : '0px'})` }}>
+                  {
+                    loading
+                      ?
+                      <div className="Loading">
+                        <div className="Loader" />
+                      </div>
+                      :
+                      null
+                  }
+                  <input
+                    value={value}
+                    onFocus={this.onFocus(item, index, values[index + 1])}
+                    onChange={this.onChange.bind(this)}
+                    onBlur={this.onBlur(index)}
+                    min="0" max={item.max} readOnly={data.readOnly} />
+                  {
+                    item.arrow || !item.suffix ? null
+                      : <div class="Suffix">{item.suffix}</div>
+                  }
+                  <div className="after" onClick={this.onStep(index, true)} />
+                  <div className="before" onClick={this.onStep(index, false)} />
+                </div>
+              )
+            })
+          }
+        </div>
       </div>
     )
   }
