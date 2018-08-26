@@ -18,8 +18,12 @@
   h2 {
     // text-transform: uppercase;
     padding: 0 20px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 2em;
     @media (max-width: 1024px) {
-      font-size: 2em;
+      font-size: 1.5em;
     }
     @media (max-width: 425px) {
       font-size: 1.2em;
