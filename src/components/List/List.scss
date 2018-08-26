@@ -84,15 +84,21 @@
 
           &.status {
             position: absolute;
-            right: 30px;
+            display: flex;
             top: 3px;
+            right: 30px;
+            width: auto;
 
             .Label {
-              display: none;
+              overflow: visible;
+              margin-top: 6px;
+              line-height: 14px;
             }
 
             .Data {
               overflow: visible;
+              margin-top: 6px;
+              line-height: 14px;
             }
           }
         }
