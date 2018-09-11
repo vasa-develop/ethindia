@@ -3,7 +3,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import FadeIn from 'react-fade-in'
 
 import FormInput from '../FormInput/FormInput'
-import { FormInputs, FeeFormInputs, WrapETHFormInputs, AllowanceFormInputs } from './Forms'
+import { FormInputs, FeeFormInputs, WrapETHFormInputs, AllowanceFormInputs, MakerDAIFormInputs } from './Forms'
 
 import './FormTab.scss'
 import './ReactTab.scss'
@@ -43,6 +43,7 @@ class FormTab extends Component {
 
       tabIndex: 0,
       showFeeForm: true,
+      making: false,
     }
 
     this.onChange = this.onChange.bind(this)
@@ -50,6 +51,7 @@ class FormTab extends Component {
     this.renderFeeForm = this.renderFeeForm.bind(this)
     this.onWrapETH = this.onWrapETH.bind(this)
     this.onAllowance = this.onAllowance.bind(this)
+    this.onMakerDAI = this.onMakerDAI.bind(this)
   }
 
   getTokenName(token) {
@@ -58,7 +60,14 @@ class FormTab extends Component {
 
   onChange(key, value, affection = null) {
     const formData = this.state
+    const { currentDAIExchangeRate } = this.props
     formData[key] = value
+
+    if (key === 'lockETH') {
+      formData['amountInDAI'] = value * currentDAIExchangeRate;
+    } else if (key === 'amountInDAI') {
+      formData['lockETH'] = value / currentDAIExchangeRate;
+    }
     this.setState(formData)
   }
 
@@ -146,6 +155,16 @@ class FormTab extends Component {
     methods.onAllowance(token, newAllowance)
   }
 
+  async onMakerDAI() {
+    const { amountInDAI, lockETH } = this.state
+    const { methods: { startAsync } } = this.props
+
+    this.setState({ making: true })
+    startAsync(lockETH, amountInDAI, () => {
+      setTimeout(() => this.setState({ making: false }), 5000)
+    })
+  }
+
   onTabChange(tabIndex) {
     this.setState({ tabIndex })
 
@@ -167,6 +186,7 @@ class FormTab extends Component {
     const { contracts, loading } = this.props
     const formData = this.state
     contracts.token = formData.token
+    const loadings = Object.assign({}, loading, { making: formData.making })
 
     return formInputs.map(item => (
       <td style={item.style}>
@@ -194,7 +214,7 @@ class FormTab extends Component {
                 data={item}
                 onChange={this.onChange.bind(this)}
                 val={item.value ? (item.value(contracts)) : formData[item.key]}
-                loading={item.loading ? loading[item.loading] : false}
+                loading={item.loading ? loadings[item.loading] : false}
               />
         }
       </td>
@@ -242,6 +262,7 @@ class FormTab extends Component {
             <Tab>Borrow</Tab>
             <Tab>Wrap/Unwrap ETH</Tab>
             <Tab>Allowance</Tab>
+            <Tab>Maker DAI</Tab>
           </TabList>
 
           <TabPanel>
@@ -299,6 +320,18 @@ class FormTab extends Component {
                   <tr>
                     {this.renderInputs(AllowanceFormInputs)}
                     {this.renderButton('Submit', this.isValidForm(AllowanceFormInputs), this.onAllowance)}
+                  </tr>
+                </tbody>
+              </table>
+            </FadeIn>
+          </TabPanel>
+          <TabPanel>
+            <FadeIn>
+              <table cellspacing="15" className="MakerDAITAble">
+                <tbody>
+                  <tr>
+                    {this.renderInputs(MakerDAIFormInputs)}
+                    {this.renderButton('Submit', this.isValidForm(MakerDAIFormInputs), this.onMakerDAI)}
                   </tr>
                 </tbody>
               </table>

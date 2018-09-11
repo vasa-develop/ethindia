@@ -118,7 +118,7 @@ class FormInput extends Component {
                     value={value}
                     onFocus={this.onFocus(item, index, values[index + 1])}
                     onChange={this.onChange.bind(this)}
-                    onBlur={this.onBlur(index)}
+                    onBlur={data.readOnly ? null : this.onBlur(index)}
                     min="0" max={item.max} readOnly={data.readOnly} />
                   {
                     item.arrow || !item.suffix ? null

@@ -217,3 +217,52 @@ export const AllowanceFormInputs = [
     required: true
   },
 ]
+
+export const MakerDAIFormInputs = [
+  {
+    key: 'ethBalance',
+    label: 'ETH Balance',
+    width: 150,
+    output: (val) => (val.toString()),
+    inputs: [{
+      precision: 3,
+      unit: 1
+    }],
+    readOnly: true,
+    value: (contracts) => (contracts.balances ? (contracts.balances.ETH || 0) : 0),
+    loading: 'making'
+  }, {
+    key: 'daiBalance',
+    label: 'DAI Balance',
+    width: 150,
+    output: (val) => (val.toString()),
+    inputs: [{
+      precision: 3,
+      unit: 1
+    }],
+    readOnly: true,
+    value: (contracts) => (contracts.balances ? (contracts.balances.DAI || 0) : 0),
+    loading: 'making'
+  }, {
+    key: 'lockETH',
+    label: 'Amount to Lock(ETH)',
+    width: 150,
+    output: (val) => (val.toString()),
+    inputs: [{
+      precision: 3,
+      unit: 1
+    }],
+    required: true,
+  }, {
+    key: 'amountInDAI',
+    label: 'Amount to Buy(DAI)',
+    width: 150,
+    output: (val) => (val.toString()),
+    inputs: [{
+      precision: 3,
+      unit: 1
+    }],
+    readOnly: true,
+    required: true,
+  },
+]
