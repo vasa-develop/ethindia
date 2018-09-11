@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@makerdao/dai": "^0.7.1",
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
     "bootstrap": "^4.1.1",
+    "dotenv": "^6.0.0",
     "file-loader": "^1.1.11",
     "lendroid": "^2.1.0",
     "moment": "^2.21.0",
