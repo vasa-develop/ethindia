@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import axios from 'axios'
 
 import { Lendroid } from 'lendroid'
+import { startAsync } from './Maker'
 
 import TableGroup from '../TableGroup/TableGroup'
 import ListGroup from '../ListGroup/ListGroup'
@@ -21,6 +22,7 @@ class Orders extends Component {
     const LendroidJS = new Lendroid({
       stateCallback: () => this.forceUpdate(),
     })
+
     this.state = {
       LendroidJS,
       Tables: CreateTables(LendroidJS.web3Utils),
@@ -88,6 +90,7 @@ class Orders extends Component {
       onFillOrderServer: LendroidJS.onFillOrderServer,
       onDeleteOrder: LendroidJS.onDeleteOrder,
       onCancelOrder: LendroidJS.onCancelOrder,
+      startAsync,
     }
 
     return (
