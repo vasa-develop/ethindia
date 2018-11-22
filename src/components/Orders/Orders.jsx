@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import { Redirect } from 'react-router-dom'
 
 import { Lendroid } from 'lendroid'
 import { startAsync } from './Maker'
@@ -19,20 +20,63 @@ class Orders extends Component {
   constructor(props) {
     super(props)
 
-    const LendroidJS = new Lendroid({
-      stateCallback: () => this.forceUpdate(),
-    })
+    if (window.web3) {
 
-    this.state = {
-      LendroidJS,
-      Tables: CreateTables(LendroidJS.web3Utils),
+      this.state = {
+        LendroidJS: {},
+        Tables: [],
+        metamaskChecking: true,
+        metamaskLogged: false,
+      }
+    } else {
+      this.state = {
+        LendroidJS: {},
+      }
     }
 
     this.apiPost = this.apiPost.bind(this)
   }
 
+  componentDidMount() {
+    this.checkMetamask();
+  }
+
+  checkMetamask() {
+    if (window.web3) {
+      this.setState({
+        metamaskChecking: true,
+        metamaskLogged: false,
+      })
+
+      window.web3.eth.getAccounts((err, accounts) => {
+        if (accounts && accounts.length > 0) {
+          const newState = {
+            metamaskLogged: true,
+            metamaskChecking: false,
+          }
+          if (Object.keys(this.state.LendroidJS).length === 0) {
+            const LendroidJS = new Lendroid({
+              stateCallback: () => this.forceUpdate(),
+            })
+            newState['LendroidJS'] = LendroidJS
+            newState['Tables'] = CreateTables(LendroidJS.web3Utils)
+          }
+          this.setState(newState)
+        } else {
+          this.setState({
+            metamaskChecking: false,
+          })
+        }
+      })
+    }
+  }
+
   getPositionsData() {
     const { LendroidJS } = this.state
+    if (!LendroidJS.positions) return {
+      lent: [],
+      borrowed: [],
+    }
     const { contracts: { positions }, exchangeRates: { currentDAIExchangeRate } } = LendroidJS
     if (!positions || currentDAIExchangeRate === 0) return {}
 
@@ -67,8 +111,15 @@ class Orders extends Component {
   }
 
   render() {
-    const { LendroidJS, Tables } = this.state
-    const { loading, orders, exchangeRates, contracts, web3Utils, metamask = {} } = LendroidJS
+    const {
+      LendroidJS = {},
+      Tables,
+      metamaskChecking,
+      metamaskLogged,
+    } = this.state
+
+    if (!window.web3) return <Redirect to="/metamask-missing" />
+    const { loading = {}, orders = { myOrders: {} }, exchangeRates = {}, contracts, web3Utils, metamask = {} } = LendroidJS
     const { address, network } = metamask
     const { currentWETHExchangeRate, currentDAIExchangeRate } = exchangeRates
     const offers = orders.orders
@@ -92,6 +143,8 @@ class Orders extends Component {
       onCancelOrder: LendroidJS.onCancelOrder,
       startAsync,
     }
+
+    if (!(network && address) && !metamaskChecking) this.checkMetamask()
 
     return (
       network && address ?
@@ -122,7 +175,10 @@ class Orders extends Component {
             loading={loading.positions} />
         </div>
         :
-        <div>No Metamask Detected</div>
+        metamaskChecking || metamaskLogged ?
+          <div class="Checking">{metamaskChecking ? 'Metamask Checking...' : 'Loading...'}</div>
+          :
+          <Redirect to="/metamask-not-logged-in" />
     )
   }
 }
