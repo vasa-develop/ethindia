@@ -1,6 +1,4 @@
 .ReactModal__Content {
-  width: 100%;
-  max-width: 500px;
   padding: 30px 20px 0 !important;
   @media (max-width: 1024px) {
     max-width: 400px;
@@ -22,6 +20,11 @@
     text-overflow: ellipsis;
     overflow: hidden;
     font-size: 2em;
+
+    &.normal {
+      font-size: 1.5em;
+      text-align: center;
+    }
     @media (max-width: 1024px) {
       font-size: 1.5em;
     }
@@ -40,6 +43,14 @@
     line-height: 100%;
     margin-bottom: 10px;
     margin-top: 25px;
+    position: relative;
+
+    .Warning {
+      position: absolute;
+      color: red;
+      font-size: 80%;
+      bottom: -15px;
+    }
 
     .Label {
       line-height: 35px;
@@ -79,6 +90,17 @@
     .Info {
       padding: 10px;
       margin-top: 20px;
+
+      &.Error {
+        > div {
+          max-width: 500px;
+          overflow: hidden;
+          width: 400px;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+        }
+      }
 
       table {
         tr {

@@ -1,39 +1,68 @@
 import React, { Component } from 'react'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import FadeIn from 'react-fade-in'
+import Modal from 'react-modal'
 
 import FormInput from '../FormInput/FormInput'
-import { FormInputs, FeeFormInputs, WrapETHFormInputs, AllowanceFormInputs, MakerDAIFormInputs } from './Forms'
+import {
+  FormInputs,
+  FeeFormInputs,
+  WrapETHFormInputs,
+  AllowanceFormInputs,
+  MakerDAIFormInputs
+} from './Forms'
 
 import InputModal from '../common/InputModal/InputModal'
 
 import './FormTab.scss'
 import './ReactTab.scss'
 
+Modal.setAppElement('body')
+
+const customStyles = {
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    zIndex: 1000
+  },
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    padding: '30px 20px 0',
+    minWidth: 500
+  }
+}
+
 class FormTab extends Component {
   constructor(props) {
     super(props)
 
     this.state = {
+      modalErrorIsOpen: false,
+      modalErr: 'Unknown',
+
       // Lend/Borrow Form Inputs
       loanAmountOffered: 1.0,
-      interestRatePerDay: 0.008,
-      loanDuration: 60 * 3600,
-      offerExpiry: 720,
+      interestRatePerDay: 5,
+      loanDuration: 2,
+      offerExpiry: 12,
       wrangler: 'Lendroid',
       allowance: 0,
 
       // Fee Form Inputs
-      relayerFeeLST: 0.0,
-      monitoringFeeLST: 0.0,
-      rolloverFeeLST: 0.0,
-      closureFeeLST: 0.0,
+      relayerFeeLST: 0,
+      monitoringFeeLST: 1.0,
+      rolloverFeeLST: 0,
+      closureFeeLST: 0,
 
       // Wrap/Unwrap ETH Form Inputs
       ETHBalance: 0,
       wETHBalance: 0,
       operation: 'Wrap',
-      amount: 0.0500,
+      amount: 0.05,
       WETHContractInstance: null,
 
       // Allowance Form Inputs
@@ -48,6 +77,10 @@ class FormTab extends Component {
       making: false,
       privateKey: null,
       modalIsOpen: false,
+
+      flagOnSubmit: false,
+      flagOnWrapETH: false,
+      flagOnAllowance: false
     }
 
     this.onChange = this.onChange.bind(this)
@@ -68,15 +101,15 @@ class FormTab extends Component {
     formData[key] = value
 
     if (key === 'lockETH') {
-      formData['amountInDAI'] = value * currentDAIExchangeRate;
+      formData['amountInDAI'] = value * currentDAIExchangeRate
     } else if (key === 'amountInDAI') {
-      formData['lockETH'] = value / currentDAIExchangeRate;
+      formData['lockETH'] = value / currentDAIExchangeRate
     }
     this.setState(formData)
   }
 
   onChangeSync(item) {
-    return (e) => {
+    return e => {
       this.setState({ [item.key]: e.target.value })
     }
   }
@@ -92,6 +125,13 @@ class FormTab extends Component {
         valid = false
       } else if (item.validation) {
         if (!item.validation(contracts, currentDAIExchangeRate)) valid = false
+      }
+    })
+    FeeFormInputs(isLend).forEach(item => {
+      if (item.required && Number(formData[item.key]) === 0) {
+        valid = false
+      } else if (item.validation) {
+        if (!item.validation(contracts, formData[item.key])) valid = false
       }
     })
     return valid
@@ -124,44 +164,104 @@ class FormTab extends Component {
       const { address, methods, contracts, web3Utils } = this.props
       const postData = {}
 
-      FormInputs(isLend).forEach(item => {
-        postData[item.key] = item.output ? item.output(formData[item.key]) : formData[item.key]
+      this.setState({
+        flagOnSubmit: true
       })
-      FeeFormInputs.forEach(item => {
-        postData[item.key] = item.output ? item.output(formData[item.key]) : formData[item.key]
+
+      FormInputs(isLend).forEach(item => {
+        postData[item.key] = item.output
+          ? item.output(formData[item.key])
+          : formData[item.key]
+      })
+      FeeFormInputs(isLend).forEach(item => {
+        postData[item.key] = item.output
+          ? item.output(formData[item.key])
+          : formData[item.key]
       })
       postData.wrangler = '0x0f02a30cA336EC791Ac8Cb40816e4Fc5aeB57E38'
       postData.lender = isLend ? address : ''
       postData.borrower = !isLend ? address : ''
 
       postData.creatorSalt = '0x' + this.randHex(40)
-      postData.collateralToken = contracts.contracts ? contracts.contracts.WETH._address : ''
-      postData.loanToken = contracts.contracts ? contracts.contracts.DAI._address : ''
+      postData.collateralToken = contracts.contracts
+        ? contracts.contracts.WETH._address
+        : ''
+      postData.loanToken = contracts.contracts
+        ? contracts.contracts.DAI._address
+        : ''
       postData.relayer = ''
       postData.collateralAmount = web3Utils.toWei(0)
 
       delete postData.allowance
-      postData.offerExpiry = parseInt(postData.offerExpiry / 1000).toString();
+      postData.offerExpiry = parseInt(postData.offerExpiry / 1000).toString()
 
-      methods.onCreateOrder(postData)
+      methods.onCreateOrder(postData, (err = {}, res) => {
+        if (err && err.message) {
+          this.setState(
+            {
+              modalErr: err.message
+            },
+            () => this.openModal('modalErrorIsOpen')
+          )
+        }
+        this.setState({
+          flagOnSubmit: false
+        })
+      })
     }
   }
 
   onWrapETH() {
     const { methods } = this.props
     const { amount, operation } = this.state
-    methods.onWrapETH(amount, operation === 'Wrap')
+
+    this.setState({
+      flagOnWrapETH: true
+    })
+
+    methods.onWrapETH(amount, operation === 'Wrap', (err = {}, res) => {
+      if (err && err.message) {
+        this.setState(
+          {
+            modalErr: err.message
+          },
+          () => this.openModal('modalErrorIsOpen')
+        )
+      }
+      this.setState({
+        flagOnWrapETH: false
+      })
+    })
   }
 
   onAllowance() {
     const { methods } = this.props
     const { newAllowance, token } = this.state
-    methods.onAllowance(token, newAllowance)
+
+    this.setState({
+      flagOnAllowance: true
+    })
+
+    methods.onAllowance(token, newAllowance, (err = {}, res) => {
+      if (err && err.message) {
+        this.setState(
+          {
+            modalErr: err.message
+          },
+          () => this.openModal('modalErrorIsOpen')
+        )
+      }
+      this.setState({
+        flagOnAllowance: false
+      })
+    })
   }
 
   onMakerDAI() {
     const { amountInDAI, lockETH, privateKey } = this.state
-    const { methods: { startAsync } } = this.props
+    const {
+      methods: { startAsync }
+    } = this.props
 
     this.closeModal('modalIsOpen')
     this.setState({ making: true })
@@ -193,71 +293,112 @@ class FormTab extends Component {
   }
 
   renderInputs(formInputs) {
-    const { contracts, loading } = this.props
+    const { contracts, loading, currentDAIExchangeRate } = this.props
     const formData = this.state
     contracts.token = formData.token
     const loadings = Object.assign({}, loading, { making: formData.making })
 
-    return formInputs.map(item => (
-      <td style={item.style}>
-        {
-          item.key === "operation" ? <div className="FormInputWrapper">
-            <div className="InputLabel">{item.label}</div>
-            <select value={formData.operation} onChange={this.onChangeSync(item)}>
+    return formInputs.map((item, index) => (
+      <td style={item.style} key={index}>
+        {item.key === 'operation' ? (
+          <div className='FormInputWrapper'>
+            <div className='InputLabel'>{item.label}</div>
+            <select
+              value={formData.operation}
+              onChange={this.onChangeSync(item)}
+            >
               <option disabled>Select Operation</option>
               <option>Wrap</option>
               <option>Unwrap</option>
             </select>
           </div>
-            :
-            item.key === "token" ? <div className="FormInputWrapper">
-              <div className="InputLabel">{item.label}</div>
-              <select value={formData.token} onChange={this.onChangeSync(item)}>
-                <option disabled>Select Token</option>
-                <option>WETH</option>
-                <option>DAI</option>
-                <option>LST</option>
-              </select>
-            </div>
-              :
-              <FormInput
-                data={item}
-                onChange={this.onChange.bind(this)}
-                val={item.value ? (item.value(contracts)) : formData[item.key]}
-                loading={item.loading ? loadings[item.loading] : false}
-              />
-        }
+        ) : item.key === 'token' ? (
+          <div className='FormInputWrapper'>
+            <div className='InputLabel'>{item.label}</div>
+            <select value={formData.token} onChange={this.onChangeSync(item)}>
+              <option disabled>Select Token</option>
+              <option>WETH</option>
+              <option>DAI</option>
+              <option>LST</option>
+            </select>
+          </div>
+        ) : (
+          <FormInput
+            data={item}
+            onChange={this.onChange.bind(this)}
+            val={item.value ? item.value(contracts) : formData[item.key]}
+            loading={item.loading ? loadings[item.loading] : false}
+            className={item.warning && item.warning.feature ? 'feature' : ''}
+            warning={
+              item.warning
+                ? item.warning.feature
+                  ? item.warning.message
+                  : item.warning.check(
+                      contracts,
+                      formData[item.key],
+                      currentDAIExchangeRate
+                    )
+                  ? item.warning.message(
+                      formData[item.key],
+                      currentDAIExchangeRate
+                    )
+                  : null
+                : null
+            }
+          />
+        )}
       </td>
     ))
   }
 
-  renderFeeForm(showFeeForm) {
-    return <table cellspacing="15" className={`FeeForm ${showFeeForm ? 'Show' : 'Hide'}`}>
-      <tbody>
-        <tr>
-          {this.renderInputs(FeeFormInputs)}
-          <td colspan="2" className="Empty"></td>
-        </tr>
-      </tbody>
-    </table>
+  renderFeeForm(showFeeForm, isLend) {
+    return (
+      <table
+        cellSpacing='15'
+        className={`FeeForm ${showFeeForm ? 'Show' : 'Hide'}`}
+      >
+        <tbody>
+          <tr>
+            {this.renderInputs(FeeFormInputs(isLend))}
+            <td colSpan='1' className='Empty'>
+              {this.renderWrangler()}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    )
   }
 
   renderWrangler() {
-    return <div className="Wrangler">
-      <div className="Label">Wrangler</div>
-      <select>
-        <option disabled>Wrangler Name</option>
-        <option default>Default Simple Wrangler</option>
-      </select>
-    </div>
+    return (
+      <div className='Wrangler FormInputWrapper'>
+        <div className='InputLabel'>Wrangler</div>
+        <select>
+          <option disabled>Wrangler Name</option>
+          <option default>Default Simple Wrangler</option>
+        </select>
+      </div>
+    )
   }
 
   renderButton(title, valid, onClick) {
-    return <td className="ButtonWrapper">
-      <div className={`FormInput Button ${valid ? '' : 'Disabled'}`} onClick={onClick}>
-        <div className="left" /> {title}
-      </div>
-    </td>
+    return (
+      <td className='ButtonWrapper'>
+        <div
+          className={`FormInput Button ${valid ? '' : 'Disabled'} ${
+            valid == 2 ? 'Loading' : ''
+          }`}
+          onClick={valid == 1 ? onClick : null}
+        >
+          {valid == 2 && (
+            <div className='Loading'>
+              <div className='Loader' />
+            </div>
+          )}
+          <div className='left' /> {title}
+        </div>
+      </td>
+    )
   }
 
   openModal(key) {
@@ -269,63 +410,91 @@ class FormTab extends Component {
   }
 
   render() {
-    const { showFeeForm, modalIsOpen, privateKey } = this.state
+    const {
+      showFeeForm,
+      modalIsOpen,
+      modalErrorIsOpen,
+      modalErr,
+      privateKey
+    } = this.state
 
     return (
-      <div className="TabWrapper">
-        <div className="Title">WHAT ARE YOU UP TO TODAY?</div>
-        <Tabs selectedIndex={this.state.tabIndex} onSelect={this.onTabChange.bind(this)}>
+      <div className='TabWrapper'>
+        <div className='Title'>WHAT ARE YOU UP TO TODAY?</div>
+        <Tabs
+          selectedIndex={this.state.tabIndex}
+          onSelect={this.onTabChange.bind(this)}
+        >
           <TabList>
             <Tab>Lend</Tab>
             <Tab>Borrow</Tab>
             <Tab>Wrap/Unwrap ETH</Tab>
-            <Tab>Allowance</Tab>
-            <Tab>Maker DAI</Tab>
+            <Tab>Set Allowance</Tab>
+            {/* <Tab>Maker DAI</Tab> */}
           </TabList>
 
           <TabPanel>
             <FadeIn>
-              {this.renderWrangler()}
-              <table cellspacing="15">
+              <table cellSpacing='15'>
                 <tbody>
                   <tr>
                     {this.renderInputs(FormInputs(true))}
-                    {this.renderButton('Order', this.isValid(true), this.onSubmit(true))}
+                    {this.renderButton(
+                      'Order',
+                      this.state.flagOnSubmit ? 2 : this.isValid(true) ? 1 : 0,
+                      this.onSubmit(true)
+                    )}
                   </tr>
                 </tbody>
               </table>
               <div
-                className="HandleFeeForm"
-                onClick={e => this.setState({ showFeeForm: !showFeeForm })}>
-                {`${showFeeForm ? 'Hide' : 'Show'} Fee Form`}</div>
-              {this.renderFeeForm(showFeeForm)}
+                className='HandleFeeForm'
+                onClick={e => this.setState({ showFeeForm: !showFeeForm })}
+              >
+                {`${showFeeForm ? 'Hide' : 'Show'} Fee Form`}
+              </div>
+              {this.renderFeeForm(showFeeForm, true)}
             </FadeIn>
           </TabPanel>
           <TabPanel>
             <FadeIn>
               {this.renderWrangler()}
-              <table cellspacing="15">
+              <table cellSpacing='15'>
                 <tbody>
                   <tr>
                     {this.renderInputs(FormInputs(false))}
-                    {this.renderButton('Order', this.isValid(false), this.onSubmit(false))}
+                    {this.renderButton(
+                      'Order',
+                      this.state.flagOnSubmit ? 2 : this.isValid(false) ? 1 : 0,
+                      this.onSubmit(false)
+                    )}
                   </tr>
                 </tbody>
               </table>
               <div
-                className="HandleFeeForm"
-                onClick={e => this.setState({ showFeeForm: !showFeeForm })}>
-                {`${showFeeForm ? 'Hide' : 'Show'} Fee Form`}</div>
-              {this.renderFeeForm(showFeeForm)}
+                className='HandleFeeForm'
+                onClick={e => this.setState({ showFeeForm: !showFeeForm })}
+              >
+                {`${showFeeForm ? 'Hide' : 'Show'} Fee Form`}
+              </div>
+              {this.renderFeeForm(showFeeForm, false)}
             </FadeIn>
           </TabPanel>
           <TabPanel>
             <FadeIn>
-              <table cellspacing="15" className="WrapETHTable">
+              <table cellSpacing='15' className='WrapETHTable'>
                 <tbody>
                   <tr>
                     {this.renderInputs(WrapETHFormInputs)}
-                    {this.renderButton('Submit', this.isValidForm(WrapETHFormInputs), this.onWrapETH)}
+                    {this.renderButton(
+                      'Submit',
+                      this.state.flagOnWrapETH
+                        ? 2
+                        : this.isValidForm(WrapETHFormInputs)
+                        ? 1
+                        : 0,
+                      this.onWrapETH
+                    )}
                   </tr>
                 </tbody>
               </table>
@@ -333,19 +502,27 @@ class FormTab extends Component {
           </TabPanel>
           <TabPanel>
             <FadeIn>
-              <table cellspacing="15" className="AllowanceTable">
+              <table cellSpacing='15' className='AllowanceTable'>
                 <tbody>
                   <tr>
                     {this.renderInputs(AllowanceFormInputs)}
-                    {this.renderButton('Submit', this.isValidForm(AllowanceFormInputs), this.onAllowance)}
+                    {this.renderButton(
+                      'Submit',
+                      this.state.flagOnAllowance
+                        ? 2
+                        : this.isValidForm(AllowanceFormInputs)
+                        ? 1
+                        : 0,
+                      this.onAllowance
+                    )}
                   </tr>
                 </tbody>
               </table>
             </FadeIn>
           </TabPanel>
-          <TabPanel>
+          {/* <TabPanel>
             <FadeIn>
-              <table cellspacing="15" className="MakerDAITAble">
+              <table cellSpacing="15" className="MakerDAITAble">
                 <tbody>
                   <tr>
                     {this.renderInputs(MakerDAIFormInputs)}
@@ -354,22 +531,37 @@ class FormTab extends Component {
                 </tbody>
               </table>
             </FadeIn>
-          </TabPanel>
-        </Tabs >
+          </TabPanel> */}
+        </Tabs>
         <InputModal
           isOpen={modalIsOpen}
-          title="Input You Private Key"
+          title='Input You Private Key'
           description="Important! We don't use your private key for any other access. It's just for lock ETH while Making DAI. Thanks."
-          onRequestClose={() => this.closeModal('modalIsOpen')}
-          onChange={(e) => this.setState({ privateKey: e.target.value })}
+          // onRequestClose={() => this.closeModal('modalIsOpen')}
+          onChange={e => this.setState({ privateKey: e.target.value })}
           onSubmit={this.onMakerDAI.bind(this)}
-          contentLabel="Private Key"
+          contentLabel='Private Key'
           value={privateKey}
           prefix={'0x'}
           type={'text'}
           disabled={!privateKey}
         />
-      </div >
+        <Modal
+          isOpen={modalErrorIsOpen}
+          style={customStyles}
+          contentLabel={`'Something went wrong'`}
+        >
+          <h2>Something went wrong</h2>
+          <button onClick={() => this.closeModal('modalErrorIsOpen')} />
+          <div className='ModalBody'>
+            <div className='Info Error'>
+              <div style={{ textAlign: 'center', marginBottom: 15 }}>
+                {modalErr}
+              </div>
+            </div>
+          </div>
+        </Modal>
+      </div>
     )
   }
 }
