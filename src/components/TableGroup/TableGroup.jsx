@@ -13,22 +13,36 @@ class TableGroup extends Component {
       methods,
       loading,
       lastFetchTime,
-      web3Utils
+      web3Utils,
+      terms = 1
     } = this.props
-    const left = Object.assign(data.left, data.data, { loading, lastFetchTime })
-    const right = Object.assign(data.right, data.data, {
-      loading,
-      lastFetchTime
-    })
+    const offers = (data.data.offers.slice() || []).filter(
+      offer => parseInt(offer.loanDuration, 10) === terms * 30 * 24 * 3600
+    )
+
+    const left = Object.assign(
+      data.left,
+      { offers },
+      { loading, lastFetchTime }
+    )
+    const right = Object.assign(
+      data.right,
+      { offers },
+      {
+        loading,
+        lastFetchTime
+      }
+    )
 
     return (
-      <div className='TableGroup' style={style}>
+      <div className="TableGroup" style={style}>
         <Table
           data={left}
           classes={data.classes ? data.classes : ''}
           address={address}
           methods={methods}
           web3Utils={web3Utils}
+          terms={terms}
         />
         <Table
           data={right}
@@ -36,6 +50,7 @@ class TableGroup extends Component {
           address={address}
           methods={methods}
           web3Utils={web3Utils}
+          terms={terms}
         />
       </div>
     )

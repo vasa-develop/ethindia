@@ -24,6 +24,11 @@
       flex-direction: column-reverse;
     }
 
+    i {
+      font-size: 12px;
+      font-weight: bold;
+    }
+
     span {
       text-transform: capitalize;
       font-size: 10px;
@@ -116,14 +121,14 @@
 
   .tbl-content {
     max-height: 330px;
-    min-height: 330px;
+    // min-height: 330px;
     overflow-x: auto;
     @media (max-width: 1024px) {
       min-height: auto;
     }
 
     > div {
-      padding-bottom: 80px;
+      padding-bottom: 50px;
     }
 
     &:after {

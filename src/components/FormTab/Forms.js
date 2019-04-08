@@ -59,9 +59,9 @@ export function FormInputs(isLend) {
     },
     {
       key: 'loanDuration',
-      label: 'Loan Term',
+      label: 'Loan Period',
       width: 150,
-      output: val => (val * 24 * 3600).toString(),
+      output: val => val.toString(),
       inputs: [
         {
           precision: 0,

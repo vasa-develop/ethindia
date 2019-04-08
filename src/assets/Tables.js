@@ -41,11 +41,11 @@ const CreateTables = web3Utils => [
         precision: 3,
         style: { textAlign: 'left' }
       },
-      {
-        label: 'Term',
-        key: 'loanDuration',
-        filter: 'calcTerm'
-      },
+      // {
+      //   label: 'Term',
+      //   key: 'loanDuration',
+      //   filter: 'calcTerm'
+      // },
       {
         label: 'Rate',
         key: 'interestRate',
@@ -87,11 +87,11 @@ const CreateTables = web3Utils => [
         precision: 3,
         style: { textAlign: 'left' }
       },
-      {
-        label: 'Term',
-        key: 'loanDuration',
-        filter: 'calcTerm'
-      },
+      // {
+      //   label: 'Term',
+      //   key: 'loanDuration',
+      //   filter: 'calcTerm'
+      // },
       {
         label: 'Rate',
         key: 'interestRate',
@@ -146,7 +146,7 @@ const CreateTables = web3Utils => [
       //   style: { fontFamily: 'Space Mono', width: '27%' }
       // },
       {
-        label: 'Term ',
+        label: 'Period ',
         key: 'loanDuration',
         filter: 'calcTerm',
         style: { fontFamily: 'Space Mono', width: '40%', textAlign: 'center' }
@@ -209,7 +209,7 @@ const CreateTables = web3Utils => [
       //   style: { fontFamily: 'Space Mono', width: '27%' }
       // },
       {
-        label: 'Term ',
+        label: 'Period ',
         key: 'loanDuration',
         filter: 'calcTerm',
         style: { fontFamily: 'Space Mono', width: '40%', textAlign: 'center' }
@@ -269,7 +269,7 @@ const CreateTables = web3Utils => [
         precision: 5
       },
       {
-        label: 'Term',
+        label: 'Period',
         key: 'term',
         filter: 'calcTerm'
       },
@@ -347,7 +347,7 @@ const CreateTables = web3Utils => [
         precision: 5
       },
       {
-        label: 'Term',
+        label: 'Period',
         key: 'term',
         filter: 'calcTerm'
       },

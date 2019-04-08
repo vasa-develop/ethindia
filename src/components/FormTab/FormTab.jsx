@@ -47,7 +47,7 @@ class FormTab extends Component {
       // Lend/Borrow Form Inputs
       loanAmountOffered: 1.0,
       interestRatePerDay: 5,
-      loanDuration: 2,
+      loanDuration: 30 * 24 * 3600,
       offerExpiry: 12,
       wrangler: 'Lendroid',
       allowance: 0,
@@ -301,8 +301,8 @@ class FormTab extends Component {
     return formInputs.map((item, index) => (
       <td style={item.style} key={index}>
         {item.key === 'operation' ? (
-          <div className='FormInputWrapper'>
-            <div className='InputLabel'>{item.label}</div>
+          <div className="FormInputWrapper">
+            <div className="InputLabel">{item.label}</div>
             <select
               value={formData.operation}
               onChange={this.onChangeSync(item)}
@@ -313,13 +313,28 @@ class FormTab extends Component {
             </select>
           </div>
         ) : item.key === 'token' ? (
-          <div className='FormInputWrapper'>
-            <div className='InputLabel'>{item.label}</div>
+          <div className="FormInputWrapper">
+            <div className="InputLabel">{item.label}</div>
             <select value={formData.token} onChange={this.onChangeSync(item)}>
               <option disabled>Select Token</option>
               <option>WETH</option>
               <option>DAI</option>
               <option>LST</option>
+            </select>
+          </div>
+        ) : item.key === 'loanDuration' ? (
+          <div className="FormInputWrapper">
+            <div className="InputLabel">{item.label}</div>
+            <select
+              value={formData.loanDuration}
+              onChange={this.onChangeSync(item)}
+            >
+              <option disabled>Select Period</option>
+              {[1, 3, 6, 12, 24].map((period, index) => (
+                <option value={period * 30 * 24 * 3600} key={index}>
+                  {period < 12 ? `${period} months` : `${period / 12} years`}
+                </option>
+              ))}
             </select>
           </div>
         ) : (
@@ -354,13 +369,13 @@ class FormTab extends Component {
   renderFeeForm(showFeeForm, isLend) {
     return (
       <table
-        cellSpacing='15'
+        cellSpacing="15"
         className={`FeeForm ${showFeeForm ? 'Show' : 'Hide'}`}
       >
         <tbody>
           <tr>
             {this.renderInputs(FeeFormInputs(isLend))}
-            <td colSpan='1' className='Empty'>
+            <td colSpan="1" className="Empty">
               {this.renderWrangler()}
             </td>
           </tr>
@@ -371,8 +386,8 @@ class FormTab extends Component {
 
   renderWrangler() {
     return (
-      <div className='Wrangler FormInputWrapper'>
-        <div className='InputLabel'>Wrangler</div>
+      <div className="Wrangler FormInputWrapper">
+        <div className="InputLabel">Wrangler</div>
         <select>
           <option disabled>Wrangler Name</option>
           <option default>Default Simple Wrangler</option>
@@ -383,7 +398,7 @@ class FormTab extends Component {
 
   renderButton(title, valid, onClick) {
     return (
-      <td className='ButtonWrapper'>
+      <td className="ButtonWrapper">
         <div
           className={`FormInput Button ${valid ? '' : 'Disabled'} ${
             valid == 2 ? 'Loading' : ''
@@ -391,11 +406,11 @@ class FormTab extends Component {
           onClick={valid == 1 ? onClick : null}
         >
           {valid == 2 && (
-            <div className='Loading'>
-              <div className='Loader' />
+            <div className="Loading">
+              <div className="Loader" />
             </div>
           )}
-          <div className='left' /> {title}
+          <div className="left" /> {title}
         </div>
       </td>
     )
@@ -419,8 +434,8 @@ class FormTab extends Component {
     } = this.state
 
     return (
-      <div className='TabWrapper'>
-        <div className='Title'>WHAT ARE YOU UP TO TODAY?</div>
+      <div className="TabWrapper">
+        <div className="Title">WHAT ARE YOU UP TO TODAY?</div>
         <Tabs
           selectedIndex={this.state.tabIndex}
           onSelect={this.onTabChange.bind(this)}
@@ -435,7 +450,7 @@ class FormTab extends Component {
 
           <TabPanel>
             <FadeIn>
-              <table cellSpacing='15'>
+              <table cellSpacing="15">
                 <tbody>
                   <tr>
                     {this.renderInputs(FormInputs(true))}
@@ -448,7 +463,7 @@ class FormTab extends Component {
                 </tbody>
               </table>
               <div
-                className='HandleFeeForm'
+                className="HandleFeeForm"
                 onClick={e => this.setState({ showFeeForm: !showFeeForm })}
               >
                 {`${showFeeForm ? 'Hide' : 'Show'} Fee Form`}
@@ -459,7 +474,7 @@ class FormTab extends Component {
           <TabPanel>
             <FadeIn>
               {this.renderWrangler()}
-              <table cellSpacing='15'>
+              <table cellSpacing="15">
                 <tbody>
                   <tr>
                     {this.renderInputs(FormInputs(false))}
@@ -472,7 +487,7 @@ class FormTab extends Component {
                 </tbody>
               </table>
               <div
-                className='HandleFeeForm'
+                className="HandleFeeForm"
                 onClick={e => this.setState({ showFeeForm: !showFeeForm })}
               >
                 {`${showFeeForm ? 'Hide' : 'Show'} Fee Form`}
@@ -482,7 +497,7 @@ class FormTab extends Component {
           </TabPanel>
           <TabPanel>
             <FadeIn>
-              <table cellSpacing='15' className='WrapETHTable'>
+              <table cellSpacing="15" className="WrapETHTable">
                 <tbody>
                   <tr>
                     {this.renderInputs(WrapETHFormInputs)}
@@ -502,7 +517,7 @@ class FormTab extends Component {
           </TabPanel>
           <TabPanel>
             <FadeIn>
-              <table cellSpacing='15' className='AllowanceTable'>
+              <table cellSpacing="15" className="AllowanceTable">
                 <tbody>
                   <tr>
                     {this.renderInputs(AllowanceFormInputs)}
@@ -535,12 +550,12 @@ class FormTab extends Component {
         </Tabs>
         <InputModal
           isOpen={modalIsOpen}
-          title='Input You Private Key'
+          title="Input You Private Key"
           description="Important! We don't use your private key for any other access. It's just for lock ETH while Making DAI. Thanks."
           // onRequestClose={() => this.closeModal('modalIsOpen')}
           onChange={e => this.setState({ privateKey: e.target.value })}
           onSubmit={this.onMakerDAI.bind(this)}
-          contentLabel='Private Key'
+          contentLabel="Private Key"
           value={privateKey}
           prefix={'0x'}
           type={'text'}
@@ -553,8 +568,8 @@ class FormTab extends Component {
         >
           <h2>Something went wrong</h2>
           <button onClick={() => this.closeModal('modalErrorIsOpen')} />
-          <div className='ModalBody'>
-            <div className='Info Error'>
+          <div className="ModalBody">
+            <div className="Info Error">
               <div style={{ textAlign: 'center', marginBottom: 15 }}>
                 {modalErr}
               </div>

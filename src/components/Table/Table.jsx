@@ -76,12 +76,20 @@ class Table extends Component {
   }
 
   calcTerm(value) {
-    return (
-      `${parseInt(value / 3600 / 24, 10)}d` +
-      ((value / 3600) % 24 !== 0
-        ? ` ${parseInt((value / 3600) % 24, 10)}h`
-        : '')
-    )
+    const { terms } = this.props
+    let day = parseInt(value / 3600 / 24, 10)
+    let month = parseInt(day / 30, 10)
+    day = day % 30
+    let year = parseInt(month / 12)
+    month = month % 12
+    return terms
+      ? `${year > 0 ? year + ' Years ' : ''}${
+          month > 0 ? month + ' Months ' : ''
+        }`
+      : `${parseInt(value / 3600 / 24, 10)}d` +
+          ((value / 3600) % 24 !== 0
+            ? ` ${parseInt((value / 3600) % 24, 10)}h`
+            : '')
   }
 
   setPrecision(value, prec) {
@@ -242,7 +250,7 @@ class Table extends Component {
   }
 
   render() {
-    const { data, classes } = this.props
+    const { data, classes, terms } = this.props
     const {
       postError,
       result,
@@ -264,20 +272,23 @@ class Table extends Component {
       new Date().getTime() - new Date(data.lastFetchTime).getTime()
 
     return (
-      <div className='TableWrapper'>
+      <div className="TableWrapper">
         {data.loading && (
-          <div className='Loading'>
-            <div className='Loader' />
+          <div className="Loading">
+            <div className="Loader" />
           </div>
         )}
-        <div className='Title'>
-          {data.title}
+        <div className="Title">
+          <div>
+            {data.title}{' '}
+            <i>{terms < 12 ? `(${terms} Months)` : `(${terms / 12} Years)`}</i>
+          </div>
           <span>
             refreshing in <b>{parseInt(30 - refreshing / 1000, 10)}</b> seconds
           </span>
         </div>
-        <div className='tbl-header'>
-          <table cellPadding='0' cellSpacing='0' border='0'>
+        <div className="tbl-header">
+          <table cellPadding="0" cellSpacing="0" border="0">
             <thead>
               <tr>
                 {data.headers.map((h, hIndex) => (
@@ -292,7 +303,7 @@ class Table extends Component {
         </div>
         <div className={`tbl-content ${classes}`}>
           <div>
-            <table cellPadding='0' cellSpacing='0' border='0'>
+            <table cellPadding="0" cellSpacing="0" border="0">
               <tbody>
                 {filteredData.map((d, dIndex) => (
                   <tr key={dIndex}>
@@ -303,10 +314,10 @@ class Table extends Component {
                     ))}
                     <td>
                       {data.action.label === '3-dot' ? (
-                        <button style={data.action.style} className='three-dot'>
-                          <div className='dot' />
-                          <div className='dot' />
-                          <div className='dot' />
+                        <button style={data.action.style} className="three-dot">
+                          <div className="dot" />
+                          <div className="dot" />
+                          <div className="dot" />
                         </button>
                       ) : (
                         <button
@@ -332,9 +343,9 @@ class Table extends Component {
           isOpen={modalIsOpen}
           // onRequestClose={() => this.closeModal('modalIsOpen')}
           style={customStyles}
-          contentLabel='Order Book'
+          contentLabel="Order Book"
         >
-          <h2 className='normal'>
+          <h2 className="normal">
             {postError
               ? 'MESSAGE FROM WRANGLER'
               : expireInSecond > 0
@@ -342,15 +353,15 @@ class Table extends Component {
               : 'WRANGLER APPROVAL HAS EXPIRED.'}
           </h2>
           {/* <button onClick={() => this.closeModal('modalIsOpen')} /> */}
-          <div className='ModalBody'>
+          <div className="ModalBody">
             <div>
               {isLoading && (
-                <div className='Loading'>
-                  <div className='Loader' />
+                <div className="Loading">
+                  <div className="Loader" />
                 </div>
               )}
               {postError ? (
-                <div className='Error'>
+                <div className="Error">
                   {postError.response.status == 400 ? (
                     <ul>
                       {postError.response.data.message.error.map(err => (
@@ -362,7 +373,7 @@ class Table extends Component {
                   )}
                 </div>
               ) : (
-                <div className='Info'>
+                <div className="Info">
                   <table>
                     <tbody>
                       {Object.keys(result).map((key, kIndex) => (
@@ -375,14 +386,14 @@ class Table extends Component {
                   </table>
                 </div>
               )}
-              <div className='Buttons'>
+              <div className="Buttons">
                 {!postError && (
-                  <div className='Confirm' onClick={this.onConfirm.bind(this)}>
+                  <div className="Confirm" onClick={this.onConfirm.bind(this)}>
                     Continue
                   </div>
                 )}
                 <div
-                  className='Confirm'
+                  className="Confirm"
                   onClick={() => this.closeModal('modalIsOpen')}
                 >
                   Back to order book
@@ -411,8 +422,8 @@ class Table extends Component {
         >
           <h2>Something went wrong</h2>
           <button onClick={() => this.closeModal('modalErrorIsOpen')} />
-          <div className='ModalBody'>
-            <div className='Info Error'>
+          <div className="ModalBody">
+            <div className="Info Error">
               <div style={{ textAlign: 'center', marginBottom: 15 }}>
                 {modalErr}
               </div>

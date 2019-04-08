@@ -3,7 +3,7 @@ import axios from 'axios'
 import { Redirect } from 'react-router-dom'
 import { Steps, Hints } from 'intro.js-react'
 import cookie from 'react-cookies'
-import { isBrowser } from 'react-device-detect';
+import { isBrowser } from 'react-device-detect'
 
 import { Lendroid } from 'lendroid'
 import { startAsync } from './Maker'
@@ -211,7 +211,7 @@ class Orders extends Component {
       metamaskLogged
     } = this.state
 
-    if (!window.web3) return <Redirect to='/metamask-missing' />
+    if (!window.web3) return <Redirect to="/metamask-missing" />
     const {
       loading = {},
       orders = { myOrders: {} },
@@ -242,10 +242,11 @@ class Orders extends Component {
       startAsync
     }
 
-    if (!(network && address) && !metamaskChecking && isBrowser) this.checkMetamask()
+    if (!(network && address) && !metamaskChecking && isBrowser)
+      this.checkMetamask()
 
     return network && address ? (
-      <div className='OrdersWrapper'>
+      <div className="OrdersWrapper">
         {this.renderIntro()}
         <Header address={address} contracts={contracts} />
         <FormTab
@@ -256,33 +257,41 @@ class Orders extends Component {
           web3Utils={web3Utils}
           loading={loading}
         />
-        <TableGroup
-          methods={methods}
-          address={address}
-          data={{
-            left: Tables[0],
-            right: Tables[1],
-            classes: 'first',
-            data: { offers }
-          }}
-          web3Utils={web3Utils}
-          loading={loading.orders}
-          lastFetchTime={lastFetchTime}
-        />
-        <ListGroup
-          methods={methods}
-          address={address}
-          contracts={contracts}
-          currentWETHExchangeRate={currentWETHExchangeRate}
-          data={{
-            left: Tables[2],
-            right: Tables[3],
-            data: { myLendOffers, myBorrowOffers }
-          }}
-          web3Utils={web3Utils}
-          loading={loading.orders}
-          style={{ marginBottom: 29 }}
-        />
+        {[1, 3, 6, 12, 24].map((term, tIndex) => (
+          <TableGroup
+            key={tIndex}
+            methods={methods}
+            address={address}
+            data={{
+              left: Tables[0],
+              right: Tables[1],
+              classes: 'first',
+              data: { offers }
+            }}
+            web3Utils={web3Utils}
+            loading={loading.orders}
+            lastFetchTime={lastFetchTime}
+            terms={term}
+          />
+        ))}
+        {[1, 3, 6, 12, 24].map((term, lIndex) => (
+          <ListGroup
+            key={lIndex}
+            methods={methods}
+            address={address}
+            contracts={contracts}
+            currentWETHExchangeRate={currentWETHExchangeRate}
+            data={{
+              left: Tables[2],
+              right: Tables[3],
+              data: { myLendOffers, myBorrowOffers }
+            }}
+            web3Utils={web3Utils}
+            loading={loading.orders}
+            style={{ marginBottom: 29 }}
+            terms={term}
+          />
+        ))}
         <ListGroup
           methods={methods}
           address={address}
@@ -299,11 +308,11 @@ class Orders extends Component {
         />
       </div>
     ) : metamaskChecking || metamaskLogged ? (
-      <div className='Checking'>
+      <div className="Checking">
         {metamaskChecking ? 'Metamask Checking...' : 'Loading...'}
       </div>
     ) : (
-      <Redirect to='/metamask-not-logged-in' />
+      <Redirect to="/metamask-not-logged-in" />
     )
   }
 }
