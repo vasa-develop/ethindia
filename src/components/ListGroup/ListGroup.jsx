@@ -15,28 +15,11 @@ class ListGroup extends Component {
       loading,
       contracts,
       web3Utils,
-      terms
+      isOffer
     } = this.props
-    const myLendOffers = (data.data.myLendOffers || [])
-      .slice()
-      .filter(
-        offer => parseInt(offer.loanDuration, 10) === terms * 30 * 24 * 3600
-      )
-    const myBorrowOffers = (data.data.myBorrowOffers || [])
-      .slice()
-      .filter(
-        offer => parseInt(offer.loanDuration, 10) === terms * 30 * 24 * 3600
-      )
-    const left = Object.assign(
-      data.left,
-      terms ? { myLendOffers } : data.data,
-      { loading }
-    )
-    const right = Object.assign(
-      data.right,
-      terms ? { myBorrowOffers } : data.data,
-      { loading }
-    )
+
+    const left = Object.assign(data.left, data.data, { loading })
+    const right = Object.assign(data.right, data.data, { loading })
 
     return (
       <div className="ListGroup" style={style}>
@@ -48,7 +31,7 @@ class ListGroup extends Component {
           methods={methods}
           contracts={contracts}
           web3Utils={web3Utils}
-          terms={terms}
+          isOffer={isOffer}
         />
         <List
           data={right}
@@ -58,7 +41,7 @@ class ListGroup extends Component {
           methods={methods}
           contracts={contracts}
           web3Utils={web3Utils}
-          terms={terms}
+          isOffer={isOffer}
         />
       </div>
     )

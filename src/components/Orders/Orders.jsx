@@ -274,24 +274,21 @@ class Orders extends Component {
             terms={term}
           />
         ))}
-        {[1, 3, 6, 12, 24].map((term, lIndex) => (
-          <ListGroup
-            key={lIndex}
-            methods={methods}
-            address={address}
-            contracts={contracts}
-            currentWETHExchangeRate={currentWETHExchangeRate}
-            data={{
-              left: Tables[2],
-              right: Tables[3],
-              data: { myLendOffers, myBorrowOffers }
-            }}
-            web3Utils={web3Utils}
-            loading={loading.orders}
-            style={{ marginBottom: 29 }}
-            terms={term}
-          />
-        ))}
+        <ListGroup
+          methods={methods}
+          address={address}
+          contracts={contracts}
+          currentWETHExchangeRate={currentWETHExchangeRate}
+          data={{
+            left: Tables[2],
+            right: Tables[3],
+            data: { myLendOffers, myBorrowOffers }
+          }}
+          web3Utils={web3Utils}
+          loading={loading.orders}
+          style={{ marginBottom: 29 }}
+          isOffer
+        />
         <ListGroup
           methods={methods}
           address={address}

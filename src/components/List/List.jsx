@@ -78,13 +78,13 @@ class List extends Component {
   }
 
   calcTerm(value) {
-    const { terms } = this.props
+    const { isOffer } = this.props
     let day = parseInt(value / 3600 / 24, 10)
     let month = parseInt(day / 30, 10)
     day = day % 30
     let year = parseInt(month / 12)
     month = month % 12
-    return terms
+    return isOffer
       ? `${year > 0 ? year + ' Years ' : ''}${
           month > 0 ? month + ' Months ' : ''
         }`
