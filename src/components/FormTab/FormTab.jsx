@@ -46,6 +46,7 @@ class FormTab extends Component {
 
       lendToken: props.tokens.lend[0],
       borrowToken: props.tokens.borrow[0],
+      collateralToken: props.tokens.borrow[0],
 
       // Lend/Borrow Form Inputs
       loanAmountOffered: 1.0,
@@ -177,7 +178,7 @@ class FormTab extends Component {
   onSubmit(isLend) {
     return () => {
       const formData = this.state
-      const { lendToken, borrowToken } = formData
+      const { lendToken, borrowToken, collateralToken } = formData
       const loanToken = isLend ? lendToken : borrowToken
       const { address, methods, contracts, web3Utils, tokens } = this.props
       const postData = {}
@@ -201,9 +202,10 @@ class FormTab extends Component {
       postData.borrower = !isLend ? address : ''
 
       postData.creatorSalt = '0x' + this.randHex(40)
-      postData.collateralToken = contracts.contracts
-        ? contracts.contracts.WETH._address
-        : ''
+      postData.collateralToken =
+        contracts.contracts && contracts.contracts[collateralToken]
+          ? contracts.contracts[collateralToken]._address
+          : ''
       postData.loanToken = contracts.contracts
         ? contracts.contracts[loanToken]._address
         : ''
@@ -375,7 +377,7 @@ class FormTab extends Component {
                       contracts,
                       formData[item.key],
                       exchangeRates[tabIndex === 0 ? lendToken : borrowToken],
-                      tabIndex === 0 ? lendToken : borrowToken,
+                      tabIndex === 0 ? lendToken : borrowToken
                     )
                   ? item.warning.message(
                       formData[item.key],
@@ -415,6 +417,25 @@ class FormTab extends Component {
         <select>
           <option disabled>Wrangler Name</option>
           <option default>Default Simple Wrangler</option>
+        </select>
+      </div>
+    )
+  }
+
+  renderCollateral() {
+    const { collateralToken } = this.state
+    const { tokens } = this.props
+
+    return (
+      <div className="Wrangler FormInputWrapper">
+        <div className="InputLabel">Collateral</div>
+        <select
+          value={collateralToken}
+          onChange={e => this.setState({ collateralToken: e.target.value })}
+        >
+          {tokens.borrow.map(token => (
+            <option key={token}>{token}</option>
+          ))}
         </select>
       </div>
     )
@@ -479,6 +500,9 @@ class FormTab extends Component {
               <table cellSpacing="15">
                 <tbody>
                   <tr>
+                    <td>{this.renderCollateral()}</td>
+                  </tr>
+                  <tr>
                     {this.renderInputs(FormInputs(true, tokens))}
                     {this.renderButton(
                       'Order',
@@ -501,6 +525,9 @@ class FormTab extends Component {
             <FadeIn>
               <table cellSpacing="15">
                 <tbody>
+                  <tr>
+                    <td>{this.renderCollateral()}</td>
+                  </tr>
                   <tr>
                     {this.renderInputs(FormInputs(false, tokens))}
                     {this.renderButton(

@@ -13,7 +13,7 @@ export function FormInputs(
       inputs: [
         {
           precision: 3,
-          suffix: isLend ? tokens.lend : tokens.borrow,
+          suffix: isLend ? tokens.lend : tokens.lend,
           isLend,
           unit: 1
         }
