@@ -412,7 +412,7 @@ class FormTab extends Component {
 
   renderWrangler() {
     return (
-      <div className="Wrangler FormInputWrapper">
+      <div className="FormInputWrapper">
         <div className="InputLabel">Wrangler</div>
         <select>
           <option disabled>Wrangler Name</option>
@@ -427,7 +427,7 @@ class FormTab extends Component {
     const { tokens } = this.props
 
     return (
-      <div className="Wrangler FormInputWrapper">
+      <div className="FormInputWrapper">
         <div className="InputLabel">Collateral</div>
         <select
           value={collateralToken}
