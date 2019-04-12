@@ -374,7 +374,8 @@ class FormTab extends Component {
                   : item.warning.check(
                       contracts,
                       formData[item.key],
-                      exchangeRates[tabIndex === 0 ? lendToken : borrowToken]
+                      exchangeRates[tabIndex === 0 ? lendToken : borrowToken],
+                      tabIndex === 0 ? lendToken : borrowToken,
                     )
                   ? item.warning.message(
                       formData[item.key],

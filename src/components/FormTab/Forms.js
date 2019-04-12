@@ -25,21 +25,21 @@ export function FormInputs(
           ? contracts.allowances[token] || 0
           : 0),
       warning: {
-        check: (contracts, value, currentDAIExchangeRate) => {
+        check: (contracts, value, exchangeRate, token) => {
           if (isLend) {
-            if (parseFloat(value) > parseFloat(contracts.allowances['DAI']))
+            if (parseFloat(value) > parseFloat(contracts.allowances[token]))
               return true
           } else {
             if (
               parseFloat(value) >
-              parseFloat(contracts.allowances['WETH']) * currentDAIExchangeRate
+              parseFloat(contracts.allowances['WETH']) * exchangeRate
             )
               return true
           }
           return false
         },
         message: isLend
-          ? value => `Please set DAI allowance of ${value} on the Allowance Tab`
+          ? value => `Please set token allowance of ${value} on the Allowance Tab`
           : (value, currentDAIExchangeRate) =>
               `Please set WETH allowance of ${(
                 value / currentDAIExchangeRate
