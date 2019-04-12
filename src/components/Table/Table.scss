@@ -131,6 +131,16 @@
       padding-bottom: 50px;
     }
 
+    &.NoData {
+      > div {
+        padding-bottom: 20px;
+      }
+
+      &:after {
+        height: 20px;
+      }
+    }
+
     &:after {
       content: '';
       position: absolute;

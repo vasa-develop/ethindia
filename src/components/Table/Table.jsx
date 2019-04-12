@@ -301,7 +301,7 @@ class Table extends Component {
             </thead>
           </table>
         </div>
-        <div className={`tbl-content ${classes}`}>
+        <div className={`tbl-content ${classes} ${filteredData.length === 0 ? 'NoData' : ''}`}>
           <div>
             <table cellPadding="0" cellSpacing="0" border="0">
               <tbody>
@@ -332,7 +332,12 @@ class Table extends Component {
                 ))}
                 {filteredData.length === 0 && (
                   <tr>
-                    <td colSpan={data.headers.length}>No Data</td>
+                    <td
+                      colSpan={data.headers.length}
+                      style={{ textAlign: 'center' }}
+                    >
+                      No Data
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -411,7 +416,7 @@ class Table extends Component {
           contentLabel={`Amount to ${param.isLend ? 'Borrow' : 'Lend'}`}
           value={fillLoanAmount}
           max={currentData ? currentData.loanAmount : 0}
-          suffix={param.isLend ? 'DAI' : 'DAI'}
+          suffix={param.isLend ? '' : ''}
           disabled={fillLoanAmount > (currentData ? currentData.loanAmount : 0)}
           isLoading={isLoading}
         />

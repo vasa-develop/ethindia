@@ -8,8 +8,8 @@ import {
   FormInputs,
   FeeFormInputs,
   WrapETHFormInputs,
-  AllowanceFormInputs,
-  MakerDAIFormInputs
+  AllowanceFormInputs
+  // MakerDAIFormInputs
 } from './Forms'
 
 import InputModal from '../common/InputModal/InputModal'
@@ -43,6 +43,9 @@ class FormTab extends Component {
     this.state = {
       modalErrorIsOpen: false,
       modalErr: 'Unknown',
+
+      lendToken: props.tokens.lend[0],
+      borrowToken: props.tokens.borrow[0],
 
       // Lend/Borrow Form Inputs
       loanAmountOffered: 1.0,
@@ -97,7 +100,6 @@ class FormTab extends Component {
 
   onChange(key, value, affection = null) {
     const formData = this.state
-    const { currentDAIExchangeRate } = this.props
     formData[key] = value
 
     if (key === 'lockETH') {
@@ -108,6 +110,12 @@ class FormTab extends Component {
     this.setState(formData)
   }
 
+  onSelect(isLend, token) {
+    this.setState({
+      [isLend ? 'lendToken' : 'borrowToken']: token
+    })
+  }
+
   onChangeSync(item) {
     return e => {
       this.setState({ [item.key]: e.target.value })
@@ -115,16 +123,24 @@ class FormTab extends Component {
   }
 
   isValid(isLend = true) {
-    const { contracts, currentDAIExchangeRate } = this.props
+    const { contracts, exchangeRates, tokens } = this.props
     const formData = this.state
+    const { lendToken, borrowToken } = formData
     contracts.loanAmountOffered = formData.loanAmountOffered
 
     let valid = true
-    FormInputs(isLend).forEach(item => {
+    FormInputs(isLend, tokens).forEach(item => {
       if (item.required && Number(formData[item.key]) === 0) {
         valid = false
       } else if (item.validation) {
-        if (!item.validation(contracts, currentDAIExchangeRate)) valid = false
+        if (
+          !item.validation(
+            contracts,
+            exchangeRates[isLend ? lendToken : borrowToken],
+            isLend ? lendToken : borrowToken
+          )
+        )
+          valid = false
       }
     })
     FeeFormInputs(isLend).forEach(item => {
@@ -161,14 +177,16 @@ class FormTab extends Component {
   onSubmit(isLend) {
     return () => {
       const formData = this.state
-      const { address, methods, contracts, web3Utils } = this.props
+      const { lendToken, borrowToken } = formData
+      const loanToken = isLend ? lendToken : borrowToken
+      const { address, methods, contracts, web3Utils, tokens } = this.props
       const postData = {}
 
       this.setState({
         flagOnSubmit: true
       })
 
-      FormInputs(isLend).forEach(item => {
+      FormInputs(isLend, tokens).forEach(item => {
         postData[item.key] = item.output
           ? item.output(formData[item.key])
           : formData[item.key]
@@ -187,7 +205,7 @@ class FormTab extends Component {
         ? contracts.contracts.WETH._address
         : ''
       postData.loanToken = contracts.contracts
-        ? contracts.contracts.DAI._address
+        ? contracts.contracts[loanToken]._address
         : ''
       postData.relayer = ''
       postData.collateralAmount = web3Utils.toWei(0)
@@ -293,8 +311,9 @@ class FormTab extends Component {
   }
 
   renderInputs(formInputs) {
-    const { contracts, loading, currentDAIExchangeRate } = this.props
+    const { contracts, loading, exchangeRates } = this.props
     const formData = this.state
+    const { tabIndex, lendToken, borrowToken } = formData
     contracts.token = formData.token
     const loadings = Object.assign({}, loading, { making: formData.making })
 
@@ -318,8 +337,10 @@ class FormTab extends Component {
             <select value={formData.token} onChange={this.onChangeSync(item)}>
               <option disabled>Select Token</option>
               <option>WETH</option>
-              <option>DAI</option>
               <option>LST</option>
+              {this.props.pTokens.map(token => (
+                <option key={token}>{token}</option>
+              ))}
             </select>
           </div>
         ) : item.key === 'loanDuration' ? (
@@ -341,6 +362,8 @@ class FormTab extends Component {
           <FormInput
             data={item}
             onChange={this.onChange.bind(this)}
+            onSelect={this.onSelect.bind(this)}
+            tokenInfo={[formData.lendToken, formData.borrowToken]}
             val={item.value ? item.value(contracts) : formData[item.key]}
             loading={item.loading ? loadings[item.loading] : false}
             className={item.warning && item.warning.feature ? 'feature' : ''}
@@ -351,11 +374,11 @@ class FormTab extends Component {
                   : item.warning.check(
                       contracts,
                       formData[item.key],
-                      currentDAIExchangeRate
+                      exchangeRates[tabIndex === 0 ? lendToken : borrowToken]
                     )
                   ? item.warning.message(
                       formData[item.key],
-                      currentDAIExchangeRate
+                      exchangeRates[tabIndex === 0 ? lendToken : borrowToken]
                     )
                   : null
                 : null
@@ -433,6 +456,8 @@ class FormTab extends Component {
       privateKey
     } = this.state
 
+    const { tokens } = this.props
+
     return (
       <div className="TabWrapper">
         <div className="Title">WHAT ARE YOU UP TO TODAY?</div>
@@ -453,7 +478,7 @@ class FormTab extends Component {
               <table cellSpacing="15">
                 <tbody>
                   <tr>
-                    {this.renderInputs(FormInputs(true))}
+                    {this.renderInputs(FormInputs(true, tokens))}
                     {this.renderButton(
                       'Order',
                       this.state.flagOnSubmit ? 2 : this.isValid(true) ? 1 : 0,
@@ -473,11 +498,10 @@ class FormTab extends Component {
           </TabPanel>
           <TabPanel>
             <FadeIn>
-              {this.renderWrangler()}
               <table cellSpacing="15">
                 <tbody>
                   <tr>
-                    {this.renderInputs(FormInputs(false))}
+                    {this.renderInputs(FormInputs(false, tokens))}
                     {this.renderButton(
                       'Order',
                       this.state.flagOnSubmit ? 2 : this.isValid(false) ? 1 : 0,

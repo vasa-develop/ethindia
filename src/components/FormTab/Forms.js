@@ -1,6 +1,9 @@
 import moment from 'moment'
 
-export function FormInputs(isLend) {
+export function FormInputs(
+  isLend,
+  tokens
+) {
   return [
     {
       key: 'loanAmountOffered',
@@ -10,15 +13,16 @@ export function FormInputs(isLend) {
       inputs: [
         {
           precision: 3,
-          suffix: isLend ? 'DAI' : 'DAI',
+          suffix: isLend ? tokens.lend : tokens.borrow,
+          isLend,
           unit: 1
         }
       ],
       required: true,
-      validation: (contracts, rate = 1) =>
+      validation: (contracts, rate = 1, token) =>
         contracts.loanAmountOffered / (isLend ? 1 : rate) <=
         (contracts.allowances
-          ? contracts.allowances[isLend ? 'DAI' : 'WETH'] || 0
+          ? contracts.allowances[token] || 0
           : 0),
       warning: {
         check: (contracts, value, currentDAIExchangeRate) => {

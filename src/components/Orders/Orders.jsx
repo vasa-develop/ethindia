@@ -16,6 +16,8 @@ import Header from '../Header/Header'
 import CreateTables from '../../assets/Tables'
 import API from '../../assets/API'
 
+import { CONTRACT_ADDRESSES, ORDER_TOKENS } from './Contracts'
+
 import 'intro.js/introjs.css'
 import 'react-tabs/style/react-tabs.scss'
 import './Orders.scss'
@@ -46,11 +48,11 @@ class Orders extends Component {
         },
         {
           element: '.Info3 .Value',
-          intro: "Here's your DAI balance"
+          intro: "Here's your LST balance"
         },
         {
           element: '.Info4 .Value',
-          intro: "Here's your LST balance"
+          intro: "Here's your Lend/Borrow token balance"
         },
         {
           element: '.TabWrapper',
@@ -76,12 +78,12 @@ class Orders extends Component {
         },
         {
           element: '.Info3 .Value',
-          hint: "Here's your DAI balance",
+          hint: "Here's your LST balance",
           hintPosition: 'middle-right'
         },
         {
           element: '.Info4 .Value',
-          hint: "Here's your LST balance",
+          hint: "Here's your Lend/Borrow token balance",
           hintPosition: 'middle-right'
         },
         {
@@ -111,8 +113,9 @@ class Orders extends Component {
           }
           if (Object.keys(this.state.LendroidJS).length === 0) {
             const LendroidJS = new Lendroid({
-              stateCallback: () => this.forceUpdate()
-              // apiLoanRequests: 'http://localhost:5000'
+              // apiLoanRequests: 'http://localhost:5000',
+              stateCallback: () => this.forceUpdate(),
+              CONTRACT_ADDRESSES
             })
             newState['LendroidJS'] = LendroidJS
             newState['Tables'] = CreateTables(LendroidJS.web3Utils)
@@ -136,14 +139,14 @@ class Orders extends Component {
       }
     const {
       contracts: { positions },
-      exchangeRates: { currentDAIExchangeRate }
+      exchangeRates: { DAI }
     } = LendroidJS
-    if (!positions || currentDAIExchangeRate === 0) return {}
+    if (!positions || DAI === 0) return {}
 
     const positionsData = {
       lent: positions.lent.map(position => {
         const currentCollateralAmount =
-          position.origin.loanAmountBorrowed / currentDAIExchangeRate
+          position.origin.loanAmountBorrowed / DAI
         const health = parseInt(
           (position.origin.collateralAmount / currentCollateralAmount) * 100,
           10
@@ -157,7 +160,7 @@ class Orders extends Component {
       }),
       borrowed: positions.borrowed.map(position => {
         const currentCollateralAmount =
-          position.origin.loanAmountBorrowed / currentDAIExchangeRate
+          position.origin.loanAmountBorrowed / DAI
         const health = parseInt(
           (position.origin.collateralAmount / currentCollateralAmount) * 100,
           10
@@ -222,7 +225,7 @@ class Orders extends Component {
       metamask = {}
     } = LendroidJS
     const { address, network } = metamask
-    const { currentWETHExchangeRate, currentDAIExchangeRate } = exchangeRates
+    const { currentWETHExchangeRate } = exchangeRates
     const offers = orders.orders
     const myLendOffers = orders.myOrders.lend
     const myBorrowOffers = orders.myOrders.borrow
@@ -248,14 +251,20 @@ class Orders extends Component {
     return network && address ? (
       <div className="OrdersWrapper">
         {this.renderIntro()}
-        <Header address={address} contracts={contracts} />
+        <Header
+          address={address}
+          contracts={contracts}
+          tokens={Object.keys(CONTRACT_ADDRESSES)}
+        />
         <FormTab
           methods={methods}
           address={address}
           contracts={contracts}
-          currentDAIExchangeRate={currentDAIExchangeRate}
+          exchangeRates={exchangeRates}
           web3Utils={web3Utils}
           loading={loading}
+          tokens={ORDER_TOKENS}
+          pTokens={Object.keys(CONTRACT_ADDRESSES)}
         />
         {[1, 3, 6, 12, 24].map((term, tIndex) => (
           <TableGroup
