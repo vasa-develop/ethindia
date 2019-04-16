@@ -103,8 +103,30 @@ class Orders extends Component {
     }, 500)
   }
 
-  checkMetamask() {
-    if (window.web3) {
+  async checkMetamask() {
+    if (window.ethereum) {
+      try {
+        await ethereum.enable()
+        const newState = {
+          metamaskLogged: true,
+          metamaskChecking: false
+        }
+        if (Object.keys(this.state.LendroidJS).length === 0) {
+          const LendroidJS = new Lendroid({
+            provider: ethereum,
+            stateCallback: () => this.forceUpdate(),
+            CONTRACT_ADDRESSES
+          })
+          newState['LendroidJS'] = LendroidJS
+          newState['Tables'] = CreateTables(LendroidJS.web3Utils)
+        }
+        this.setState(newState)
+      } catch (error) {
+        this.setState({
+          metamaskChecking: false
+        })
+      }
+    } else if (window.web3) {
       window.web3.eth.getAccounts((err, accounts) => {
         if (accounts && accounts.length > 0) {
           const newState = {
@@ -113,7 +135,6 @@ class Orders extends Component {
           }
           if (Object.keys(this.state.LendroidJS).length === 0) {
             const LendroidJS = new Lendroid({
-              // apiLoanRequests: 'http://localhost:5000',
               stateCallback: () => this.forceUpdate(),
               CONTRACT_ADDRESSES
             })
@@ -145,8 +166,7 @@ class Orders extends Component {
 
     const positionsData = {
       lent: positions.lent.map(position => {
-        const currentCollateralAmount =
-          position.origin.loanAmountBorrowed / DAI
+        const currentCollateralAmount = position.origin.loanAmountBorrowed / DAI
         const health = parseInt(
           (position.origin.collateralAmount / currentCollateralAmount) * 100,
           10
@@ -159,8 +179,7 @@ class Orders extends Component {
         )
       }),
       borrowed: positions.borrowed.map(position => {
-        const currentCollateralAmount =
-          position.origin.loanAmountBorrowed / DAI
+        const currentCollateralAmount = position.origin.loanAmountBorrowed / DAI
         const health = parseInt(
           (position.origin.collateralAmount / currentCollateralAmount) * 100,
           10
@@ -214,7 +233,7 @@ class Orders extends Component {
       metamaskLogged
     } = this.state
 
-    if (!window.web3) return <Redirect to="/metamask-missing" />
+    if (!window.web3 && !window.ethereum) return <Redirect to="/metamask-missing" />
     const {
       loading = {},
       orders = { myOrders: {} },
