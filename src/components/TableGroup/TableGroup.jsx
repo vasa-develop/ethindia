@@ -10,15 +10,14 @@ class TableGroup extends Component {
       style,
       data,
       address,
+      contracts,
       methods,
       loading,
       lastFetchTime,
       web3Utils,
       terms = 1
     } = this.props
-    const offers = (data.data.offers.slice() || []).filter(
-      offer => parseInt(offer.loanDuration, 10) === terms * 30 * 24 * 3600
-    )
+    const offers = JSON.parse(JSON.stringify(data.data.offers || []))
 
     const left = Object.assign(
       data.left,
@@ -40,6 +39,7 @@ class TableGroup extends Component {
           data={left}
           classes={data.classes ? data.classes : ''}
           address={address}
+          contracts={contracts}
           methods={methods}
           web3Utils={web3Utils}
           terms={terms}
@@ -48,6 +48,7 @@ class TableGroup extends Component {
           data={right}
           classes={data.classes ? data.classes : ''}
           address={address}
+          contracts={contracts}
           methods={methods}
           web3Utils={web3Utils}
           terms={terms}

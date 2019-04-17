@@ -7,7 +7,7 @@ import FormInput from '../FormInput/FormInput'
 import {
   FormInputs,
   FeeFormInputs,
-  WrapETHFormInputs,
+  WrapETHFormInputs
   // AllowanceFormInputs
   // MakerDAIFormInputs
 } from './Forms'
@@ -55,6 +55,7 @@ class FormTab extends Component {
       offerExpiry: 12,
       wrangler: 'Lendroid',
       allowance: 0,
+      fieldLoading: {},
 
       // Fee Form Inputs
       relayerFeeLST: 0,
@@ -254,9 +255,9 @@ class FormTab extends Component {
     })
   }
 
-  onAllowance(selectedToken) {
+  onAllowance(selectedToken, loading = null) {
     const { methods } = this.props
-    const { token } = this.state
+    const { token, fieldLoading } = this.state
 
     this.setState({
       flagOnAllowance: true
@@ -271,8 +272,12 @@ class FormTab extends Component {
           () => this.openModal('modalErrorIsOpen')
         )
       }
+      if (loading) {
+        fieldLoading[loading] = false
+      }
       this.setState({
-        flagOnAllowance: false
+        flagOnAllowance: false,
+        fieldLoading
       })
     })
   }
@@ -315,7 +320,7 @@ class FormTab extends Component {
   renderInputs(formInputs) {
     const { contracts, loading, exchangeRates } = this.props
     const formData = this.state
-    const { tabIndex, lendToken, borrowToken } = formData
+    const { tabIndex, lendToken, borrowToken, fieldLoading } = formData
     contracts.token = formData.token
     const loadings = Object.assign({}, loading, { making: formData.making })
 
@@ -372,7 +377,13 @@ class FormTab extends Component {
                   : borrowToken
                 : 'LST'
             }
-            onWarning={token => this.onAllowance(token)}
+            onWarning={token => {
+              const { fieldLoading } = this.state
+              fieldLoading[item.key] = true
+              this.setState({ fieldLoading }, () =>
+                this.onAllowance(token, item.key)
+              )
+            }}
             tokenInfo={[formData.lendToken, formData.borrowToken]}
             val={item.value ? item.value(contracts) : formData[item.key]}
             loading={item.loading ? loadings[item.loading] : false}
@@ -388,6 +399,9 @@ class FormTab extends Component {
                     tabIndex === 0 ? lendToken : borrowToken
                   ) ? (
                   <div>
+                    <div className={fieldLoading[item.key] ? 'Loading' : ''}>
+                      {fieldLoading[item.key] && <div className="Loader" />}
+                    </div>
                     Click <span>here</span> to unlock{' '}
                     {item.warning.message(
                       tabIndex === 0 ? lendToken : borrowToken,
@@ -434,7 +448,7 @@ class FormTab extends Component {
   }
 
   renderCollateral(isLend = true) {
-    const { collateralToken } = this.state
+    const { collateralToken, fieldLoading } = this.state
     const {
       tokens,
       contracts: { allowances = {} },
@@ -460,9 +474,22 @@ class FormTab extends Component {
             {isWarning && (
               <div
                 className="warning"
-                onClick={e => this.onAllowance(collateralToken)}
+                onClick={e => {
+                  const { fieldLoading } = this.state
+                  fieldLoading[collateralToken] = true
+                  this.setState({ fieldLoading }, () =>
+                    this.onAllowance(collateralToken, collateralToken)
+                  )
+                }}
               >
                 <div>
+                  <div
+                    className={fieldLoading[collateralToken] ? 'Loading' : ''}
+                  >
+                    {fieldLoading[collateralToken] && (
+                      <div className="Loader" />
+                    )}
+                  </div>
                   Click <span>here</span> to unlock {collateralToken}
                 </div>
               </div>

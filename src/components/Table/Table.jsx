@@ -31,6 +31,7 @@ class Table extends Component {
     super(props)
 
     this.state = {
+      fieldLoading: {},
       modalIsOpen: false,
       modalAmountIsOpen: false,
       modalErrorIsOpen: false,
@@ -62,9 +63,15 @@ class Table extends Component {
   }
 
   getData(data) {
+    const { terms } = this.props
     const { key, filter } = data.data
     if (key) {
-      const ret = this.props.data[key] || []
+      let ret = JSON.parse(JSON.stringify(this.props.data[key] || []))
+      if (terms) {
+        ret = ret.filter(
+          offer => parseInt(offer.loanDuration, 10) === terms * 30 * 24 * 3600
+        )
+      }
       if (filter) return filter(ret)
       return ret
     }
@@ -257,8 +264,33 @@ class Table extends Component {
     this[action.slot](data, action.param)
   }
 
+  onAllowance(selectedToken, loading = null) {
+    const { methods } = this.props
+    const { token, fieldLoading } = this.state
+
+    methods.onAllowance(selectedToken || token, (err = {}, res) => {
+      if (err && err.message) {
+        this.setState(
+          {
+            modalErr: err.message
+          },
+          () => this.openModal('modalErrorIsOpen')
+        )
+      }
+      if (loading) {
+        fieldLoading[loading] = false
+      }
+      this.setState({ fieldLoading })
+    })
+  }
+
   render() {
-    const { data, classes, terms } = this.props
+    const {
+      data,
+      classes,
+      terms,
+      contracts: { allowances }
+    } = this.props
     const {
       postError,
       result,
@@ -270,7 +302,8 @@ class Table extends Component {
       currentData,
       param,
       fillLoanAmount,
-      isLoading
+      isLoading,
+      fieldLoading
     } = this.state
     const filteredData = this.getData(data)
     const expireInSecond =
@@ -317,31 +350,69 @@ class Table extends Component {
           <div>
             <table cellPadding="0" cellSpacing="0" border="0">
               <tbody>
-                {filteredData.map((d, dIndex) => (
-                  <tr key={dIndex}>
-                    {data.headers.map((h, hIndex) => (
-                      <td key={hIndex} style={h.style}>
-                        {this.getDisplayData(d, h)}
+                {filteredData.map((d, dIndex) => {
+                  const token = data.action.isLend
+                    ? d.collateralCurrency
+                    : d.loanCurrency
+
+                  return (
+                    <tr key={dIndex}>
+                      {data.headers.map((h, hIndex) => (
+                        <td key={hIndex} style={h.style}>
+                          {this.getDisplayData(d, h)}
+                        </td>
+                      ))}
+                      <td>
+                        {data.action.label === '3-dot' ? (
+                          <button
+                            style={data.action.style}
+                            className="three-dot"
+                          >
+                            <div className="dot" />
+                            <div className="dot" />
+                            <div className="dot" />
+                          </button>
+                        ) : (
+                          <button
+                            style={data.action.style}
+                            onClick={() => {
+                              if (
+                                data.action.slot === 'onOrder' &&
+                                allowances[token] < 1000000
+                              ) {
+                                const { fieldLoading } = this.state
+                                if (fieldLoading[token]) return
+                                fieldLoading[token] = true
+                                this.setState({ fieldLoading }, () =>
+                                  this.onAllowance(token, token)
+                                )
+                              } else {
+                                this.onAction(data.action, d)
+                              }
+                            }}
+                          >
+                            <div
+                              className={fieldLoading[token] ? 'Loading' : ''}
+                            >
+                              {fieldLoading[token] && (
+                                <div className="Loader" />
+                              )}
+                            </div>
+                            {data.action.slot === 'onOrder' &&
+                            allowances[token] < 1000000 ? (
+                              <div>
+                                <span>Unlock </span>
+                                {token}
+                              </div>
+                            ) : (
+                              data.action.label
+                            )}
+                          </button>
+                        )}
                       </td>
-                    ))}
-                    <td>
-                      {data.action.label === '3-dot' ? (
-                        <button style={data.action.style} className="three-dot">
-                          <div className="dot" />
-                          <div className="dot" />
-                          <div className="dot" />
-                        </button>
-                      ) : (
-                        <button
-                          style={data.action.style}
-                          onClick={() => this.onAction(data.action, d)}
-                        >
-                          {data.action.label}
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                    </tr>
+                  )
+                })}
                 {filteredData.length === 0 && (
                   <tr>
                     <td

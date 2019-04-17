@@ -233,7 +233,8 @@ class Orders extends Component {
       metamaskLogged
     } = this.state
 
-    if (!window.web3 && !window.ethereum) return <Redirect to="/metamask-missing" />
+    if (!window.web3 && !window.ethereum)
+      return <Redirect to="/metamask-missing" />
     const {
       loading = {},
       orders = { myOrders: {} },
@@ -290,11 +291,12 @@ class Orders extends Component {
             key={tIndex}
             methods={methods}
             address={address}
+            contracts={contracts}
             data={{
               left: Tables[0],
               right: Tables[1],
               classes: 'first',
-              data: { offers }
+              data: { offers: JSON.parse(JSON.stringify(offers)) }
             }}
             web3Utils={web3Utils}
             loading={loading.orders}
