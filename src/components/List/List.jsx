@@ -115,7 +115,15 @@ class List extends Component {
 
     if (header.precision) ret = this.setPrecision(ret, header.precision)
     if (header.filter) ret = this[header.filter](ret)
-    if (header.suffix) ret += ' ' + (data[header.suffix] || header.suffix)
+    if (header.suffix) {
+      ret = (
+        <div>
+          {ret} <span>{data[header.suffix] || header.suffix}</span>
+        </div>
+      )
+    } else {
+      ret = <div>{ret}</div>
+    }
     return ret
   }
 
