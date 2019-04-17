@@ -45,7 +45,7 @@ class FormTab extends Component {
       modalErr: 'Unknown',
 
       lendToken: props.tokens.lend[0],
-      borrowToken: props.tokens.borrow[0],
+      borrowToken: props.tokens.lend[0],
       collateralToken: props.tokens.borrow[0],
 
       // Lend/Borrow Form Inputs
@@ -254,15 +254,15 @@ class FormTab extends Component {
     })
   }
 
-  onAllowance() {
+  onAllowance(selectedToken) {
     const { methods } = this.props
-    const { newAllowance, token } = this.state
+    const { token } = this.state
 
     this.setState({
       flagOnAllowance: true
     })
 
-    methods.onAllowance(token, newAllowance, (err = {}, res) => {
+    methods.onAllowance(selectedToken || token, (err = {}, res) => {
       if (err && err.message) {
         this.setState(
           {
@@ -365,6 +365,14 @@ class FormTab extends Component {
             data={item}
             onChange={this.onChange.bind(this)}
             onSelect={this.onSelect.bind(this)}
+            token={
+              item.key.indexOf('LST') === -1
+                ? tabIndex === 0
+                  ? lendToken
+                  : borrowToken
+                : 'LST'
+            }
+            onWarning={token => this.onAllowance(token)}
             tokenInfo={[formData.lendToken, formData.borrowToken]}
             val={item.value ? item.value(contracts) : formData[item.key]}
             loading={item.loading ? loadings[item.loading] : false}
@@ -380,8 +388,8 @@ class FormTab extends Component {
                       tabIndex === 0 ? lendToken : borrowToken
                     )
                   ? item.warning.message(
-                      formData[item.key],
-                      exchangeRates[tabIndex === 0 ? lendToken : borrowToken]
+                      tabIndex === 0 ? lendToken : borrowToken,
+                      formData[item.key]
                     )
                   : null
                 : null
@@ -580,7 +588,7 @@ class FormTab extends Component {
                         : this.isValidForm(AllowanceFormInputs)
                         ? 1
                         : 0,
-                      this.onAllowance
+                      e => this.onAllowance(null)
                     )}
                   </tr>
                 </tbody>

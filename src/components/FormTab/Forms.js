@@ -1,9 +1,6 @@
 import moment from 'moment'
 
-export function FormInputs(
-  isLend,
-  tokens
-) {
+export function FormInputs(isLend, tokens) {
   return [
     {
       key: 'loanAmountOffered',
@@ -21,29 +18,25 @@ export function FormInputs(
       required: true,
       validation: (contracts, rate = 1, token) =>
         contracts.loanAmountOffered / (isLend ? 1 : rate) <=
-        (contracts.allowances
-          ? contracts.allowances[token] || 0
-          : 0),
+        (contracts.allowances ? contracts.allowances[token] || 0 : 0),
       warning: {
         check: (contracts, value, exchangeRate, token) => {
           if (isLend) {
-            if (parseFloat(value) > parseFloat(contracts.allowances[token]))
+            if (
+              parseFloat(contracts.allowances[token]) * exchangeRate <
+              1000000
+            )
               return true
           } else {
             if (
-              parseFloat(value) >
-              parseFloat(contracts.allowances['WETH']) * exchangeRate
+              parseFloat(contracts.allowances[token]) * exchangeRate <
+              10000000
             )
               return true
           }
           return false
         },
-        message: isLend
-          ? value => `Please set token allowance of ${value} on the Allowance Tab`
-          : (value, currentDAIExchangeRate) =>
-              `Please set WETH allowance of ${(
-                value / currentDAIExchangeRate
-              ).toFixed(2)} on the Allowance Tab`
+        message: token => `Click here to unlock ${token}`
       }
     },
     {
@@ -148,9 +141,9 @@ export function FeeFormInputs(isLend) {
           }
         },
         message: isLend
-          ? value =>
+          ? (token, value) =>
               parseFloat(value) > 0
-                ? `Please set LST allowance of ${value} on the Allowance Tab`
+                ? `Click here to unlock LST`
                 : `Monitoring fee cannot be 0`
           : value => `Monitoring fee cannot be 0`
       }

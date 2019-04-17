@@ -168,7 +168,7 @@ class FormInput extends Component {
                 <div className="after" onClick={this.onStep(index, true)} />
                 <div className="before" onClick={this.onStep(index, false)} />
                 {!loading && warning && (
-                  <div className="warning">{warning}</div>
+                  <div className="warning" onClick={e => this.props.onWarning(this.props.token)}>{warning}</div>
                 )}
               </div>
             )
