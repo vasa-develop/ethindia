@@ -115,7 +115,7 @@ class List extends Component {
 
     if (header.precision) ret = this.setPrecision(ret, header.precision)
     if (header.filter) ret = this[header.filter](ret)
-    if (header.suffix) ret += header.suffix
+    if (header.suffix) ret += ' ' + (data[header.suffix] || header.suffix)
     return ret
   }
 
@@ -333,22 +333,20 @@ class List extends Component {
                     <div className="Label">{h.label}</div>
                     <div className="Data">
                       {h.key === 'health' ? (
-                        d[h.key] ? (
-                          <div className="HealthBar">
-                            <div className="BarPercent">
-                              {this.getDisplayData(d, h)}
-                            </div>
-                            <div className="BarBase">
-                              <div
-                                className="Fill"
-                                style={{
-                                  width: `${d[h.key]}%`,
-                                  backgroundColor: this.getFill(d[h.key])
-                                }}
-                              />
-                            </div>
+                        <div className="HealthBar">
+                          <div className="BarPercent">
+                            {this.getDisplayData(d, h)}
                           </div>
-                        ) : null
+                          <div className="BarBase">
+                            <div
+                              className="Fill"
+                              style={{
+                                width: `${d[h.key] || 0}%`,
+                                backgroundColor: this.getFill(d[h.key] || 0)
+                              }}
+                            />
+                          </div>
+                        </div>
                       ) : (
                         this.getDisplayData(d, h)
                       )}

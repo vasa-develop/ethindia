@@ -113,7 +113,7 @@ class Table extends Component {
 
     if (header.precision) ret = this.setPrecision(ret, header.precision)
     if (header.filter) ret = this[header.filter](ret)
-    if (header.suffix) ret += header.suffix
+    if (header.suffix) ret += ' ' + (data[header.suffix] || header.suffix)
     return ret
   }
 
@@ -301,7 +301,11 @@ class Table extends Component {
             </thead>
           </table>
         </div>
-        <div className={`tbl-content ${classes} ${filteredData.length === 0 ? 'NoData' : ''}`}>
+        <div
+          className={`tbl-content ${classes} ${
+            filteredData.length === 0 ? 'NoData' : ''
+          }`}
+        >
           <div>
             <table cellPadding="0" cellSpacing="0" border="0">
               <tbody>

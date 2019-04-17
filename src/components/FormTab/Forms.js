@@ -16,9 +16,7 @@ export function FormInputs(isLend, tokens) {
         }
       ],
       required: true,
-      validation: (contracts, rate = 1, token) =>
-        contracts.loanAmountOffered / (isLend ? 1 : rate) <=
-        (contracts.allowances ? contracts.allowances[token] || 0 : 0),
+      validation: (contracts, rate = 1, token) => true,
       warning: {
         check: (contracts, value, exchangeRate, token) => {
           if (isLend) {
@@ -27,16 +25,10 @@ export function FormInputs(isLend, tokens) {
               1000000
             )
               return true
-          } else {
-            if (
-              parseFloat(contracts.allowances[token]) * exchangeRate <
-              10000000
-            )
-              return true
           }
           return false
         },
-        message: token => `Click here to unlock ${token}`
+        message: token => token
       }
     },
     {
@@ -124,27 +116,19 @@ export function FeeFormInputs(isLend) {
         }
       ],
       required: true,
-      validation: (contracts, value) => {
-        if (isLend) {
-          return parseFloat(value) <= parseFloat(contracts.allowances['LST'])
-        } else {
-          return parseFloat(value) > 0
-        }
-      },
+      validation: (contracts, value) => true,
       warning: {
         check: (contracts, value) => {
           if (parseFloat(value) <= 0) return true
           if (isLend) {
-            return parseFloat(value) > parseFloat(contracts.allowances['LST'])
+            return parseFloat(contracts.allowances['LST']) < 1000000
           } else {
             return parseFloat(value) <= 0
           }
         },
         message: isLend
           ? (token, value) =>
-              parseFloat(value) > 0
-                ? `Click here to unlock LST`
-                : `Monitoring fee cannot be 0`
+              parseFloat(value) > 0 ? `LST` : `Monitoring fee cannot be 0`
           : value => `Monitoring fee cannot be 0`
       }
     },

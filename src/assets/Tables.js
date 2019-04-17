@@ -38,14 +38,14 @@ const CreateTables = web3Utils => [
       {
         label: 'Amount',
         key: 'loanAmount',
+        suffix: 'loanCurrency',
         precision: 3,
         style: { textAlign: 'left' }
       },
-      // {
-      //   label: 'Term',
-      //   key: 'loanDuration',
-      //   filter: 'calcTerm'
-      // },
+      {
+        label: 'Collateral',
+        key: 'collateralCurrency'
+      },
       {
         label: 'Rate',
         key: 'interestRate',
@@ -84,14 +84,14 @@ const CreateTables = web3Utils => [
       {
         label: 'Amount',
         key: 'loanAmount',
+        suffix: 'loanCurrency',
         precision: 3,
         style: { textAlign: 'left' }
       },
-      // {
-      //   label: 'Term',
-      //   key: 'loanDuration',
-      //   filter: 'calcTerm'
-      // },
+      {
+        label: 'Collateral',
+        key: 'collateralCurrency'
+      },
       {
         label: 'Rate',
         key: 'interestRate',
@@ -130,8 +130,13 @@ const CreateTables = web3Utils => [
       {
         label: 'Amount',
         key: 'loanAmount',
+        suffix: 'loanCurrency',
         precision: 2,
         style: { fontFamily: 'Space Mono', width: '33%' }
+      },
+      {
+        label: 'Collateral',
+        key: 'collateralCurrency'
       },
       // {
       //   label: 'Total Interest ',
@@ -193,8 +198,13 @@ const CreateTables = web3Utils => [
       {
         label: 'Amount',
         key: 'loanAmount',
+        suffix: 'loanCurrency',
         precision: 2,
         style: { fontFamily: 'Space Mono', width: '33%' }
+      },
+      {
+        label: 'Collateral',
+        key: 'collateralCurrency'
       },
       // {
       //   label: 'Total Interest ',
@@ -255,8 +265,7 @@ const CreateTables = web3Utils => [
     headers: [
       {
         label: 'Loan Number',
-        key: 'loanNumber',
-        style: { fontFamily: 'Space Mono', width: '100%' }
+        key: 'loanNumber'
       },
       {
         label: 'Amount',
@@ -333,8 +342,7 @@ const CreateTables = web3Utils => [
     headers: [
       {
         label: 'Loan Number',
-        key: 'loanNumber',
-        style: { fontFamily: 'Space Mono', width: '100%' }
+        key: 'loanNumber'
       },
       {
         label: 'Amount',

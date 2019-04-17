@@ -8,7 +8,7 @@ import {
   FormInputs,
   FeeFormInputs,
   WrapETHFormInputs,
-  AllowanceFormInputs
+  // AllowanceFormInputs
   // MakerDAIFormInputs
 } from './Forms'
 
@@ -378,21 +378,24 @@ class FormTab extends Component {
             loading={item.loading ? loadings[item.loading] : false}
             className={item.warning && item.warning.feature ? 'feature' : ''}
             warning={
-              item.warning
-                ? item.warning.feature
-                  ? item.warning.message
-                  : item.warning.check(
-                      contracts,
-                      formData[item.key],
-                      exchangeRates[tabIndex === 0 ? lendToken : borrowToken],
-                      tabIndex === 0 ? lendToken : borrowToken
-                    )
-                  ? item.warning.message(
+              item.warning ? (
+                item.warning.feature ? (
+                  item.warning.message
+                ) : item.warning.check(
+                    contracts,
+                    formData[item.key],
+                    exchangeRates[tabIndex === 0 ? lendToken : borrowToken],
+                    tabIndex === 0 ? lendToken : borrowToken
+                  ) ? (
+                  <div>
+                    Click <span>here</span> to unlock{' '}
+                    {item.warning.message(
                       tabIndex === 0 ? lendToken : borrowToken,
                       formData[item.key]
-                    )
-                  : null
-                : null
+                    )}
+                  </div>
+                ) : null
+              ) : null
             }
           />
         )}
@@ -430,21 +433,42 @@ class FormTab extends Component {
     )
   }
 
-  renderCollateral() {
+  renderCollateral(isLend = true) {
     const { collateralToken } = this.state
-    const { tokens } = this.props
+    const {
+      tokens,
+      contracts: { allowances = {} },
+      exchangeRates = {}
+    } = this.props
+    const isWarning =
+      !isLend &&
+      allowances[collateralToken] * exchangeRates[collateralToken] < 1000000
 
     return (
       <div className="FormInputWrapper">
         <div className="InputLabel">Collateral</div>
-        <select
-          value={collateralToken}
-          onChange={e => this.setState({ collateralToken: e.target.value })}
-        >
-          {tokens.borrow.map(token => (
-            <option key={token}>{token}</option>
-          ))}
-        </select>
+        <div className="FormInputs">
+          <div className="FormInput" style={{ border: 0, marginBottom: 10 }}>
+            <select
+              value={collateralToken}
+              onChange={e => this.setState({ collateralToken: e.target.value })}
+            >
+              {tokens.borrow.map(token => (
+                <option key={token}>{token}</option>
+              ))}
+            </select>
+            {isWarning && (
+              <div
+                className="warning"
+                onClick={e => this.onAllowance(collateralToken)}
+              >
+                <div>
+                  Click <span>here</span> to unlock {collateralToken}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     )
   }
@@ -499,7 +523,7 @@ class FormTab extends Component {
             <Tab>Lend</Tab>
             <Tab>Borrow</Tab>
             <Tab>Wrap/Unwrap ETH</Tab>
-            <Tab>Set Allowance</Tab>
+            {/* <Tab>Set Allowance</Tab> */}
             {/* <Tab>Maker DAI</Tab> */}
           </TabList>
 
@@ -534,7 +558,7 @@ class FormTab extends Component {
               <table cellSpacing="15">
                 <tbody>
                   <tr>
-                    <td>{this.renderCollateral()}</td>
+                    <td>{this.renderCollateral(false)}</td>
                   </tr>
                   <tr>
                     {this.renderInputs(FormInputs(false, tokens))}
@@ -575,7 +599,7 @@ class FormTab extends Component {
               </table>
             </FadeIn>
           </TabPanel>
-          <TabPanel>
+          {/* <TabPanel>
             <FadeIn>
               <table cellSpacing="15" className="AllowanceTable">
                 <tbody>
@@ -594,7 +618,7 @@ class FormTab extends Component {
                 </tbody>
               </table>
             </FadeIn>
-          </TabPanel>
+          </TabPanel> */}
           {/* <TabPanel>
             <FadeIn>
               <table cellSpacing="15" className="MakerDAITAble">
