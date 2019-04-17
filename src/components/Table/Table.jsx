@@ -351,7 +351,7 @@ class Table extends Component {
             <table cellPadding="0" cellSpacing="0" border="0">
               <tbody>
                 {filteredData.map((d, dIndex) => {
-                  const token = data.action.isLend
+                  const token = data.action.param.isLend
                     ? d.collateralCurrency
                     : d.loanCurrency
 
@@ -452,8 +452,8 @@ class Table extends Component {
                 <div className="Error">
                   {postError.response.status == 400 ? (
                     <ul>
-                      {postError.response.data.message.error.map(err => (
-                        <li>{err.message}</li>
+                      {postError.response.data.message.error.map((err, index) => (
+                        <li key={index}>{err.message}</li>
                       ))}
                     </ul>
                   ) : (
