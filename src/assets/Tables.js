@@ -270,12 +270,13 @@ const CreateTables = web3Utils => [
       {
         label: 'Amount',
         key: 'amount',
+        suffix: 'loanCurrency',
         precision: 2
       },
       {
         label: 'Total Interest ',
         key: 'totalInterest',
-        precision: 5
+        precision: 3
       },
       {
         label: 'Period',
@@ -347,12 +348,13 @@ const CreateTables = web3Utils => [
       {
         label: 'Amount',
         key: 'amount',
+        suffix: 'loanCurrency',
         precision: 2
       },
       {
         label: 'Total Interest ',
         key: 'totalInterest',
-        precision: 5
+        precision: 3
       },
       {
         label: 'Period',
