@@ -39,7 +39,7 @@ class Table extends Component {
       modalErr: 'Unknown',
       result: {},
       approval: {},
-      currentData: null,
+      currentData: undefined,
       param: {},
       fillLoanAmount: 0
     }
@@ -299,7 +299,7 @@ class Table extends Component {
       modalAmountIsOpen,
       modalErrorIsOpen,
       modalErr,
-      currentData,
+      currentData = {},
       param,
       fillLoanAmount,
       isLoading,
@@ -452,9 +452,11 @@ class Table extends Component {
                 <div className="Error">
                   {postError.response.status == 400 ? (
                     <ul>
-                      {postError.response.data.message.error.map((err, index) => (
-                        <li key={index}>{err.message}</li>
-                      ))}
+                      {postError.response.data.message.error.map(
+                        (err, index) => (
+                          <li key={index}>{err.message}</li>
+                        )
+                      )}
                     </ul>
                   ) : (
                     postError.response.data.message
@@ -498,9 +500,9 @@ class Table extends Component {
           onSubmit={this.onSubmitOrder.bind(this)}
           contentLabel={`Amount to ${param.isLend ? 'Borrow' : 'Lend'}`}
           value={fillLoanAmount}
-          max={currentData ? currentData.loanAmount : 0}
-          suffix={param.isLend ? '' : ''}
-          disabled={fillLoanAmount > (currentData ? currentData.loanAmount : 0)}
+          max={currentData.loanAmount || 0}
+          suffix={currentData.loanCurrency || ''}
+          disabled={fillLoanAmount > (currentData.loanAmount || 0)}
           isLoading={isLoading}
         />
         <Modal

@@ -50,7 +50,7 @@ class InputModal extends Component {
                 <div className='FormInputWrapper'>
                   <div
                     className={`FormInput ${
-                      props.suffix ? `Suffix ${props.suffix || ''}` : ''
+                      props.suffix ? `Suffix ${props.suffix || ''} L${(props.suffix || '').length}` : ''
                     } ${props.prefix ? 'Prefix' : ''}`}
                   >
                     <div className='Prefix'>{props.prefix}</div>

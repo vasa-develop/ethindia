@@ -42,7 +42,7 @@ class List extends Component {
       modalIsOpen: false,
       modalData: {},
       modalErr: 'Unknown',
-      currentData: null,
+      currentData: undefined,
       singleLoading: false
     }
 
@@ -302,7 +302,7 @@ class List extends Component {
     const filteredData = this.getData(data)
     const {
       topupCollateralAmount,
-      currentData,
+      currentData = {},
       modalAmountIsOpen,
       modalErrorIsOpen,
       modalIsOpen,
@@ -418,7 +418,9 @@ class List extends Component {
             ))}
             {filteredData.length === 0 && (
               <div className={`List ${classes}`}>
-                {data.loading ? 'Loading' : 'No Data'}
+                <div style={{ width: '100%' }}>
+                  {data.loading ? 'Loading' : 'No Data'}
+                </div>
               </div>
             )}
           </div>
@@ -433,11 +435,9 @@ class List extends Component {
           onSubmit={this.onSubmitTopupWithCollateral.bind(this)}
           contentLabel="Topup Collateral Amount"
           value={topupCollateralAmount}
-          max={currentData ? currentData.amount : 0}
-          suffix="WETH"
-          disabled={
-            topupCollateralAmount > (currentData ? currentData.amount : 0)
-          }
+          max={currentData.amount || 0}
+          suffix={currentData.collateralCurrency || ''}
+          disabled={topupCollateralAmount > (currentData.amount || 0)}
         />
         <Modal
           isOpen={modalIsOpen}
