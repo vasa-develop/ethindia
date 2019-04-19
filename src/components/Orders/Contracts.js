@@ -21,6 +21,6 @@ export const CONTRACT_ADDRESSES = {
 }
 
 export const ORDER_TOKENS = {
-  lend: ['USDC'],
-  borrow: ['DAI', 'DGX']
+  lend: ['USDC', 'DAI'],
+  borrow: ['DAI', 'DGX', 'WETH']
 }

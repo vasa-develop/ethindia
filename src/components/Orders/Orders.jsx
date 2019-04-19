@@ -286,7 +286,7 @@ class Orders extends Component {
           tokens={ORDER_TOKENS}
           pTokens={Object.keys(CONTRACT_ADDRESSES)}
         />
-        {[1, 3, 6, 12, 24].map((term, tIndex) => (
+        {[1, 3, 6].map((term, tIndex) => (
           <TableGroup
             key={tIndex}
             methods={methods}

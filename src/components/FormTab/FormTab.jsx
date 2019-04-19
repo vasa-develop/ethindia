@@ -358,7 +358,7 @@ class FormTab extends Component {
               onChange={this.onChangeSync(item)}
             >
               <option disabled>Select Period</option>
-              {[1, 3, 6, 12, 24].map((period, index) => (
+              {[1, 3, 6].map((period, index) => (
                 <option value={period * 30 * 24 * 3600} key={index}>
                   {period < 12 ? `${period} months` : `${period / 12} years`}
                 </option>
