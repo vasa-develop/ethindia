@@ -159,6 +159,22 @@
   justify-content: center;
   z-index: 100;
 
+  .Content {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 50px;
+    text-align: center;
+    color: #a87df3;
+    z-index: -1;
+  }
+
   .Loader {
     border: 3px solid rgba(255, 255, 255, 0.4);
     border-top: 3px solid rgba(134, 90, 235, 0.5);

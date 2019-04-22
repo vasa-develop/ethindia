@@ -445,6 +445,15 @@ class Table extends Component {
             <div>
               {isLoading && (
                 <div className="Loading">
+                  <div
+                    className="Content"
+                    style={{
+                      fontSize: '150%',
+                      paddingBottom: 150
+                    }}
+                  >
+                    Creating a new position...
+                  </div>
                   <div className="Loader" />
                 </div>
               )}
@@ -504,6 +513,7 @@ class Table extends Component {
           suffix={currentData.loanCurrency || ''}
           disabled={fillLoanAmount > (currentData.loanAmount || 0)}
           isLoading={isLoading}
+          loadingContent={'Waiting for response from wrangler...'}
         />
         <Modal
           isOpen={modalErrorIsOpen}

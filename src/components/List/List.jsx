@@ -297,8 +297,37 @@ class List extends Component {
     this[action.slot](data, action.param)
   }
 
+  onAllowance(selectedToken, address) {
+    const { methods } = this.props
+
+    this.setState(
+      {
+        singleLoading: address
+      },
+      () =>
+        methods.onAllowance(selectedToken, (err = {}, res) => {
+          if (err && err.message) {
+            this.setState(
+              {
+                singleLoading: false,
+                modalErr: err.message
+              },
+              () => this.openModal('modalErrorIsOpen')
+            )
+          } else {
+            this.setState({ singleLoading: false })
+          }
+        })
+    )
+  }
+
   render() {
-    const { data, classes, terms } = this.props
+    const {
+      data,
+      classes,
+      terms,
+      contracts: { allowances }
+    } = this.props
     const filteredData = this.getData(data)
     const {
       topupCollateralAmount,
@@ -386,9 +415,26 @@ class List extends Component {
                             .map((item, iIndex) => (
                               <DropdownItem
                                 key={iIndex}
-                                onClick={() => this.onAction(item, d)}
+                                onClick={() => {
+                                  if (
+                                    item.slot === 'onRepayLoan' &&
+                                    allowances[d.loanCurrency] > 1000000
+                                  ) {
+                                    this.onAllowance(d.loanCurrency, d.address)
+                                  } else {
+                                    this.onAction(item, d)
+                                  }
+                                }}
                               >
-                                {item.label}
+                                {item.slot === 'onRepayLoan' &&
+                                allowances[d.loanCurrency] > 1000000 ? (
+                                  <div>
+                                    Unlock <span>{d.loanCurrency}</span> to
+                                    Repay loan
+                                  </div>
+                                ) : (
+                                  item.label
+                                )}
                               </DropdownItem>
                             ))}
                         </DropdownMenu>

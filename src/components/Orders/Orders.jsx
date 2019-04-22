@@ -22,6 +22,13 @@ import 'intro.js/introjs.css'
 import 'react-tabs/style/react-tabs.scss'
 import './Orders.scss'
 
+const options = _this => ({
+  apiEndpoint: 'https://winged-yeti-201009.appspot.com',
+  apiLoanRequests: 'https://lendroidwrangler.com',
+  stateCallback: () => _this.forceUpdate(),
+  CONTRACT_ADDRESSES
+})
+
 class Orders extends Component {
   constructor(props) {
     super(props)
@@ -113,9 +120,8 @@ class Orders extends Component {
         }
         if (Object.keys(this.state.LendroidJS).length === 0) {
           const LendroidJS = new Lendroid({
-            provider: ethereum,
-            stateCallback: () => this.forceUpdate(),
-            CONTRACT_ADDRESSES
+            ...options(this),
+            provider: ethereum
           })
           newState['LendroidJS'] = LendroidJS
           newState['Tables'] = CreateTables(LendroidJS.web3Utils)
@@ -134,10 +140,7 @@ class Orders extends Component {
             metamaskChecking: false
           }
           if (Object.keys(this.state.LendroidJS).length === 0) {
-            const LendroidJS = new Lendroid({
-              stateCallback: () => this.forceUpdate(),
-              CONTRACT_ADDRESSES
-            })
+            const LendroidJS = new Lendroid(options(this))
             newState['LendroidJS'] = LendroidJS
             newState['Tables'] = CreateTables(LendroidJS.web3Utils)
           }
