@@ -418,7 +418,7 @@ class List extends Component {
                                 onClick={() => {
                                   if (
                                     item.slot === 'onRepayLoan' &&
-                                    allowances[d.loanCurrency] > 1000000
+                                    allowances[d.loanCurrency] < 1000000
                                   ) {
                                     this.onAllowance(d.loanCurrency, d.address)
                                   } else {
@@ -427,7 +427,7 @@ class List extends Component {
                                 }}
                               >
                                 {item.slot === 'onRepayLoan' &&
-                                allowances[d.loanCurrency] > 1000000 ? (
+                                allowances[d.loanCurrency] < 1000000 ? (
                                   <div>
                                     Unlock <span>{d.loanCurrency}</span> to
                                     Repay loan
