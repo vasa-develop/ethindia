@@ -24,9 +24,25 @@ import './Orders.scss'
 
 const options = _this => ({
   apiEndpoint: 'https://winged-yeti-201009.appspot.com',
-  apiLoanRequests: 'https://lendroidwrangler.com',
   stateCallback: () => _this.forceUpdate(),
-  CONTRACT_ADDRESSES
+  CONTRACT_ADDRESSES,
+  wranglers: [
+    {
+      label: 'Default Simple Wrangler',
+      address: '0x0f02a30cA336EC791Ac8Cb40816e4Fc5aeB57E38',
+      apiLoanRequests: 'https://lendroidwrangler.com'
+    },
+    {
+      label: 'Default Simple Wrangler1',
+      address: '0x0f02a30cA336EC791Ac8Cb40816e4Fc5aeB57E39',
+      apiLoanRequests: 'https://lendroidwrangler.com'
+    },
+    {
+      label: 'Default Simple Wrangler2',
+      address: '0x0f02a30cA336EC791Ac8Cb40816e4Fc5aeB57E3A',
+      apiLoanRequests: 'https://lendroidwrangler.com'
+    },
+  ]
 })
 
 class Orders extends Component {
@@ -245,7 +261,8 @@ class Orders extends Component {
       exchangeRates = {},
       contracts,
       web3Utils,
-      metamask = {}
+      metamask = {},
+      wranglers
     } = LendroidJS
     const { address, network } = metamask
     const { currentWETHExchangeRate } = exchangeRates
@@ -288,6 +305,7 @@ class Orders extends Component {
           loading={loading}
           tokens={ORDER_TOKENS}
           pTokens={Object.keys(CONTRACT_ADDRESSES)}
+          wranglers={wranglers}
         />
         {[1, 3, 6].map((term, tIndex) => (
           <TableGroup

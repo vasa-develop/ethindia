@@ -53,7 +53,7 @@ class FormTab extends Component {
       interestRatePerDay: 5,
       loanDuration: 30 * 24 * 3600,
       offerExpiry: 12,
-      wrangler: 'Lendroid',
+      wrangler: (props.wranglers || [])[0].address,
       allowance: 0,
       fieldLoading: {},
 
@@ -198,7 +198,7 @@ class FormTab extends Component {
           ? item.output(formData[item.key])
           : formData[item.key]
       })
-      postData.wrangler = '0x0f02a30cA336EC791Ac8Cb40816e4Fc5aeB57E38'
+      postData.wrangler = formData.wrangler
       postData.lender = isLend ? address : ''
       postData.borrower = !isLend ? address : ''
 
@@ -435,12 +435,22 @@ class FormTab extends Component {
   }
 
   renderWrangler() {
+    const { wrangler } = this.state
+    const { wranglers } = this.props
+
     return (
       <div className="FormInputWrapper">
         <div className="InputLabel">Wrangler</div>
-        <select>
+        <select
+          value={wrangler}
+          onChange={e => this.setState({ wrangler: e.target.value })}
+        >
           <option disabled>Wrangler Name</option>
-          <option default>Default Simple Wrangler</option>
+          {wranglers.map(({ address, label }, wIndex) => (
+            <option key={wIndex} value={address}>
+              {label}
+            </option>
+          ))}
         </select>
       </div>
     )
