@@ -210,7 +210,6 @@ class FormTab extends Component {
       postData.loanToken = contracts.contracts
         ? contracts.contracts[loanToken]._address
         : ''
-      postData.relayer = ''
       postData.collateralAmount = web3Utils.toWei(0)
 
       delete postData.allowance
