@@ -32,16 +32,6 @@ const options = _this => ({
       address: '0x0f02a30cA336EC791Ac8Cb40816e4Fc5aeB57E38',
       apiLoanRequests: 'https://lendroidwrangler.com'
     },
-    {
-      label: 'Default Simple Wrangler1',
-      address: '0x0f02a30cA336EC791Ac8Cb40816e4Fc5aeB57E39',
-      apiLoanRequests: 'https://lendroidwrangler.com'
-    },
-    {
-      label: 'Default Simple Wrangler2',
-      address: '0x0f02a30cA336EC791Ac8Cb40816e4Fc5aeB57E3A',
-      apiLoanRequests: 'https://lendroidwrangler.com'
-    },
   ]
 })
 

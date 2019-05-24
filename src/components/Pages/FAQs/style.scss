@@ -12,6 +12,12 @@
     @media all and (max-width: 420px) {
       font-size: 1.8em;
     }
+
+    a {
+      color : inherit;
+      text-decoration: none;
+    }
+
   }
 
   .FAQs {

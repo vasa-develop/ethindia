@@ -160,7 +160,7 @@ export const FAQContents = [
     ]
   },
   {
-    title: `Regulatory FAQs (Need inputs from Pranav)`,
+    title: `Regulatory FAQs`,
     contents: [
       [
         `Is ReloanR a custodian of funds - loan collateral, loan amount, etc.?`,
@@ -169,18 +169,6 @@ export const FAQContents = [
       [
         `Is ReloanR regulated by the Monetary Authority of Singapore (MAS)?`,
         `No it is not. It is a proof of concept for a blockchain-based financial instrument.`
-      ],
-      [
-        `What are the terms and conditions of using ReloanR?`,
-        `Need inputs from Pranav. Working on it Yo!. Need to collaborate also.`
-      ],
-      [
-        `What is the system of redressal in the event that I lose my funds on the platform as a lender?`,
-        `Need inputs from Pranav. Because of some glitch? Need Lawyer.`
-      ],
-      [
-        `What is the system of redressal in the event that I lose my collateral on the platform as a borrower?`,
-        `Need inputs from Pranav. No system of  redressal. Event of default will lead to Liquidation of Collateral. If glitch, need lawyer.`
       ]
     ]
   }

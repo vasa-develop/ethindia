@@ -199,6 +199,9 @@ class Table extends Component {
           )
 
           methods.onPostLoans(postData, (err, res) => {
+            console.log(postData)
+            console.log(err)
+            console.log(res)
             if (err) {
               return _this.setState(
                 {
@@ -222,8 +225,12 @@ class Table extends Component {
                 else if (
                   result[key].toString().indexOf('0x') !== 0 &&
                   key !== 'nonce'
-                )
+                ) try {
                   result[key] = web3Utils.fromWei(result[key])
+                }
+                  catch (err) {
+                    console.log(err)
+                  }
               })
               _this.setState(
                 {
@@ -322,7 +329,7 @@ class Table extends Component {
         <div className="Title">
           <div>
             {data.title}{' '}
-            <i>{terms < 12 ? `(${terms} Months)` : `(${terms / 12} Years)`}</i>
+            <i>{terms === 1 ? `(${terms} Month)` : terms < 12 ? `(${terms} Months)` : `(${terms / 12} Years)`}</i>
           </div>
           <span>
             refreshing in <b>{parseInt(30 - refreshing / 1000, 10)}</b> seconds

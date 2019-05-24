@@ -14,10 +14,10 @@ class FAQs extends Component {
 
     return (
       <div className="FAQsWrapper">
-        <h1>FAQs for ReloanR</h1>
+        <h1>FAQs for <a href="https://reloanr.com">ReloanR</a></h1>
         <div className="FAQs">
           <p>
-            Reloanr is a dApp for collateralised ERC20 loans, with stablecoins
+            Reloanr is a <a href="https://app.reloanr.com">dApp</a> for collateralised ERC20 loans, with stablecoins
             forming an important part of the ecosystem. Those who hold digital
             assets can lend and earn interest on their tokens. And those that
             need them can use this as an alternative to outright purchase on

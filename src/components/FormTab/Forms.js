@@ -4,7 +4,7 @@ export function FormInputs(isLend, tokens) {
   return [
     {
       key: 'loanAmountOffered',
-      label: 'Amount',
+      label: 'Loan Amount',
       width: 150,
       output: val => val.toString(),
       inputs: [
@@ -33,7 +33,7 @@ export function FormInputs(isLend, tokens) {
     },
     {
       key: 'interestRatePerDay',
-      label: 'Daily Rate',
+      label: 'Daily Interest Rate',
       width: 150,
       output: val => val.toString(),
       inputs: [
