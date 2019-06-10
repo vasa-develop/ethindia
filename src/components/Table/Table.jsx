@@ -199,8 +199,6 @@ class Table extends Component {
           )
 
           methods.onPostLoans(postData, (err, res) => {
-            console.log(postData)
-            console.log(err)
             console.log(res)
             if (err) {
               return _this.setState(
@@ -314,7 +312,7 @@ class Table extends Component {
     } = this.state
     const filteredData = this.getData(data)
     const expireInSecond =
-      (approval._timestamps || [0])[0] -
+      (approval._timestamps || [0][0])[1] -
       parseInt(new Date().getTime() / 1000, 10)
     const refreshing =
       new Date().getTime() - new Date(data.lastFetchTime).getTime()
@@ -493,9 +491,9 @@ class Table extends Component {
                 </div>
               )}
               <div className="Buttons">
-                {!postError && (
+                {!postError && expireInSecond > 0 && (
                   <div className="Confirm" onClick={this.onConfirm.bind(this)}>
-                    Continue
+                    Create Loan
                   </div>
                 )}
                 <div

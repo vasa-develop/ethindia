@@ -458,9 +458,6 @@ class FormTab extends Component {
 
   renderCollateral(isLend = true) {
     const { collateralToken, fieldLoading } = this.state
-    console.log(`collateralToken : ${collateralToken}`)
-    console.log('fieldLoading')
-    console.log(fieldLoading)
     const {
       tokens,
       contracts: { allowances = {} },
