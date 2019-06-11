@@ -359,7 +359,11 @@ class FormTab extends Component {
               <option disabled>Select Period</option>
               {[1, 3, 6].map((period, index) => (
                 <option value={period * 30 * 24 * 3600} key={index}>
-                  {period === 1 ? `${period} month` : period < 12 ? `${period} months` : `${period / 12} years`}
+                  {period === 1
+                    ? `${period} month`
+                    : period < 12
+                    ? `${period} months`
+                    : `${period / 12} years`}
                 </option>
               ))}
             </select>
@@ -378,6 +382,7 @@ class FormTab extends Component {
             }
             onWarning={token => {
               const { fieldLoading } = this.state
+              if (fieldLoading[item.key]) return
               fieldLoading[item.key] = true
               this.setState({ fieldLoading }, () =>
                 this.onAllowance(token, item.key)
@@ -460,11 +465,9 @@ class FormTab extends Component {
     const { collateralToken, fieldLoading } = this.state
     const {
       tokens,
-      contracts: { allowances = {} },
+      contracts: { allowances = {} }
     } = this.props
-    const isWarning =
-      !isLend &&
-      allowances[collateralToken] < 1000000
+    const isWarning = !isLend && allowances[collateralToken] < 1000000
 
     return (
       <div className="FormInputWrapper">
