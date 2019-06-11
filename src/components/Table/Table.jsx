@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import axios from 'axios'
 import moment from 'moment'
 import Modal from 'react-modal'
 
@@ -133,19 +132,19 @@ class Table extends Component {
   }
 
   onConfirm() {
-    const { approval, currentData } = this.state
-    const { methods } = this.props
+    const { approval, currentData, result } = this.state
+    const { methods, web3Utils } = this.props
     this.setState(
       {
         isLoading: true
       },
       () => {
-        methods.onFillLoan(approval, (err, result) => {
-          console.log('Fill Loan', err, result)
-          if (result) {
+        methods.onFillLoan(approval, (err, res) => {
+          console.log('Fill Loan', err, res)
+          if (res) {
             methods.onFillOrderServer(
               currentData.id,
-              approval['_values'][6],
+              web3Utils.toWei(result.loanAmountFilled),
               (err, res) => {
                 if (err) {
                   console.log(err)
@@ -464,7 +463,7 @@ class Table extends Component {
               )}
               {postError ? (
                 <div className="Error">
-                  {postError.response.status == 400 ? (
+                  {postError.response.status === 400 ? (
                     <ul>
                       {postError.response.data.message.error.map(
                         (err, index) => (

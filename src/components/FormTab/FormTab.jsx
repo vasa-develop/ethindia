@@ -53,7 +53,7 @@ class FormTab extends Component {
       interestRatePerDay: 5,
       loanDuration: 30 * 24 * 3600,
       offerExpiry: 12,
-      wrangler: (props.wranglers || [])[0].address,
+      wrangler: props.wranglers ? props.wranglers[0].address : '',
       allowance: 0,
       fieldLoading: {},
 
@@ -104,11 +104,11 @@ class FormTab extends Component {
     const formData = this.state
     formData[key] = value
 
-    if (key === 'lockETH') {
-      formData['amountInDAI'] = value * currentDAIExchangeRate
-    } else if (key === 'amountInDAI') {
-      formData['lockETH'] = value / currentDAIExchangeRate
-    }
+    // if (key === 'lockETH') {
+    //   formData['amountInDAI'] = value * currentDAIExchangeRate
+    // } else if (key === 'amountInDAI') {
+    //   formData['lockETH'] = value / currentDAIExchangeRate
+    // }
     this.setState(formData)
   }
 
@@ -446,7 +446,7 @@ class FormTab extends Component {
           onChange={e => this.setState({ wrangler: e.target.value })}
         >
           <option disabled>Wrangler Name</option>
-          {wranglers.map(({ address, label }, wIndex) => (
+          {(wranglers || []).map(({ address, label }, wIndex) => (
             <option key={wIndex} value={address}>
               {label}
             </option>
@@ -461,7 +461,6 @@ class FormTab extends Component {
     const {
       tokens,
       contracts: { allowances = {} },
-      exchangeRates = {}
     } = this.props
     const isWarning =
       !isLend &&
@@ -514,11 +513,11 @@ class FormTab extends Component {
       <td className="ButtonWrapper">
         <div
           className={`FormInput Button ${valid ? '' : 'Disabled'} ${
-            valid == 2 ? 'Loading' : ''
+            valid === 2 ? 'Loading' : ''
           }`}
-          onClick={valid == 1 ? onClick : null}
+          onClick={valid === 1 ? onClick : null}
         >
-          {valid == 2 && (
+          {valid === 2 && (
             <div className="Loading">
               <div className="Loader" />
             </div>

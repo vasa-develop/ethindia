@@ -23,10 +23,6 @@ import {
 import './App.scss'
 
 class App extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   render() {
     return (
       <FadeIn>

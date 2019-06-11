@@ -11,7 +11,7 @@
     "file-loader": "^1.1.11",
     "intro.js": "^2.9.3",
     "intro.js-react": "^0.2.0",
-    "lendroid": "^2.5.1",
+    "lendroid": "^3.0.0",
     "moment": "^2.21.0",
     "react": "^16.2.0",
     "react-animations": "^1.0.0",
@@ -24,7 +24,7 @@
     "react-modal": "^3.4.4",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "1.0.17",
+    "react-scripts": "^2.0.0",
     "react-tabs": "^2.2.2",
     "reactstrap": "^6.1.0",
     "recompose": "^0.27.1",
@@ -35,18 +35,13 @@
     "underscore": "^1.9.1"
   },
   "scripts": {
-    "start": "webpack-dev-server",
-    "start-react": "react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject",
-    "dist": "webpack",
-    "watch": "webpack --progress --watch",
-    "dev": "webpack-dev-server --open"
+    "eject": "react-scripts eject"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-es3-member-expression-literals": "^6.22.0",
     "babel-plugin-transform-es3-property-literals": "^6.22.0",
@@ -60,13 +55,17 @@
     "sass-loader": "^6.0.7",
     "style-loader": "^0.20.3",
     "url-loader": "^0.6.2",
-    "webpack": "^3.10.0",
     "webpack-bundle-analyzer": ">=3.3.2",
-    "webpack-combine-loaders": "^2.0.3",
-    "webpack-dev-server": ">=3.1.11"
+    "webpack-combine-loaders": "^2.0.3"
   },
   "main": "index.js",
   "repository": "git@github.com:lendroidproject/reloanr-ui.git",
   "author": "alonavns <alona.vns@outlook.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

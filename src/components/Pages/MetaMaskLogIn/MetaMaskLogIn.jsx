@@ -6,12 +6,12 @@ import './MetaMaskLogIn.scss'
 
 class MetaMaskLogIn extends Component {
   constructor(props) {
-    super(props);
+    super(props)
 
     this.state = {
       timer: -1,
       metamaskLogged: false,
-      metamaskExists: true,
+      metamaskExists: true
     }
   }
 
@@ -22,7 +22,7 @@ class MetaMaskLogIn extends Component {
   }
 
   componentWillUnmount() {
-    if (this.state.timer > 0) clearInterval(this.state.timer);
+    if (this.state.timer > 0) clearInterval(this.state.timer)
   }
 
   checkMetamask() {
@@ -30,31 +30,31 @@ class MetaMaskLogIn extends Component {
       window.web3.eth.getAccounts((err, accounts) => {
         if (accounts && accounts.length > 0) {
           this.setState({
-            metamaskLogged: true,
+            metamaskLogged: true
           })
         }
       })
     } else {
       this.setState({
-        metamaskExists: false,
+        metamaskExists: false
       })
     }
   }
 
   render() {
-    const { metamaskLogged, metamaskExists } = this.state;
-    return (
-      !metamaskExists ? <Redirect to="/metamask-missing" />
-        :
-        metamaskLogged ? <Redirect to="/" />
-          :
-          <div className="MetaMaskLogInWrapper">
-            <div className="MetaMaskLogIn">
-              <h2 className="Title">Login to MetaMask</h2>
-              <img className="MetaMaskLogInImg" src={MetaMaskLogInImg} />
-              <p className="Description">Your Chrome Plugin is not active.</p>
-            </div>
-          </div>
+    const { metamaskLogged, metamaskExists } = this.state
+    return !metamaskExists ? (
+      <Redirect to="/metamask-missing" />
+    ) : metamaskLogged ? (
+      <Redirect to="/" />
+    ) : (
+      <div className="MetaMaskLogInWrapper">
+        <div className="MetaMaskLogIn">
+          <h2 className="Title">Login to MetaMask</h2>
+          <img className="MetaMaskLogInImg" src={MetaMaskLogInImg} alt="" />
+          <p className="Description">Your Chrome Plugin is not active.</p>
+        </div>
+      </div>
     )
   }
 }

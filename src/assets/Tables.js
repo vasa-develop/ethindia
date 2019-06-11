@@ -22,15 +22,6 @@ const checkLoanCanBeClosed = data => {
   )
 }
 
-const checkLoanCanBeCleaned = data => {
-  return (
-    data.origin.expiresAtTimestamp > Date.now() &&
-    data.origin.userAddress.toLowerCase() ===
-      data.origin.borrower.toLowerCase() &&
-    data.status === 'Closed'
-  )
-}
-
 const CreateTables = web3Utils => [
   {
     title: 'Lend Order Book',

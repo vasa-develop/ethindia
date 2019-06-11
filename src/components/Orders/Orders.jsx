@@ -119,7 +119,7 @@ class Orders extends Component {
   async checkMetamask() {
     if (window.ethereum) {
       try {
-        await ethereum.enable()
+        await window.ethereum.enable()
         const newState = {
           metamaskLogged: true,
           metamaskChecking: false
@@ -127,7 +127,7 @@ class Orders extends Component {
         if (Object.keys(this.state.LendroidJS).length === 0) {
           const LendroidJS = new Lendroid({
             ...options(this),
-            provider: ethereum
+            provider: window.ethereum
           })
           newState['LendroidJS'] = LendroidJS
           newState['Tables'] = CreateTables(LendroidJS.web3Utils)
