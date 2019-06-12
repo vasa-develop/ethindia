@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import FadeIn from 'react-fade-in'
 import Modal from 'react-modal'
+import moment from 'moment'
 
 import FormInput from '../FormInput/FormInput'
 import {
@@ -177,7 +178,7 @@ class FormTab extends Component {
   }
 
   onSubmit(isLend) {
-    return () => {
+    return async () => {
       const formData = this.state
       const { lendToken, borrowToken, collateralToken } = formData
       const loanToken = isLend ? lendToken : borrowToken
@@ -213,7 +214,10 @@ class FormTab extends Component {
       postData.collateralAmount = web3Utils.toWei(0)
 
       delete postData.allowance
-      postData.offerExpiry = parseInt(postData.offerExpiry / 1000).toString()
+      const timeStamp = await web3Utils.getBlockTimeStamp()
+      let offerExpiry = new moment.utc(timeStamp * 1000)
+      offerExpiry.add(postData.offerExpiry * 60, 'm')
+      postData.offerExpiry = parseInt(offerExpiry.format('x') / 1000).toString()
 
       methods.onCreateOrder(postData, (err = {}, res) => {
         if (err && err.message) {

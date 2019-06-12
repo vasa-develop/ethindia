@@ -1,5 +1,3 @@
-import moment from 'moment'
-
 export function FormInputs(isLend, tokens) {
   return [
     {
@@ -65,11 +63,7 @@ export function FormInputs(isLend, tokens) {
       key: 'offerExpiry',
       label: 'Order Expiry',
       width: 150,
-      output: val => {
-        let ret = new moment.utc()
-        ret.add(val * 60, 'm')
-        return ret.format('x')
-      },
+      output: val => val,
       inputs: [
         {
           precision: 0,
