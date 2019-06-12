@@ -90,7 +90,7 @@ class Table extends Component {
     month = month % 12
     return terms
       ? `${year > 0 ? year + ' Years ' : ''}${
-          month > 0 ? month + ' Months ' : ''
+          month > 0 ? month + (month === 1 ? ' Month' : ' Months ') : ''
         }`
       : `${parseInt(value / 3600 / 24, 10)}d` +
           ((value / 3600) % 24 !== 0
@@ -222,10 +222,10 @@ class Table extends Component {
                 else if (
                   result[key].toString().indexOf('0x') !== 0 &&
                   key !== 'nonce'
-                ) try {
-                  result[key] = web3Utils.fromWei(result[key])
-                }
-                  catch (err) {
+                )
+                  try {
+                    result[key] = web3Utils.fromWei(result[key])
+                  } catch (err) {
                     console.log(err)
                   }
               })
@@ -326,7 +326,13 @@ class Table extends Component {
         <div className="Title">
           <div>
             {data.title}{' '}
-            <i>{terms === 1 ? `(${terms} Month)` : terms < 12 ? `(${terms} Months)` : `(${terms / 12} Years)`}</i>
+            <i>
+              {terms === 1
+                ? `(${terms} Month)`
+                : terms < 12
+                ? `(${terms} Months)`
+                : `(${terms / 12} Years)`}
+            </i>
           </div>
           <span>
             refreshing in <b>{parseInt(30 - refreshing / 1000, 10)}</b> seconds

@@ -31,7 +31,7 @@ const options = _this => ({
       label: 'Default Simple Wrangler',
       address: '0x0f02a30cA336EC791Ac8Cb40816e4Fc5aeB57E38',
       apiLoanRequests: 'https://lendroidwrangler.com'
-    },
+    }
   ]
 })
 
@@ -169,13 +169,24 @@ class Orders extends Component {
       }
     const {
       contracts: { positions },
-      exchangeRates: { DAI }
+      exchangeRates
     } = LendroidJS
-    if (!positions || DAI === 0) return {}
+    if (!positions || exchangeRates.LST === 0) return {}
+
+    let isExRatesReady = true
+    positions.lent.forEach(position => {
+      if (exchangeRates[position.loanCurrency] === 0) isExRatesReady = false
+    })
+    positions.borrowed.forEach(position => {
+      if (exchangeRates[position.loanCurrency] === 0) isExRatesReady = false
+    })
+    if (!isExRatesReady) return {}
 
     const positionsData = {
       lent: positions.lent.map(position => {
-        const currentCollateralAmount = position.origin.loanAmountBorrowed / DAI
+        const currentCollateralAmount =
+          position.origin.loanAmountBorrowed /
+          exchangeRates[position.loanCurrency]
         const health = parseInt(
           (position.origin.collateralAmount / currentCollateralAmount) * 100,
           10
@@ -188,7 +199,9 @@ class Orders extends Component {
         )
       }),
       borrowed: positions.borrowed.map(position => {
-        const currentCollateralAmount = position.origin.loanAmountBorrowed / DAI
+        const currentCollateralAmount =
+          position.origin.loanAmountBorrowed /
+          exchangeRates[position.loanCurrency]
         const health = parseInt(
           (position.origin.collateralAmount / currentCollateralAmount) * 100,
           10

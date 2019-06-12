@@ -86,7 +86,7 @@ class List extends Component {
     month = month % 12
     return isOffer
       ? `${year > 0 ? year + ' Years ' : ''}${
-          month > 0 ? month + ' Months ' : ''
+          month > 0 ? month + (month === 1 ? ' Month' : ' Months ') : ''
         }`
       : `${parseInt(value / 3600 / 24, 10)}d` +
           ((value / 3600) % 24 !== 0
@@ -347,7 +347,11 @@ class List extends Component {
             {data.title}{' '}
             {terms && (
               <i>
-                {terms < 12 ? `(${terms} Months)` : `(${terms / 12} Years)`}
+                {terms === 1
+                  ? `(${terms} Month)`
+                  : terms < 12
+                  ? `(${terms} Months)`
+                  : `(${terms / 12} Years)`}
               </i>
             )}
           </div>
