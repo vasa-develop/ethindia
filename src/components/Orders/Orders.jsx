@@ -185,8 +185,9 @@ class Orders extends Component {
     const positionsData = {
       lent: positions.lent.map(position => {
         const currentCollateralAmount =
-          position.origin.loanAmountBorrowed /
-          exchangeRates[position.loanCurrency]
+          (position.origin.loanAmountBorrowed /
+            exchangeRates[position.loanCurrency]) *
+          exchangeRates[position.collateralCurrency]
         const health = parseInt(
           (position.origin.collateralAmount / currentCollateralAmount) * 100,
           10
@@ -200,8 +201,9 @@ class Orders extends Component {
       }),
       borrowed: positions.borrowed.map(position => {
         const currentCollateralAmount =
-          position.origin.loanAmountBorrowed /
-          exchangeRates[position.loanCurrency]
+          (position.origin.loanAmountBorrowed /
+            exchangeRates[position.loanCurrency]) *
+          exchangeRates[position.collateralCurrency]
         const health = parseInt(
           (position.origin.collateralAmount / currentCollateralAmount) * 100,
           10
