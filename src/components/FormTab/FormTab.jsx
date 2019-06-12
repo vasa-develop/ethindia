@@ -382,7 +382,7 @@ class FormTab extends Component {
             }
             onWarning={token => {
               const { fieldLoading } = this.state
-              if (fieldLoading[item.key]) return
+              if (fieldLoading[item.key] || item.warning.feature) return
               fieldLoading[item.key] = true
               this.setState({ fieldLoading }, () =>
                 this.onAllowance(token, item.key)
