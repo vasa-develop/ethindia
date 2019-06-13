@@ -184,36 +184,16 @@ class Orders extends Component {
 
     const positionsData = {
       lent: positions.lent.map(position => {
-        const currentCollateralAmount =
-          (position.origin.loanAmountBorrowed /
-            exchangeRates[position.loanCurrency]) *
-          exchangeRates[position.collateralCurrency]
-        const health = parseInt(
-          (position.origin.collateralAmount / currentCollateralAmount) * 100,
-          10
-        )
-        return Object.assign(
-          {
-            health: Math.min(health, 100)
-          },
-          position
-        )
+        const { health } = position
+        return Object.assign(position, {
+          health: Math.min(parseInt(health, 10), 100)
+        })
       }),
       borrowed: positions.borrowed.map(position => {
-        const currentCollateralAmount =
-          (position.origin.loanAmountBorrowed /
-            exchangeRates[position.loanCurrency]) *
-          exchangeRates[position.collateralCurrency]
-        const health = parseInt(
-          (position.origin.collateralAmount / currentCollateralAmount) * 100,
-          10
-        )
-        return Object.assign(
-          {
-            health: Math.min(health, 100)
-          },
-          position
-        )
+        const { health } = position
+        return Object.assign(position, {
+          health: Math.min(parseInt(health, 10), 100)
+        })
       })
     }
     return positionsData
@@ -235,15 +215,18 @@ class Orders extends Component {
   }
 
   renderIntro() {
-    const { stepsEnabled, steps, initialStep, hintsEnabled, hints } = this.state
+    const {
+      /*stepsEnabled, steps, initialStep, */ hintsEnabled,
+      hints
+    } = this.state
     return (
       <div>
-        <Steps
+        {/* <Steps
           enabled={stepsEnabled}
           steps={steps}
           initialStep={initialStep}
           onExit={this.onExit}
-        />
+        /> */}
         <Hints enabled={hintsEnabled} hints={hints} />
       </div>
     )
