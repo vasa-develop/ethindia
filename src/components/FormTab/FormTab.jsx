@@ -9,11 +9,7 @@ import {
   FormInputs,
   FeeFormInputs,
   WrapETHFormInputs
-  // AllowanceFormInputs
-  // MakerDAIFormInputs
 } from './Forms'
-
-import InputModal from '../common/InputModal/InputModal'
 
 import './FormTab.scss'
 import './ReactTab.scss'
@@ -73,16 +69,10 @@ class FormTab extends Component {
 
       // Allowance Form Inputs
       token: 'WETH',
-      tokenBalance: 0,
-      tokenAllowance: 0,
-      newAllowance: 10.0,
-      tokenContractInstance: null,
 
       tabIndex: 0,
       showFeeForm: true,
       making: false,
-      privateKey: null,
-      modalIsOpen: false,
 
       flagOnSubmit: false,
       flagOnWrapETH: false,
@@ -94,22 +84,11 @@ class FormTab extends Component {
     this.renderFeeForm = this.renderFeeForm.bind(this)
     this.onWrapETH = this.onWrapETH.bind(this)
     this.onAllowance = this.onAllowance.bind(this)
-    this.onMakerDAI = this.onMakerDAI.bind(this)
   }
 
-  getTokenName(token) {
-    return token.substr(0, 1).toUpperCase() + token.substr(1).toLowerCase()
-  }
-
-  onChange(key, value, affection = null) {
+  onChange(key, value) {
     const formData = this.state
     formData[key] = value
-
-    // if (key === 'lockETH') {
-    //   formData['amountInDAI'] = value * currentDAIExchangeRate
-    // } else if (key === 'amountInDAI') {
-    //   formData['lockETH'] = value / currentDAIExchangeRate
-    // }
     this.setState(formData)
   }
 
@@ -283,24 +262,6 @@ class FormTab extends Component {
         fieldLoading
       })
     })
-  }
-
-  onMakerDAI() {
-    const { amountInDAI, lockETH, privateKey } = this.state
-    const {
-      methods: { startAsync }
-    } = this.props
-
-    this.closeModal('modalIsOpen')
-    this.setState({ making: true })
-    startAsync(lockETH, amountInDAI, `0x${privateKey}`, () => {
-      setTimeout(() => this.setState({ making: false }), 5000)
-    })
-  }
-
-  onMakerDAIRequest() {
-    this.setState({ privateKey: null })
-    this.openModal('modalIsOpen')
   }
 
   onTabChange(tabIndex) {
@@ -540,16 +501,14 @@ class FormTab extends Component {
   }
 
   closeModal(key) {
-    this.setState({ [key]: false, privateKey: null })
+    this.setState({ [key]: false })
   }
 
   render() {
     const {
       showFeeForm,
-      modalIsOpen,
       modalErrorIsOpen,
       modalErr,
-      privateKey
     } = this.state
 
     const { tokens } = this.props
@@ -565,8 +524,6 @@ class FormTab extends Component {
             <Tab>Lend</Tab>
             <Tab>Borrow</Tab>
             <Tab>Wrap/Unwrap ETH</Tab>
-            {/* <Tab>Set Allowance</Tab> */}
-            {/* <Tab>Maker DAI</Tab> */}
           </TabList>
 
           <TabPanel>
@@ -641,52 +598,7 @@ class FormTab extends Component {
               </table>
             </FadeIn>
           </TabPanel>
-          {/* <TabPanel>
-            <FadeIn>
-              <table cellSpacing="15" className="AllowanceTable">
-                <tbody>
-                  <tr>
-                    {this.renderInputs(AllowanceFormInputs)}
-                    {this.renderButton(
-                      'Submit',
-                      this.state.flagOnAllowance
-                        ? 2
-                        : this.isValidForm(AllowanceFormInputs)
-                        ? 1
-                        : 0,
-                      e => this.onAllowance(null)
-                    )}
-                  </tr>
-                </tbody>
-              </table>
-            </FadeIn>
-          </TabPanel> */}
-          {/* <TabPanel>
-            <FadeIn>
-              <table cellSpacing="15" className="MakerDAITAble">
-                <tbody>
-                  <tr>
-                    {this.renderInputs(MakerDAIFormInputs)}
-                    {this.renderButton('Submit', this.isValidForm(MakerDAIFormInputs), this.onMakerDAIRequest.bind(this))}
-                  </tr>
-                </tbody>
-              </table>
-            </FadeIn>
-          </TabPanel> */}
         </Tabs>
-        <InputModal
-          isOpen={modalIsOpen}
-          title="Input You Private Key"
-          description="Important! We don't use your private key for any other access. It's just for lock ETH while Making DAI. Thanks."
-          // onRequestClose={() => this.closeModal('modalIsOpen')}
-          onChange={e => this.setState({ privateKey: e.target.value })}
-          onSubmit={this.onMakerDAI.bind(this)}
-          contentLabel="Private Key"
-          value={privateKey}
-          prefix={'0x'}
-          type={'text'}
-          disabled={!privateKey}
-        />
         <Modal
           isOpen={modalErrorIsOpen}
           style={customStyles}

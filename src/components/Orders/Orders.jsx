@@ -1,12 +1,10 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 import { Redirect } from 'react-router-dom'
-import { Steps, Hints } from 'intro.js-react'
 import cookie from 'react-cookies'
 import { isBrowser } from 'react-device-detect'
 
 import { Lendroid } from 'lendroid'
-import { startAsync } from './Maker'
 
 import TableGroup from '../TableGroup/TableGroup'
 import ListGroup from '../ListGroup/ListGroup'
@@ -45,66 +43,7 @@ class Orders extends Component {
       metamaskChecking: true,
       metamaskLogged: false,
       stepsEnabled: cookie.load('tutor_status') ? false : true,
-      initialStep: 0,
-      steps: [
-        {
-          element: '.Address .Value',
-          intro: "Here's your Address"
-        },
-        {
-          element: '.Info1 .Value',
-          intro: "Here's your ETH balance"
-        },
-        {
-          element: '.Info2 .Value',
-          intro: "Here's your WETH balance"
-        },
-        {
-          element: '.Info3 .Value',
-          intro: "Here's your LST balance"
-        },
-        {
-          element: '.Info4 .Value',
-          intro: "Here's your Lend/Borrow token balance"
-        },
-        {
-          element: '.TabWrapper',
-          intro: 'You can create Orders here'
-        }
-      ],
-      hintsEnabled: true,
-      hints: [
-        {
-          element: '.Address .Value',
-          hint: "Here's your Address",
-          hintPosition: 'middle-right'
-        },
-        {
-          element: '.Info1 .Value',
-          hint: "Here's your ETH balance",
-          hintPosition: 'middle-right'
-        },
-        {
-          element: '.Info2 .Value',
-          hint: "Here's your WETH balance",
-          hintPosition: 'middle-right'
-        },
-        {
-          element: '.Info3 .Value',
-          hint: "Here's your LST balance",
-          hintPosition: 'middle-right'
-        },
-        {
-          element: '.Info4 .Value',
-          hint: "Here's your Lend/Borrow token balance",
-          hintPosition: 'middle-right'
-        },
-        {
-          element: '.TabWrapper',
-          hint: 'You can create Orders here',
-          hintPosition: 'top-right'
-        }
-      ]
+      initialStep: 0
     }
 
     this.apiPost = this.apiPost.bind(this)
@@ -214,24 +153,6 @@ class Orders extends Component {
     this.setState(() => ({ stepsEnabled: false }))
   }
 
-  renderIntro() {
-    const {
-      /*stepsEnabled, steps, initialStep, */ hintsEnabled,
-      hints
-    } = this.state
-    return (
-      <div>
-        {/* <Steps
-          enabled={stepsEnabled}
-          steps={steps}
-          initialStep={initialStep}
-          onExit={this.onExit}
-        /> */}
-        <Hints enabled={hintsEnabled} hints={hints} />
-      </div>
-    )
-  }
-
   render() {
     const {
       LendroidJS = {},
@@ -270,7 +191,6 @@ class Orders extends Component {
       onFillOrderServer: LendroidJS.onFillOrderServer,
       onDeleteOrder: LendroidJS.onDeleteOrder,
       onCancelOrder: LendroidJS.onCancelOrder,
-      startAsync
     }
 
     if (!(network && address) && !metamaskChecking && isBrowser)
@@ -278,7 +198,6 @@ class Orders extends Component {
 
     return network && address ? (
       <div className="OrdersWrapper">
-        {this.renderIntro()}
         <Header
           address={address}
           contracts={contracts}
