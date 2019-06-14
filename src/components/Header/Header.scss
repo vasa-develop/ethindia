@@ -138,6 +138,13 @@
               span {
                 font-size: 70%;
               }
+
+              select {
+                -webkit-appearance: none;
+                background: transparent;
+                border: none;
+                color: #5800ff;
+              }
             }
           }
         }

@@ -94,8 +94,8 @@
       &.Error {
         > div {
           max-width: 500px;
-          overflow: hidden;
-          width: 400px;
+          overflow: auto;
+          max-height: 80vh;
           display: -webkit-box;
           -webkit-line-clamp: 3;
           -webkit-box-orient: vertical;

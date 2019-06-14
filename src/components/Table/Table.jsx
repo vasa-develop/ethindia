@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import axios from 'axios'
 import moment from 'moment'
 import Modal from 'react-modal'
 
@@ -31,6 +30,7 @@ class Table extends Component {
     super(props)
 
     this.state = {
+      fieldLoading: {},
       modalIsOpen: false,
       modalAmountIsOpen: false,
       modalErrorIsOpen: false,
@@ -38,7 +38,7 @@ class Table extends Component {
       modalErr: 'Unknown',
       result: {},
       approval: {},
-      currentData: null,
+      currentData: undefined,
       param: {},
       fillLoanAmount: 0
     }
@@ -62,9 +62,15 @@ class Table extends Component {
   }
 
   getData(data) {
+    const { terms } = this.props
     const { key, filter } = data.data
     if (key) {
-      const ret = this.props.data[key] || []
+      let ret = JSON.parse(JSON.stringify(this.props.data[key] || []))
+      if (terms) {
+        ret = ret.filter(
+          offer => parseInt(offer.loanDuration, 10) === terms * 30 * 24 * 3600
+        )
+      }
       if (filter) return filter(ret)
       return ret
     }
@@ -76,12 +82,20 @@ class Table extends Component {
   }
 
   calcTerm(value) {
-    return (
-      `${parseInt(value / 3600 / 24, 10)}d` +
-      ((value / 3600) % 24 !== 0
-        ? ` ${parseInt((value / 3600) % 24, 10)}h`
-        : '')
-    )
+    const { terms } = this.props
+    let day = parseInt(value / 3600 / 24, 10)
+    let month = parseInt(day / 30, 10)
+    day = day % 30
+    let year = parseInt(month / 12)
+    month = month % 12
+    return terms
+      ? `${year > 0 ? year + ' Years ' : ''}${
+          month > 0 ? month + (month === 1 ? ' Month' : ' Months ') : ''
+        }`
+      : `${parseInt(value / 3600 / 24, 10)}d` +
+          ((value / 3600) % 24 !== 0
+            ? ` ${parseInt((value / 3600) % 24, 10)}h`
+            : '')
   }
 
   setPrecision(value, prec) {
@@ -105,24 +119,32 @@ class Table extends Component {
 
     if (header.precision) ret = this.setPrecision(ret, header.precision)
     if (header.filter) ret = this[header.filter](ret)
-    if (header.suffix) ret += header.suffix
+    if (header.suffix) {
+      ret = (
+        <div>
+          {ret} <span>{data[header.suffix] || header.suffix}</span>
+        </div>
+      )
+    } else {
+      ret = <div>{ret}</div>
+    }
     return ret
   }
 
   onConfirm() {
-    const { approval, currentData } = this.state
-    const { methods } = this.props
+    const { approval, currentData, result } = this.state
+    const { methods, web3Utils } = this.props
     this.setState(
       {
         isLoading: true
       },
       () => {
-        methods.onFillLoan(approval, (err, result) => {
-          console.log('Fill Loan', err, result)
-          if (result) {
+        methods.onFillLoan(approval, (err, res) => {
+          console.log('Fill Loan', err, res)
+          if (res) {
             methods.onFillOrderServer(
               currentData.id,
-              approval['_values'][6],
+              web3Utils.toWei(result.loanAmountFilled),
               (err, res) => {
                 if (err) {
                   console.log(err)
@@ -176,6 +198,7 @@ class Table extends Component {
           )
 
           methods.onPostLoans(postData, (err, res) => {
+            console.log(res)
             if (err) {
               return _this.setState(
                 {
@@ -200,7 +223,11 @@ class Table extends Component {
                   result[key].toString().indexOf('0x') !== 0 &&
                   key !== 'nonce'
                 )
-                  result[key] = web3Utils.fromWei(result[key])
+                  try {
+                    result[key] = web3Utils.fromWei(result[key])
+                  } catch (err) {
+                    console.log(err)
+                  }
               })
               _this.setState(
                 {
@@ -241,8 +268,33 @@ class Table extends Component {
     this[action.slot](data, action.param)
   }
 
+  onAllowance(selectedToken, loading = null) {
+    const { methods } = this.props
+    const { token, fieldLoading } = this.state
+
+    methods.onAllowance(selectedToken || token, (err = {}, res) => {
+      if (err && err.message) {
+        this.setState(
+          {
+            modalErr: err.message
+          },
+          () => this.openModal('modalErrorIsOpen')
+        )
+      }
+      if (loading) {
+        fieldLoading[loading] = false
+      }
+      this.setState({ fieldLoading })
+    })
+  }
+
   render() {
-    const { data, classes } = this.props
+    const {
+      data,
+      classes,
+      terms,
+      contracts: { allowances }
+    } = this.props
     const {
       postError,
       result,
@@ -251,33 +303,43 @@ class Table extends Component {
       modalAmountIsOpen,
       modalErrorIsOpen,
       modalErr,
-      currentData,
+      currentData = {},
       param,
       fillLoanAmount,
-      isLoading
+      isLoading,
+      fieldLoading
     } = this.state
     const filteredData = this.getData(data)
     const expireInSecond =
-      (approval._timestamps || [0])[0] -
+      (approval._timestamps || [0][0])[1] -
       parseInt(new Date().getTime() / 1000, 10)
     const refreshing =
       new Date().getTime() - new Date(data.lastFetchTime).getTime()
 
     return (
-      <div className='TableWrapper'>
+      <div className="TableWrapper">
         {data.loading && (
-          <div className='Loading'>
-            <div className='Loader' />
+          <div className="Loading">
+            <div className="Loader" />
           </div>
         )}
-        <div className='Title'>
-          {data.title}
+        <div className="Title">
+          <div>
+            {data.title}{' '}
+            <i>
+              {terms === 1
+                ? `(${terms} Month)`
+                : terms < 12
+                ? `(${terms} Months)`
+                : `(${terms / 12} Years)`}
+            </i>
+          </div>
           <span>
             refreshing in <b>{parseInt(30 - refreshing / 1000, 10)}</b> seconds
           </span>
         </div>
-        <div className='tbl-header'>
-          <table cellPadding='0' cellSpacing='0' border='0'>
+        <div className="tbl-header">
+          <table cellPadding="0" cellSpacing="0" border="0">
             <thead>
               <tr>
                 {data.headers.map((h, hIndex) => (
@@ -290,38 +352,85 @@ class Table extends Component {
             </thead>
           </table>
         </div>
-        <div className={`tbl-content ${classes}`}>
+        <div
+          className={`tbl-content ${classes} ${
+            filteredData.length === 0 ? 'NoData' : ''
+          }`}
+        >
           <div>
-            <table cellPadding='0' cellSpacing='0' border='0'>
+            <table cellPadding="0" cellSpacing="0" border="0">
               <tbody>
-                {filteredData.map((d, dIndex) => (
-                  <tr key={dIndex}>
-                    {data.headers.map((h, hIndex) => (
-                      <td key={hIndex} style={h.style}>
-                        {this.getDisplayData(d, h)}
+                {filteredData.map((d, dIndex) => {
+                  const token = data.action.param.isLend
+                    ? d.collateralCurrency
+                    : d.loanCurrency
+
+                  return (
+                    <tr key={dIndex}>
+                      {data.headers.map((h, hIndex) => (
+                        <td key={hIndex} style={h.style}>
+                          {this.getDisplayData(d, h)}
+                        </td>
+                      ))}
+                      <td>
+                        {data.action.label === '3-dot' ? (
+                          <button
+                            style={data.action.style}
+                            className="three-dot"
+                          >
+                            <div className="dot" />
+                            <div className="dot" />
+                            <div className="dot" />
+                          </button>
+                        ) : (
+                          <button
+                            style={data.action.style}
+                            onClick={() => {
+                              if (
+                                data.action.slot === 'onOrder' &&
+                                allowances[token] < 1000000
+                              ) {
+                                const { fieldLoading } = this.state
+                                if (fieldLoading[token]) return
+                                fieldLoading[token] = true
+                                this.setState({ fieldLoading }, () =>
+                                  this.onAllowance(token, token)
+                                )
+                              } else {
+                                this.onAction(data.action, d)
+                              }
+                            }}
+                          >
+                            <div
+                              className={fieldLoading[token] ? 'Loading' : ''}
+                            >
+                              {fieldLoading[token] && (
+                                <div className="Loader" />
+                              )}
+                            </div>
+                            {data.action.slot === 'onOrder' &&
+                            allowances[token] < 1000000 ? (
+                              <div>
+                                <span>Unlock </span>
+                                {token}
+                              </div>
+                            ) : (
+                              data.action.label
+                            )}
+                          </button>
+                        )}
                       </td>
-                    ))}
-                    <td>
-                      {data.action.label === '3-dot' ? (
-                        <button style={data.action.style} className='three-dot'>
-                          <div className='dot' />
-                          <div className='dot' />
-                          <div className='dot' />
-                        </button>
-                      ) : (
-                        <button
-                          style={data.action.style}
-                          onClick={() => this.onAction(data.action, d)}
-                        >
-                          {data.action.label}
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                    </tr>
+                  )
+                })}
                 {filteredData.length === 0 && (
                   <tr>
-                    <td colSpan={data.headers.length}>No Data</td>
+                    <td
+                      colSpan={data.headers.length}
+                      style={{ textAlign: 'center' }}
+                    >
+                      No Data
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -332,9 +441,9 @@ class Table extends Component {
           isOpen={modalIsOpen}
           // onRequestClose={() => this.closeModal('modalIsOpen')}
           style={customStyles}
-          contentLabel='Order Book'
+          contentLabel="Order Book"
         >
-          <h2 className='normal'>
+          <h2 className="normal">
             {postError
               ? 'MESSAGE FROM WRANGLER'
               : expireInSecond > 0
@@ -342,27 +451,38 @@ class Table extends Component {
               : 'WRANGLER APPROVAL HAS EXPIRED.'}
           </h2>
           {/* <button onClick={() => this.closeModal('modalIsOpen')} /> */}
-          <div className='ModalBody'>
+          <div className="ModalBody">
             <div>
               {isLoading && (
-                <div className='Loading'>
-                  <div className='Loader' />
+                <div className="Loading">
+                  <div
+                    className="Content"
+                    style={{
+                      fontSize: '150%',
+                      paddingBottom: 150
+                    }}
+                  >
+                    Creating a new position...
+                  </div>
+                  <div className="Loader" />
                 </div>
               )}
               {postError ? (
-                <div className='Error'>
-                  {postError.response.status == 400 ? (
+                <div className="Error">
+                  {postError.response.status === 400 ? (
                     <ul>
-                      {postError.response.data.message.error.map(err => (
-                        <li>{err.message}</li>
-                      ))}
+                      {postError.response.data.message.error.map(
+                        (err, index) => (
+                          <li key={index}>{err.message}</li>
+                        )
+                      )}
                     </ul>
                   ) : (
                     postError.response.data.message
                   )}
                 </div>
               ) : (
-                <div className='Info'>
+                <div className="Info">
                   <table>
                     <tbody>
                       {Object.keys(result).map((key, kIndex) => (
@@ -375,14 +495,14 @@ class Table extends Component {
                   </table>
                 </div>
               )}
-              <div className='Buttons'>
-                {!postError && (
-                  <div className='Confirm' onClick={this.onConfirm.bind(this)}>
-                    Continue
+              <div className="Buttons">
+                {!postError && expireInSecond > 0 && (
+                  <div className="Confirm" onClick={this.onConfirm.bind(this)}>
+                    Create Loan
                   </div>
                 )}
                 <div
-                  className='Confirm'
+                  className="Confirm"
                   onClick={() => this.closeModal('modalIsOpen')}
                 >
                   Back to order book
@@ -399,10 +519,11 @@ class Table extends Component {
           onSubmit={this.onSubmitOrder.bind(this)}
           contentLabel={`Amount to ${param.isLend ? 'Borrow' : 'Lend'}`}
           value={fillLoanAmount}
-          max={currentData ? currentData.loanAmount : 0}
-          suffix={param.isLend ? 'DAI' : 'DAI'}
-          disabled={fillLoanAmount > (currentData ? currentData.loanAmount : 0)}
+          max={currentData.loanAmount || 0}
+          suffix={currentData.loanCurrency || ''}
+          disabled={fillLoanAmount > (currentData.loanAmount || 0)}
           isLoading={isLoading}
+          loadingContent={'Waiting for response from wrangler...'}
         />
         <Modal
           isOpen={modalErrorIsOpen}
@@ -411,8 +532,8 @@ class Table extends Component {
         >
           <h2>Something went wrong</h2>
           <button onClick={() => this.closeModal('modalErrorIsOpen')} />
-          <div className='ModalBody'>
-            <div className='Info Error'>
+          <div className="ModalBody">
+            <div className="Info Error">
               <div style={{ textAlign: 'center', marginBottom: 15 }}>
                 {modalErr}
               </div>

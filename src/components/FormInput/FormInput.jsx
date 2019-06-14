@@ -105,14 +105,22 @@ class FormInput extends Component {
   }
 
   render() {
-    const { data, val, loading, warning, className } = this.props
+    const {
+      data,
+      val,
+      loading,
+      warning,
+      className,
+      tokenInfo,
+      onSelect
+    } = this.props
     const { currentInput, currentValue } = this.state
     const values = this.getValues(data, val)
     const inputCount = values[0]
 
     return (
-      <div className='FormInputWrapper'>
-        <div className='InputLabel'>{data.label}</div>
+      <div className="FormInputWrapper">
+        <div className="InputLabel">{data.label}</div>
         <div className={`FormInputs ${className || ''}`}>
           {data.inputs.map((item, index) => {
             const id = JSON.stringify(item) + index
@@ -128,8 +136,8 @@ class FormInput extends Component {
                 }}
               >
                 {loading ? (
-                  <div className='Loading'>
-                    <div className='Loader' />
+                  <div className="Loading">
+                    <div className="Loader" />
                   </div>
                 ) : null}
                 <input
@@ -137,17 +145,30 @@ class FormInput extends Component {
                   onFocus={this.onFocus(item, index, values[index + 1])}
                   onChange={this.onChange(index)}
                   onBlur={data.readOnly ? null : this.onBlur(index)}
-                  min='0'
+                  min="0"
                   max={item.max}
                   readOnly={data.readOnly}
                 />
                 {item.arrow || !item.suffix ? null : (
-                  <div className='Suffix'>{item.suffix}</div>
+                  <div className="Suffix">
+                    {typeof item.suffix === 'object' ? (
+                      <select
+                        value={item.isLend ? tokenInfo[0] : tokenInfo[1]}
+                        onChange={e => onSelect(item.isLend, e.target.value)}
+                      >
+                        {item.suffix.map((suf, index) => (
+                          <option key={index}>{suf}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      item.suffix
+                    )}
+                  </div>
                 )}
-                <div className='after' onClick={this.onStep(index, true)} />
-                <div className='before' onClick={this.onStep(index, false)} />
+                <div className="after" onClick={this.onStep(index, true)} />
+                <div className="before" onClick={this.onStep(index, false)} />
                 {!loading && warning && (
-                  <div className='warning'>{warning}</div>
+                  <div className="warning" onClick={e => this.props.onWarning(this.props.token)}>{warning}</div>
                 )}
               </div>
             )

@@ -1,50 +1,37 @@
-import moment from 'moment'
-
-export function FormInputs(isLend) {
+export function FormInputs(isLend, tokens) {
   return [
     {
       key: 'loanAmountOffered',
-      label: 'Amount',
+      label: 'Loan Amount',
       width: 150,
       output: val => val.toString(),
       inputs: [
         {
           precision: 3,
-          suffix: isLend ? 'DAI' : 'DAI',
+          suffix: isLend ? tokens.lend : tokens.lend,
+          isLend,
           unit: 1
         }
       ],
       required: true,
-      validation: (contracts, rate = 1) =>
-        contracts.loanAmountOffered / (isLend ? 1 : rate) <=
-        (contracts.allowances
-          ? contracts.allowances[isLend ? 'DAI' : 'WETH'] || 0
-          : 0),
+      validation: (contracts, rate = 1, token) => true,
       warning: {
-        check: (contracts, value, currentDAIExchangeRate) => {
+        check: (contracts, value, exchangeRate, token) => {
           if (isLend) {
-            if (parseFloat(value) > parseFloat(contracts.allowances['DAI']))
-              return true
-          } else {
             if (
-              parseFloat(value) >
-              parseFloat(contracts.allowances['WETH']) * currentDAIExchangeRate
+              parseFloat(contracts.allowances[token]) * exchangeRate <
+              1000000
             )
               return true
           }
           return false
         },
-        message: isLend
-          ? value => `Please set DAI allowance of ${value} on the Allowance Tab`
-          : (value, currentDAIExchangeRate) =>
-              `Please set WETH allowance of ${(
-                value / currentDAIExchangeRate
-              ).toFixed(2)} on the Allowance Tab`
+        message: token => token
       }
     },
     {
       key: 'interestRatePerDay',
-      label: 'Daily Rate',
+      label: 'Daily Interest Rate',
       width: 150,
       output: val => val.toString(),
       inputs: [
@@ -59,9 +46,9 @@ export function FormInputs(isLend) {
     },
     {
       key: 'loanDuration',
-      label: 'Loan Term',
+      label: 'Loan Period',
       width: 150,
-      output: val => (val * 24 * 3600).toString(),
+      output: val => val.toString(),
       inputs: [
         {
           precision: 0,
@@ -76,11 +63,7 @@ export function FormInputs(isLend) {
       key: 'offerExpiry',
       label: 'Order Expiry',
       width: 150,
-      output: val => {
-        let ret = new moment.utc()
-        ret.add(val * 60, 'm')
-        return ret.format('x')
-      },
+      output: val => val,
       inputs: [
         {
           precision: 0,
@@ -127,27 +110,19 @@ export function FeeFormInputs(isLend) {
         }
       ],
       required: true,
-      validation: (contracts, value) => {
-        if (isLend) {
-          return parseFloat(value) <= parseFloat(contracts.allowances['LST'])
-        } else {
-          return parseFloat(value) > 0
-        }
-      },
+      validation: (contracts, value) => true,
       warning: {
         check: (contracts, value) => {
           if (parseFloat(value) <= 0) return true
           if (isLend) {
-            return parseFloat(value) > parseFloat(contracts.allowances['LST'])
+            return parseFloat(contracts.allowances['LST']) < 1000000
           } else {
             return parseFloat(value) <= 0
           }
         },
         message: isLend
-          ? value =>
-              parseFloat(value) > 0
-                ? `Please set LST allowance of ${value} on the Allowance Tab`
-                : `Monitoring fee cannot be 0`
+          ? (token, value) =>
+              parseFloat(value) > 0 ? `LST` : `Monitoring fee cannot be 0`
           : value => `Monitoring fee cannot be 0`
       }
     },

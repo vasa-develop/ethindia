@@ -2,14 +2,15 @@ import React, { Component } from 'react'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import FadeIn from 'react-fade-in'
 import Modal from 'react-modal'
+import moment from 'moment'
 
 import FormInput from '../FormInput/FormInput'
 import {
   FormInputs,
   FeeFormInputs,
-  WrapETHFormInputs,
-  AllowanceFormInputs,
-  MakerDAIFormInputs
+  WrapETHFormInputs
+  // AllowanceFormInputs
+  // MakerDAIFormInputs
 } from './Forms'
 
 import InputModal from '../common/InputModal/InputModal'
@@ -44,13 +45,18 @@ class FormTab extends Component {
       modalErrorIsOpen: false,
       modalErr: 'Unknown',
 
+      lendToken: props.tokens.lend[0],
+      borrowToken: props.tokens.lend[0],
+      collateralToken: props.tokens.borrow[0],
+
       // Lend/Borrow Form Inputs
       loanAmountOffered: 1.0,
       interestRatePerDay: 5,
-      loanDuration: 2,
+      loanDuration: 30 * 24 * 3600,
       offerExpiry: 12,
-      wrangler: 'Lendroid',
+      wrangler: props.wranglers ? props.wranglers[0].address : '',
       allowance: 0,
+      fieldLoading: {},
 
       // Fee Form Inputs
       relayerFeeLST: 0,
@@ -97,15 +103,20 @@ class FormTab extends Component {
 
   onChange(key, value, affection = null) {
     const formData = this.state
-    const { currentDAIExchangeRate } = this.props
     formData[key] = value
 
-    if (key === 'lockETH') {
-      formData['amountInDAI'] = value * currentDAIExchangeRate
-    } else if (key === 'amountInDAI') {
-      formData['lockETH'] = value / currentDAIExchangeRate
-    }
+    // if (key === 'lockETH') {
+    //   formData['amountInDAI'] = value * currentDAIExchangeRate
+    // } else if (key === 'amountInDAI') {
+    //   formData['lockETH'] = value / currentDAIExchangeRate
+    // }
     this.setState(formData)
+  }
+
+  onSelect(isLend, token) {
+    this.setState({
+      [isLend ? 'lendToken' : 'borrowToken']: token
+    })
   }
 
   onChangeSync(item) {
@@ -115,16 +126,24 @@ class FormTab extends Component {
   }
 
   isValid(isLend = true) {
-    const { contracts, currentDAIExchangeRate } = this.props
+    const { contracts, exchangeRates, tokens } = this.props
     const formData = this.state
+    const { lendToken, borrowToken } = formData
     contracts.loanAmountOffered = formData.loanAmountOffered
 
     let valid = true
-    FormInputs(isLend).forEach(item => {
+    FormInputs(isLend, tokens).forEach(item => {
       if (item.required && Number(formData[item.key]) === 0) {
         valid = false
       } else if (item.validation) {
-        if (!item.validation(contracts, currentDAIExchangeRate)) valid = false
+        if (
+          !item.validation(
+            contracts,
+            exchangeRates[isLend ? lendToken : borrowToken],
+            isLend ? lendToken : borrowToken
+          )
+        )
+          valid = false
       }
     })
     FeeFormInputs(isLend).forEach(item => {
@@ -159,16 +178,18 @@ class FormTab extends Component {
   }
 
   onSubmit(isLend) {
-    return () => {
+    return async () => {
       const formData = this.state
-      const { address, methods, contracts, web3Utils } = this.props
+      const { lendToken, borrowToken, collateralToken } = formData
+      const loanToken = isLend ? lendToken : borrowToken
+      const { address, methods, contracts, web3Utils, tokens } = this.props
       const postData = {}
 
       this.setState({
         flagOnSubmit: true
       })
 
-      FormInputs(isLend).forEach(item => {
+      FormInputs(isLend, tokens).forEach(item => {
         postData[item.key] = item.output
           ? item.output(formData[item.key])
           : formData[item.key]
@@ -178,22 +199,25 @@ class FormTab extends Component {
           ? item.output(formData[item.key])
           : formData[item.key]
       })
-      postData.wrangler = '0x0f02a30cA336EC791Ac8Cb40816e4Fc5aeB57E38'
+      postData.wrangler = formData.wrangler
       postData.lender = isLend ? address : ''
       postData.borrower = !isLend ? address : ''
 
       postData.creatorSalt = '0x' + this.randHex(40)
-      postData.collateralToken = contracts.contracts
-        ? contracts.contracts.WETH._address
-        : ''
+      postData.collateralToken =
+        contracts.contracts && contracts.contracts[collateralToken]
+          ? contracts.contracts[collateralToken]._address
+          : ''
       postData.loanToken = contracts.contracts
-        ? contracts.contracts.DAI._address
+        ? contracts.contracts[loanToken]._address
         : ''
-      postData.relayer = ''
       postData.collateralAmount = web3Utils.toWei(0)
 
       delete postData.allowance
-      postData.offerExpiry = parseInt(postData.offerExpiry / 1000).toString()
+      const timeStamp = await web3Utils.getBlockTimeStamp()
+      let offerExpiry = new moment.utc(timeStamp * 1000)
+      offerExpiry.add(postData.offerExpiry * 60, 'm')
+      postData.offerExpiry = parseInt(offerExpiry.format('x') / 1000).toString()
 
       methods.onCreateOrder(postData, (err = {}, res) => {
         if (err && err.message) {
@@ -234,15 +258,15 @@ class FormTab extends Component {
     })
   }
 
-  onAllowance() {
+  onAllowance(selectedToken, loading = null) {
     const { methods } = this.props
-    const { newAllowance, token } = this.state
+    const { token, fieldLoading } = this.state
 
     this.setState({
       flagOnAllowance: true
     })
 
-    methods.onAllowance(token, newAllowance, (err = {}, res) => {
+    methods.onAllowance(selectedToken || token, (err = {}, res) => {
       if (err && err.message) {
         this.setState(
           {
@@ -251,8 +275,12 @@ class FormTab extends Component {
           () => this.openModal('modalErrorIsOpen')
         )
       }
+      if (loading) {
+        fieldLoading[loading] = false
+      }
       this.setState({
-        flagOnAllowance: false
+        flagOnAllowance: false,
+        fieldLoading
       })
     })
   }
@@ -293,16 +321,17 @@ class FormTab extends Component {
   }
 
   renderInputs(formInputs) {
-    const { contracts, loading, currentDAIExchangeRate } = this.props
+    const { contracts, loading, exchangeRates } = this.props
     const formData = this.state
+    const { tabIndex, lendToken, borrowToken, fieldLoading } = formData
     contracts.token = formData.token
     const loadings = Object.assign({}, loading, { making: formData.making })
 
     return formInputs.map((item, index) => (
       <td style={item.style} key={index}>
         {item.key === 'operation' ? (
-          <div className='FormInputWrapper'>
-            <div className='InputLabel'>{item.label}</div>
+          <div className="FormInputWrapper">
+            <div className="InputLabel">{item.label}</div>
             <select
               value={formData.operation}
               onChange={this.onChangeSync(item)}
@@ -313,37 +342,82 @@ class FormTab extends Component {
             </select>
           </div>
         ) : item.key === 'token' ? (
-          <div className='FormInputWrapper'>
-            <div className='InputLabel'>{item.label}</div>
+          <div className="FormInputWrapper">
+            <div className="InputLabel">{item.label}</div>
             <select value={formData.token} onChange={this.onChangeSync(item)}>
               <option disabled>Select Token</option>
               <option>WETH</option>
-              <option>DAI</option>
               <option>LST</option>
+              {this.props.pTokens.map(token => (
+                <option key={token}>{token}</option>
+              ))}
+            </select>
+          </div>
+        ) : item.key === 'loanDuration' ? (
+          <div className="FormInputWrapper">
+            <div className="InputLabel">{item.label}</div>
+            <select
+              value={formData.loanDuration}
+              onChange={this.onChangeSync(item)}
+            >
+              <option disabled>Select Period</option>
+              {[1, 3, 6].map((period, index) => (
+                <option value={period * 30 * 24 * 3600} key={index}>
+                  {period === 1
+                    ? `${period} month`
+                    : period < 12
+                    ? `${period} months`
+                    : `${period / 12} years`}
+                </option>
+              ))}
             </select>
           </div>
         ) : (
           <FormInput
             data={item}
             onChange={this.onChange.bind(this)}
+            onSelect={this.onSelect.bind(this)}
+            token={
+              item.key.indexOf('LST') === -1
+                ? tabIndex === 0
+                  ? lendToken
+                  : borrowToken
+                : 'LST'
+            }
+            onWarning={token => {
+              const { fieldLoading } = this.state
+              if (fieldLoading[item.key] || item.warning.feature) return
+              fieldLoading[item.key] = true
+              this.setState({ fieldLoading }, () =>
+                this.onAllowance(token, item.key)
+              )
+            }}
+            tokenInfo={[formData.lendToken, formData.borrowToken]}
             val={item.value ? item.value(contracts) : formData[item.key]}
             loading={item.loading ? loadings[item.loading] : false}
             className={item.warning && item.warning.feature ? 'feature' : ''}
             warning={
-              item.warning
-                ? item.warning.feature
-                  ? item.warning.message
-                  : item.warning.check(
-                      contracts,
-                      formData[item.key],
-                      currentDAIExchangeRate
-                    )
-                  ? item.warning.message(
-                      formData[item.key],
-                      currentDAIExchangeRate
-                    )
-                  : null
-                : null
+              item.warning ? (
+                item.warning.feature ? (
+                  item.warning.message
+                ) : item.warning.check(
+                    contracts,
+                    formData[item.key],
+                    exchangeRates[tabIndex === 0 ? lendToken : borrowToken],
+                    tabIndex === 0 ? lendToken : borrowToken
+                  ) ? (
+                  <div>
+                    <div className={fieldLoading[item.key] ? 'Loading' : ''}>
+                      {fieldLoading[item.key] && <div className="Loader" />}
+                    </div>
+                    Click <span>here</span> to unlock{' '}
+                    {item.warning.message(
+                      tabIndex === 0 ? lendToken : borrowToken,
+                      formData[item.key]
+                    )}
+                  </div>
+                ) : null
+              ) : null
             }
           />
         )}
@@ -354,13 +428,13 @@ class FormTab extends Component {
   renderFeeForm(showFeeForm, isLend) {
     return (
       <table
-        cellSpacing='15'
+        cellSpacing="15"
         className={`FeeForm ${showFeeForm ? 'Show' : 'Hide'}`}
       >
         <tbody>
           <tr>
             {this.renderInputs(FeeFormInputs(isLend))}
-            <td colSpan='1' className='Empty'>
+            <td colSpan="1" className="Empty">
               {this.renderWrangler()}
             </td>
           </tr>
@@ -370,32 +444,92 @@ class FormTab extends Component {
   }
 
   renderWrangler() {
+    const { wrangler } = this.state
+    const { wranglers } = this.props
+
     return (
-      <div className='Wrangler FormInputWrapper'>
-        <div className='InputLabel'>Wrangler</div>
-        <select>
+      <div className="FormInputWrapper">
+        <div className="InputLabel">Wrangler</div>
+        <select
+          value={wrangler}
+          onChange={e => this.setState({ wrangler: e.target.value })}
+        >
           <option disabled>Wrangler Name</option>
-          <option default>Default Simple Wrangler</option>
+          {(wranglers || []).map(({ address, label }, wIndex) => (
+            <option key={wIndex} value={address}>
+              {label}
+            </option>
+          ))}
         </select>
+      </div>
+    )
+  }
+
+  renderCollateral(isLend = true) {
+    const { collateralToken, fieldLoading } = this.state
+    const {
+      tokens,
+      contracts: { allowances = {} }
+    } = this.props
+    const isWarning = !isLend && allowances[collateralToken] < 1000000
+
+    return (
+      <div className="FormInputWrapper">
+        <div className="InputLabel">Collateral</div>
+        <div className="FormInputs">
+          <div className="FormInput" style={{ border: 0, marginBottom: 10 }}>
+            <select
+              value={collateralToken}
+              onChange={e => this.setState({ collateralToken: e.target.value })}
+            >
+              {tokens.borrow.map(token => (
+                <option key={token}>{token}</option>
+              ))}
+            </select>
+            {isWarning && (
+              <div
+                className="warning"
+                onClick={e => {
+                  const { fieldLoading } = this.state
+                  fieldLoading[collateralToken] = true
+                  this.setState({ fieldLoading }, () =>
+                    this.onAllowance(collateralToken, collateralToken)
+                  )
+                }}
+              >
+                <div>
+                  <div
+                    className={fieldLoading[collateralToken] ? 'Loading' : ''}
+                  >
+                    {fieldLoading[collateralToken] && (
+                      <div className="Loader" />
+                    )}
+                  </div>
+                  Click <span>here</span> to unlock {collateralToken}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     )
   }
 
   renderButton(title, valid, onClick) {
     return (
-      <td className='ButtonWrapper'>
+      <td className="ButtonWrapper">
         <div
           className={`FormInput Button ${valid ? '' : 'Disabled'} ${
-            valid == 2 ? 'Loading' : ''
+            valid === 2 ? 'Loading' : ''
           }`}
-          onClick={valid == 1 ? onClick : null}
+          onClick={valid === 1 ? onClick : null}
         >
-          {valid == 2 && (
-            <div className='Loading'>
-              <div className='Loader' />
+          {valid === 2 && (
+            <div className="Loading">
+              <div className="Loader" />
             </div>
           )}
-          <div className='left' /> {title}
+          <div className="left" /> {title}
         </div>
       </td>
     )
@@ -418,9 +552,11 @@ class FormTab extends Component {
       privateKey
     } = this.state
 
+    const { tokens } = this.props
+
     return (
-      <div className='TabWrapper'>
-        <div className='Title'>WHAT ARE YOU UP TO TODAY?</div>
+      <div className="TabWrapper">
+        <div className="Title">WHAT ARE YOU UP TO TODAY?</div>
         <Tabs
           selectedIndex={this.state.tabIndex}
           onSelect={this.onTabChange.bind(this)}
@@ -429,16 +565,19 @@ class FormTab extends Component {
             <Tab>Lend</Tab>
             <Tab>Borrow</Tab>
             <Tab>Wrap/Unwrap ETH</Tab>
-            <Tab>Set Allowance</Tab>
+            {/* <Tab>Set Allowance</Tab> */}
             {/* <Tab>Maker DAI</Tab> */}
           </TabList>
 
           <TabPanel>
             <FadeIn>
-              <table cellSpacing='15'>
+              <table cellSpacing="15">
                 <tbody>
                   <tr>
-                    {this.renderInputs(FormInputs(true))}
+                    <td>{this.renderCollateral()}</td>
+                  </tr>
+                  <tr>
+                    {this.renderInputs(FormInputs(true, tokens))}
                     {this.renderButton(
                       'Order',
                       this.state.flagOnSubmit ? 2 : this.isValid(true) ? 1 : 0,
@@ -448,7 +587,7 @@ class FormTab extends Component {
                 </tbody>
               </table>
               <div
-                className='HandleFeeForm'
+                className="HandleFeeForm"
                 onClick={e => this.setState({ showFeeForm: !showFeeForm })}
               >
                 {`${showFeeForm ? 'Hide' : 'Show'} Fee Form`}
@@ -458,11 +597,13 @@ class FormTab extends Component {
           </TabPanel>
           <TabPanel>
             <FadeIn>
-              {this.renderWrangler()}
-              <table cellSpacing='15'>
+              <table cellSpacing="15">
                 <tbody>
                   <tr>
-                    {this.renderInputs(FormInputs(false))}
+                    <td>{this.renderCollateral(false)}</td>
+                  </tr>
+                  <tr>
+                    {this.renderInputs(FormInputs(false, tokens))}
                     {this.renderButton(
                       'Order',
                       this.state.flagOnSubmit ? 2 : this.isValid(false) ? 1 : 0,
@@ -472,7 +613,7 @@ class FormTab extends Component {
                 </tbody>
               </table>
               <div
-                className='HandleFeeForm'
+                className="HandleFeeForm"
                 onClick={e => this.setState({ showFeeForm: !showFeeForm })}
               >
                 {`${showFeeForm ? 'Hide' : 'Show'} Fee Form`}
@@ -482,7 +623,7 @@ class FormTab extends Component {
           </TabPanel>
           <TabPanel>
             <FadeIn>
-              <table cellSpacing='15' className='WrapETHTable'>
+              <table cellSpacing="15" className="WrapETHTable">
                 <tbody>
                   <tr>
                     {this.renderInputs(WrapETHFormInputs)}
@@ -500,9 +641,9 @@ class FormTab extends Component {
               </table>
             </FadeIn>
           </TabPanel>
-          <TabPanel>
+          {/* <TabPanel>
             <FadeIn>
-              <table cellSpacing='15' className='AllowanceTable'>
+              <table cellSpacing="15" className="AllowanceTable">
                 <tbody>
                   <tr>
                     {this.renderInputs(AllowanceFormInputs)}
@@ -513,13 +654,13 @@ class FormTab extends Component {
                         : this.isValidForm(AllowanceFormInputs)
                         ? 1
                         : 0,
-                      this.onAllowance
+                      e => this.onAllowance(null)
                     )}
                   </tr>
                 </tbody>
               </table>
             </FadeIn>
-          </TabPanel>
+          </TabPanel> */}
           {/* <TabPanel>
             <FadeIn>
               <table cellSpacing="15" className="MakerDAITAble">
@@ -535,12 +676,12 @@ class FormTab extends Component {
         </Tabs>
         <InputModal
           isOpen={modalIsOpen}
-          title='Input You Private Key'
+          title="Input You Private Key"
           description="Important! We don't use your private key for any other access. It's just for lock ETH while Making DAI. Thanks."
           // onRequestClose={() => this.closeModal('modalIsOpen')}
           onChange={e => this.setState({ privateKey: e.target.value })}
           onSubmit={this.onMakerDAI.bind(this)}
-          contentLabel='Private Key'
+          contentLabel="Private Key"
           value={privateKey}
           prefix={'0x'}
           type={'text'}
@@ -553,8 +694,8 @@ class FormTab extends Component {
         >
           <h2>Something went wrong</h2>
           <button onClick={() => this.closeModal('modalErrorIsOpen')} />
-          <div className='ModalBody'>
-            <div className='Info Error'>
+          <div className="ModalBody">
+            <div className="Info Error">
               <div style={{ textAlign: 'center', marginBottom: 15 }}>
                 {modalErr}
               </div>

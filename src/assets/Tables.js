@@ -22,15 +22,6 @@ const checkLoanCanBeClosed = data => {
   )
 }
 
-const checkLoanCanBeCleaned = data => {
-  return (
-    data.origin.expiresAtTimestamp > Date.now() &&
-    data.origin.userAddress.toLowerCase() ===
-      data.origin.borrower.toLowerCase() &&
-    data.status === 'Closed'
-  )
-}
-
 const CreateTables = web3Utils => [
   {
     title: 'Lend Order Book',
@@ -38,13 +29,13 @@ const CreateTables = web3Utils => [
       {
         label: 'Amount',
         key: 'loanAmount',
+        suffix: 'loanCurrency',
         precision: 3,
         style: { textAlign: 'left' }
       },
       {
-        label: 'Term',
-        key: 'loanDuration',
-        filter: 'calcTerm'
+        label: 'Collateral',
+        key: 'collateralCurrency'
       },
       {
         label: 'Rate',
@@ -84,13 +75,13 @@ const CreateTables = web3Utils => [
       {
         label: 'Amount',
         key: 'loanAmount',
+        suffix: 'loanCurrency',
         precision: 3,
         style: { textAlign: 'left' }
       },
       {
-        label: 'Term',
-        key: 'loanDuration',
-        filter: 'calcTerm'
+        label: 'Collateral',
+        key: 'collateralCurrency'
       },
       {
         label: 'Rate',
@@ -130,8 +121,13 @@ const CreateTables = web3Utils => [
       {
         label: 'Amount',
         key: 'loanAmount',
+        suffix: 'loanCurrency',
         precision: 2,
         style: { fontFamily: 'Space Mono', width: '33%' }
+      },
+      {
+        label: 'Collateral',
+        key: 'collateralCurrency'
       },
       // {
       //   label: 'Total Interest ',
@@ -146,7 +142,7 @@ const CreateTables = web3Utils => [
       //   style: { fontFamily: 'Space Mono', width: '27%' }
       // },
       {
-        label: 'Term ',
+        label: 'Period ',
         key: 'loanDuration',
         filter: 'calcTerm',
         style: { fontFamily: 'Space Mono', width: '40%', textAlign: 'center' }
@@ -193,8 +189,13 @@ const CreateTables = web3Utils => [
       {
         label: 'Amount',
         key: 'loanAmount',
+        suffix: 'loanCurrency',
         precision: 2,
         style: { fontFamily: 'Space Mono', width: '33%' }
+      },
+      {
+        label: 'Collateral',
+        key: 'collateralCurrency'
       },
       // {
       //   label: 'Total Interest ',
@@ -209,7 +210,7 @@ const CreateTables = web3Utils => [
       //   style: { fontFamily: 'Space Mono', width: '27%' }
       // },
       {
-        label: 'Term ',
+        label: 'Period ',
         key: 'loanDuration',
         filter: 'calcTerm',
         style: { fontFamily: 'Space Mono', width: '40%', textAlign: 'center' }
@@ -255,21 +256,21 @@ const CreateTables = web3Utils => [
     headers: [
       {
         label: 'Loan Number',
-        key: 'loanNumber',
-        style: { fontFamily: 'Space Mono', width: '100%' }
+        key: 'loanNumber'
       },
       {
         label: 'Amount',
         key: 'amount',
+        suffix: 'loanCurrency',
         precision: 2
       },
       {
         label: 'Total Interest ',
         key: 'totalInterest',
-        precision: 5
+        precision: 3
       },
       {
-        label: 'Term',
+        label: 'Period',
         key: 'term',
         filter: 'calcTerm'
       },
@@ -333,21 +334,21 @@ const CreateTables = web3Utils => [
     headers: [
       {
         label: 'Loan Number',
-        key: 'loanNumber',
-        style: { fontFamily: 'Space Mono', width: '100%' }
+        key: 'loanNumber'
       },
       {
         label: 'Amount',
         key: 'amount',
+        suffix: 'loanCurrency',
         precision: 2
       },
       {
         label: 'Total Interest ',
         key: 'totalInterest',
-        precision: 5
+        precision: 3
       },
       {
-        label: 'Term',
+        label: 'Period',
         key: 'term',
         filter: 'calcTerm'
       },

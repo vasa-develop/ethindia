@@ -42,7 +42,7 @@ class List extends Component {
       modalIsOpen: false,
       modalData: {},
       modalErr: 'Unknown',
-      currentData: null,
+      currentData: undefined,
       singleLoading: false
     }
 
@@ -78,12 +78,20 @@ class List extends Component {
   }
 
   calcTerm(value) {
-    return (
-      `${parseInt(value / 3600 / 24, 10)}d` +
-      ((value / 3600) % 24 !== 0
-        ? ` ${parseInt((value / 3600) % 24, 10)}h`
-        : '')
-    )
+    const { isOffer } = this.props
+    let day = parseInt(value / 3600 / 24, 10)
+    let month = parseInt(day / 30, 10)
+    day = day % 30
+    let year = parseInt(month / 12)
+    month = month % 12
+    return isOffer
+      ? `${year > 0 ? year + ' Years ' : ''}${
+          month > 0 ? month + (month === 1 ? ' Month' : ' Months ') : ''
+        }`
+      : `${parseInt(value / 3600 / 24, 10)}d` +
+          ((value / 3600) % 24 !== 0
+            ? ` ${parseInt((value / 3600) % 24, 10)}h`
+            : '')
   }
 
   setPrecision(value, prec) {
@@ -107,7 +115,15 @@ class List extends Component {
 
     if (header.precision) ret = this.setPrecision(ret, header.precision)
     if (header.filter) ret = this[header.filter](ret)
-    if (header.suffix) ret += header.suffix
+    if (header.suffix) {
+      ret = (
+        <div>
+          {ret} <span>{data[header.suffix] || header.suffix}</span>
+        </div>
+      )
+    } else {
+      ret = <div>{ret}</div>
+    }
     return ret
   }
 
@@ -281,12 +297,41 @@ class List extends Component {
     this[action.slot](data, action.param)
   }
 
+  onAllowance(selectedToken, address) {
+    const { methods } = this.props
+
+    this.setState(
+      {
+        singleLoading: address
+      },
+      () =>
+        methods.onAllowance(selectedToken, (err = {}, res) => {
+          if (err && err.message) {
+            this.setState(
+              {
+                singleLoading: false,
+                modalErr: err.message
+              },
+              () => this.openModal('modalErrorIsOpen')
+            )
+          } else {
+            this.setState({ singleLoading: false })
+          }
+        })
+    )
+  }
+
   render() {
-    const { data, classes } = this.props
+    const {
+      data,
+      classes,
+      terms,
+      contracts: { allowances }
+    } = this.props
     const filteredData = this.getData(data)
     const {
       topupCollateralAmount,
-      currentData,
+      currentData = {},
       modalAmountIsOpen,
       modalErrorIsOpen,
       modalIsOpen,
@@ -296,15 +341,28 @@ class List extends Component {
     } = this.state
 
     return (
-      <div className='ListWrapper'>
-        <div className='Title'>{data.title}</div>
-        <div className='ListsWrapper'>
+      <div className="ListWrapper">
+        <div className="Title">
+          <div>
+            {data.title}{' '}
+            {terms && (
+              <i>
+                {terms === 1
+                  ? `(${terms} Month)`
+                  : terms < 12
+                  ? `(${terms} Months)`
+                  : `(${terms / 12} Years)`}
+              </i>
+            )}
+          </div>
+        </div>
+        <div className="ListsWrapper">
           {data.loading && (
-            <div className='Loading'>
-              <div className='Loader' />
+            <div className="Loading">
+              <div className="Loader" />
             </div>
           )}
-          <div className='Lists'>
+          <div className="Lists">
             {filteredData.map((d, index) => (
               <div className={`List ${classes}`} key={index}>
                 {data.headers.map((h, hIndex) => (
@@ -313,32 +371,30 @@ class List extends Component {
                     className={`ListField ${h.key}`}
                     style={h.style}
                   >
-                    <div className='Label'>{h.label}</div>
-                    <div className='Data'>
+                    <div className="Label">{h.label}</div>
+                    <div className="Data">
                       {h.key === 'health' ? (
-                        d[h.key] ? (
-                          <div className='HealthBar'>
-                            <div className='BarPercent'>
-                              {this.getDisplayData(d, h)}
-                            </div>
-                            <div className='BarBase'>
-                              <div
-                                className='Fill'
-                                style={{
-                                  width: `${d[h.key]}%`,
-                                  backgroundColor: this.getFill(d[h.key])
-                                }}
-                              />
-                            </div>
+                        <div className="HealthBar">
+                          <div className="BarPercent">
+                            {this.getDisplayData(d, h)}
                           </div>
-                        ) : null
+                          <div className="BarBase">
+                            <div
+                              className="Fill"
+                              style={{
+                                width: `${d[h.key] || 0}%`,
+                                backgroundColor: this.getFill(d[h.key] || 0)
+                              }}
+                            />
+                          </div>
+                        </div>
                       ) : (
                         this.getDisplayData(d, h)
                       )}
                     </div>
                   </div>
                 ))}
-                <div className='Actions'>
+                <div className="Actions">
                   {data.action.label === '3-dot' ? (
                     data.action.items.filter(item => item.enabled(d)).length >
                     0 ? (
@@ -348,12 +404,12 @@ class List extends Component {
                       >
                         <DropdownToggle
                           style={data.action.style}
-                          className='close three-dot'
+                          className="close three-dot"
                           disabled={singleLoading === d.address}
                         >
                           {singleLoading === d.address && (
-                            <div className='Loading'>
-                              <div className='Loader' />
+                            <div className="Loading">
+                              <div className="Loader" />
                             </div>
                           )}
                         </DropdownToggle>
@@ -363,9 +419,26 @@ class List extends Component {
                             .map((item, iIndex) => (
                               <DropdownItem
                                 key={iIndex}
-                                onClick={() => this.onAction(item, d)}
+                                onClick={() => {
+                                  if (
+                                    item.slot === 'onRepayLoan' &&
+                                    allowances[d.loanCurrency] < 1000000
+                                  ) {
+                                    this.onAllowance(d.loanCurrency, d.address)
+                                  } else {
+                                    this.onAction(item, d)
+                                  }
+                                }}
                               >
-                                {item.label}
+                                {item.slot === 'onRepayLoan' &&
+                                allowances[d.loanCurrency] < 1000000 ? (
+                                  <div>
+                                    Unlock <span>{d.loanCurrency}</span> to
+                                    Repay loan
+                                  </div>
+                                ) : (
+                                  item.label
+                                )}
                               </DropdownItem>
                             ))}
                         </DropdownMenu>
@@ -383,8 +456,8 @@ class List extends Component {
                       }
                     >
                       {singleLoading === d.id && (
-                        <div className='Loading'>
-                          <div className='Loader' />
+                        <div className="Loading">
+                          <div className="Loader" />
                         </div>
                       )}
                       {data.action.label}
@@ -395,26 +468,26 @@ class List extends Component {
             ))}
             {filteredData.length === 0 && (
               <div className={`List ${classes}`}>
-                {data.loading ? 'Loading' : 'No Data'}
+                <div style={{ width: '100%' }}>
+                  {data.loading ? 'Loading' : 'No Data'}
+                </div>
               </div>
             )}
           </div>
         </div>
         <InputModal
           isOpen={modalAmountIsOpen}
-          title='Topup Collateral Amount'
+          title="Topup Collateral Amount"
           onRequestClose={() => this.closeModal('modalAmountIsOpen')}
           onChange={e =>
             this.setState({ topupCollateralAmount: e.target.value })
           }
           onSubmit={this.onSubmitTopupWithCollateral.bind(this)}
-          contentLabel='Topup Collateral Amount'
+          contentLabel="Topup Collateral Amount"
           value={topupCollateralAmount}
-          max={currentData ? currentData.amount : 0}
-          suffix='WETH'
-          disabled={
-            topupCollateralAmount > (currentData ? currentData.amount : 0)
-          }
+          max={currentData.amount || 0}
+          suffix={currentData.collateralCurrency || ''}
+          disabled={topupCollateralAmount > (currentData.amount || 0)}
         />
         <Modal
           isOpen={modalIsOpen}
@@ -424,8 +497,8 @@ class List extends Component {
         >
           <h2>Position Detail</h2>
           <button onClick={() => this.closeModal('modalIsOpen')} />
-          <div className='ModalBody'>
-            <div className='Info'>
+          <div className="ModalBody">
+            <div className="Info">
               <table>
                 <tbody>
                   {Object.keys(modalData).map((key, kIndex) => (
@@ -446,8 +519,8 @@ class List extends Component {
         >
           <h2>Something went wrong</h2>
           <button onClick={() => this.closeModal('modalErrorIsOpen')} />
-          <div className='ModalBody'>
-            <div className='Info Error'>
+          <div className="ModalBody">
+            <div className="Info Error">
               <div style={{ textAlign: 'center', marginBottom: 15 }}>
                 {modalErr}
               </div>

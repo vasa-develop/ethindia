@@ -3,7 +3,7 @@ import axios from 'axios'
 import { Redirect } from 'react-router-dom'
 import { Steps, Hints } from 'intro.js-react'
 import cookie from 'react-cookies'
-import { isBrowser } from 'react-device-detect';
+import { isBrowser } from 'react-device-detect'
 
 import { Lendroid } from 'lendroid'
 import { startAsync } from './Maker'
@@ -16,9 +16,24 @@ import Header from '../Header/Header'
 import CreateTables from '../../assets/Tables'
 import API from '../../assets/API'
 
+import { CONTRACT_ADDRESSES, ORDER_TOKENS } from './Contracts'
+
 import 'intro.js/introjs.css'
 import 'react-tabs/style/react-tabs.scss'
 import './Orders.scss'
+
+const options = _this => ({
+  apiEndpoint: 'https://winged-yeti-201009.appspot.com',
+  stateCallback: () => _this.forceUpdate(),
+  CONTRACT_ADDRESSES,
+  wranglers: [
+    {
+      label: 'Default Simple Wrangler',
+      address: '0x0f02a30cA336EC791Ac8Cb40816e4Fc5aeB57E38',
+      apiLoanRequests: 'https://lendroidwrangler.com'
+    }
+  ]
+})
 
 class Orders extends Component {
   constructor(props) {
@@ -46,11 +61,11 @@ class Orders extends Component {
         },
         {
           element: '.Info3 .Value',
-          intro: "Here's your DAI balance"
+          intro: "Here's your LST balance"
         },
         {
           element: '.Info4 .Value',
-          intro: "Here's your LST balance"
+          intro: "Here's your Lend/Borrow token balance"
         },
         {
           element: '.TabWrapper',
@@ -76,12 +91,12 @@ class Orders extends Component {
         },
         {
           element: '.Info3 .Value',
-          hint: "Here's your DAI balance",
+          hint: "Here's your LST balance",
           hintPosition: 'middle-right'
         },
         {
           element: '.Info4 .Value',
-          hint: "Here's your LST balance",
+          hint: "Here's your Lend/Borrow token balance",
           hintPosition: 'middle-right'
         },
         {
@@ -101,8 +116,29 @@ class Orders extends Component {
     }, 500)
   }
 
-  checkMetamask() {
-    if (window.web3) {
+  async checkMetamask() {
+    if (window.ethereum) {
+      try {
+        await window.ethereum.enable()
+        const newState = {
+          metamaskLogged: true,
+          metamaskChecking: false
+        }
+        if (Object.keys(this.state.LendroidJS).length === 0) {
+          const LendroidJS = new Lendroid({
+            ...options(this),
+            provider: window.ethereum
+          })
+          newState['LendroidJS'] = LendroidJS
+          newState['Tables'] = CreateTables(LendroidJS.web3Utils)
+        }
+        this.setState(newState)
+      } catch (error) {
+        this.setState({
+          metamaskChecking: false
+        })
+      }
+    } else if (window.web3) {
       window.web3.eth.getAccounts((err, accounts) => {
         if (accounts && accounts.length > 0) {
           const newState = {
@@ -110,10 +146,7 @@ class Orders extends Component {
             metamaskChecking: false
           }
           if (Object.keys(this.state.LendroidJS).length === 0) {
-            const LendroidJS = new Lendroid({
-              stateCallback: () => this.forceUpdate()
-              // apiLoanRequests: 'http://localhost:5000'
-            })
+            const LendroidJS = new Lendroid(options(this))
             newState['LendroidJS'] = LendroidJS
             newState['Tables'] = CreateTables(LendroidJS.web3Utils)
           }
@@ -136,38 +169,31 @@ class Orders extends Component {
       }
     const {
       contracts: { positions },
-      exchangeRates: { currentDAIExchangeRate }
+      exchangeRates
     } = LendroidJS
-    if (!positions || currentDAIExchangeRate === 0) return {}
+    if (!positions || exchangeRates.LST === 0) return {}
+
+    let isExRatesReady = true
+    positions.lent.forEach(position => {
+      if (exchangeRates[position.loanCurrency] === 0) isExRatesReady = false
+    })
+    positions.borrowed.forEach(position => {
+      if (exchangeRates[position.loanCurrency] === 0) isExRatesReady = false
+    })
+    if (!isExRatesReady) return {}
 
     const positionsData = {
       lent: positions.lent.map(position => {
-        const currentCollateralAmount =
-          position.origin.loanAmountBorrowed / currentDAIExchangeRate
-        const health = parseInt(
-          (position.origin.collateralAmount / currentCollateralAmount) * 100,
-          10
-        )
-        return Object.assign(
-          {
-            health: Math.min(health, 100)
-          },
-          position
-        )
+        const { health } = position
+        return Object.assign(position, {
+          health: Math.min(parseInt(health, 10), 100)
+        })
       }),
       borrowed: positions.borrowed.map(position => {
-        const currentCollateralAmount =
-          position.origin.loanAmountBorrowed / currentDAIExchangeRate
-        const health = parseInt(
-          (position.origin.collateralAmount / currentCollateralAmount) * 100,
-          10
-        )
-        return Object.assign(
-          {
-            health: Math.min(health, 100)
-          },
-          position
-        )
+        const { health } = position
+        return Object.assign(position, {
+          health: Math.min(parseInt(health, 10), 100)
+        })
       })
     }
     return positionsData
@@ -189,15 +215,18 @@ class Orders extends Component {
   }
 
   renderIntro() {
-    const { stepsEnabled, steps, initialStep, hintsEnabled, hints } = this.state
+    const {
+      /*stepsEnabled, steps, initialStep, */ hintsEnabled,
+      hints
+    } = this.state
     return (
       <div>
-        <Steps
+        {/* <Steps
           enabled={stepsEnabled}
           steps={steps}
           initialStep={initialStep}
           onExit={this.onExit}
-        />
+        /> */}
         <Hints enabled={hintsEnabled} hints={hints} />
       </div>
     )
@@ -211,7 +240,8 @@ class Orders extends Component {
       metamaskLogged
     } = this.state
 
-    if (!window.web3) return <Redirect to='/metamask-missing' />
+    if (!window.web3 && !window.ethereum)
+      return <Redirect to="/metamask-missing" />
     const {
       loading = {},
       orders = { myOrders: {} },
@@ -219,10 +249,11 @@ class Orders extends Component {
       exchangeRates = {},
       contracts,
       web3Utils,
-      metamask = {}
+      metamask = {},
+      wranglers
     } = LendroidJS
     const { address, network } = metamask
-    const { currentWETHExchangeRate, currentDAIExchangeRate } = exchangeRates
+    const { currentWETHExchangeRate } = exchangeRates
     const offers = orders.orders
     const myLendOffers = orders.myOrders.lend
     const myBorrowOffers = orders.myOrders.borrow
@@ -242,33 +273,46 @@ class Orders extends Component {
       startAsync
     }
 
-    if (!(network && address) && !metamaskChecking && isBrowser) this.checkMetamask()
+    if (!(network && address) && !metamaskChecking && isBrowser)
+      this.checkMetamask()
 
     return network && address ? (
-      <div className='OrdersWrapper'>
+      <div className="OrdersWrapper">
         {this.renderIntro()}
-        <Header address={address} contracts={contracts} />
+        <Header
+          address={address}
+          contracts={contracts}
+          tokens={Object.keys(CONTRACT_ADDRESSES)}
+        />
         <FormTab
           methods={methods}
           address={address}
           contracts={contracts}
-          currentDAIExchangeRate={currentDAIExchangeRate}
+          exchangeRates={exchangeRates}
           web3Utils={web3Utils}
           loading={loading}
+          tokens={ORDER_TOKENS}
+          pTokens={Object.keys(CONTRACT_ADDRESSES)}
+          wranglers={wranglers}
         />
-        <TableGroup
-          methods={methods}
-          address={address}
-          data={{
-            left: Tables[0],
-            right: Tables[1],
-            classes: 'first',
-            data: { offers }
-          }}
-          web3Utils={web3Utils}
-          loading={loading.orders}
-          lastFetchTime={lastFetchTime}
-        />
+        {[1, 3, 6].map((term, tIndex) => (
+          <TableGroup
+            key={tIndex}
+            methods={methods}
+            address={address}
+            contracts={contracts}
+            data={{
+              left: Tables[0],
+              right: Tables[1],
+              classes: 'first',
+              data: { offers: JSON.parse(JSON.stringify(offers)) }
+            }}
+            web3Utils={web3Utils}
+            loading={loading.orders}
+            lastFetchTime={lastFetchTime}
+            terms={term}
+          />
+        ))}
         <ListGroup
           methods={methods}
           address={address}
@@ -282,6 +326,7 @@ class Orders extends Component {
           web3Utils={web3Utils}
           loading={loading.orders}
           style={{ marginBottom: 29 }}
+          isOffer
         />
         <ListGroup
           methods={methods}
@@ -299,11 +344,11 @@ class Orders extends Component {
         />
       </div>
     ) : metamaskChecking || metamaskLogged ? (
-      <div className='Checking'>
+      <div className="Checking">
         {metamaskChecking ? 'Metamask Checking...' : 'Loading...'}
       </div>
     ) : (
-      <Redirect to='/metamask-not-logged-in' />
+      <Redirect to="/metamask-not-logged-in" />
     )
   }
 }

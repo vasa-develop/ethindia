@@ -21,11 +21,16 @@
     .warning {
       position: absolute;
       font-size: 10px;
-      line-height: 10px;
+      line-height: 20px;
       color: red;
       min-width: 100%;
       text-align: center;
       top: calc(100% + 3px);
+      cursor: pointer;
+
+      span {
+        text-decoration: underline;
+      }
     }
   }
 
@@ -44,6 +49,20 @@
       input {
         padding-left: 40px;
         padding-right: 20px;
+      }
+    }
+
+    &.Suffix {
+      input[type="number"]::-webkit-inner-spin-button,
+      input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      &.L4 {
+        input {
+          padding-right: 60px;
+        }
       }
     }
 
@@ -98,6 +117,7 @@
       top: 9px;
       font-size: 14px;
       color: rgba(0, 0, 0, .4);
+      cursor: pointer;
     }
 
     .Suffix {
@@ -106,6 +126,7 @@
       top: 9px;
       font-size: 14px;
       color: rgba(0, 0, 0, .4);
+      cursor: pointer;
     }
 
     &:first-child {
@@ -137,6 +158,23 @@
   align-items: center;
   justify-content: center;
   z-index: 100;
+  cursor: wait;
+
+  .Content {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 50px;
+    text-align: center;
+    color: #a87df3;
+    z-index: -1;
+  }
 
   .Loader {
     border: 3px solid rgba(255, 255, 255, 0.4);

@@ -8,7 +8,7 @@
     line-height: 20px;
     text-align: center;
     font-family: "SFProText-Bold", Helvetica, Arial, serif;
-    font-size: 24px;
+    font-size: 20px;
     color: rgba(0, 0, 0, .8);
     text-align: left;
     letter-spacing: 0.17px;
@@ -22,6 +22,11 @@
       margin-bottom: 10px;
       font-size: 1.2em;
       flex-direction: column-reverse;
+    }
+
+    i {
+      font-size: 18px;
+      font-weight: bold;
     }
 
     span {
@@ -63,6 +68,11 @@
 
         &:last-child:not(:first-child) {
           text-align: right;
+        }
+
+        span {
+          font-size: 80%;
+          opacity: 0.6;
         }
       }
 
@@ -116,14 +126,24 @@
 
   .tbl-content {
     max-height: 330px;
-    min-height: 330px;
+    // min-height: 330px;
     overflow-x: auto;
     @media (max-width: 1024px) {
       min-height: auto;
     }
 
     > div {
-      padding-bottom: 80px;
+      padding-bottom: 50px;
+    }
+
+    &.NoData {
+      > div {
+        padding-bottom: 20px;
+      }
+
+      &:after {
+        height: 20px;
+      }
     }
 
     &:after {

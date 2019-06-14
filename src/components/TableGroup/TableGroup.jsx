@@ -10,32 +10,48 @@ class TableGroup extends Component {
       style,
       data,
       address,
+      contracts,
       methods,
       loading,
       lastFetchTime,
-      web3Utils
+      web3Utils,
+      terms = 1
     } = this.props
-    const left = Object.assign(data.left, data.data, { loading, lastFetchTime })
-    const right = Object.assign(data.right, data.data, {
-      loading,
-      lastFetchTime
-    })
+    const offers = JSON.parse(JSON.stringify(data.data.offers || []))
+
+    const left = Object.assign(
+      data.left,
+      { offers },
+      { loading, lastFetchTime }
+    )
+    const right = Object.assign(
+      data.right,
+      { offers },
+      {
+        loading,
+        lastFetchTime
+      }
+    )
 
     return (
-      <div className='TableGroup' style={style}>
+      <div className="TableGroup" style={style}>
         <Table
           data={left}
           classes={data.classes ? data.classes : ''}
           address={address}
+          contracts={contracts}
           methods={methods}
           web3Utils={web3Utils}
+          terms={terms}
         />
         <Table
           data={right}
           classes={data.classes ? data.classes : ''}
           address={address}
+          contracts={contracts}
           methods={methods}
           web3Utils={web3Utils}
+          terms={terms}
         />
       </div>
     )
