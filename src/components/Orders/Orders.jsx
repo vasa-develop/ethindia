@@ -22,7 +22,7 @@ import './Orders.scss'
 
 const options = _this => ({
   apiEndpoint: 'https://winged-yeti-201009.appspot.com',
-  stateCallback: () => _this.forceUpdate(),
+  stateCallback: () => _this.setState({ lastSync: Date.now() }),
   CONTRACT_ADDRESSES,
   wranglers: [
     {
@@ -43,7 +43,8 @@ class Orders extends Component {
       metamaskChecking: true,
       metamaskLogged: false,
       stepsEnabled: cookie.load('tutor_status') ? false : true,
-      initialStep: 0
+      initialStep: 0,
+      lastSync: Date.now()
     }
 
     this.apiPost = this.apiPost.bind(this)
@@ -190,7 +191,7 @@ class Orders extends Component {
       onLiquidatePosition: LendroidJS.onLiquidatePosition,
       onFillOrderServer: LendroidJS.onFillOrderServer,
       onDeleteOrder: LendroidJS.onDeleteOrder,
-      onCancelOrder: LendroidJS.onCancelOrder,
+      onCancelOrder: LendroidJS.onCancelOrder
     }
 
     if (!(network && address) && !metamaskChecking && isBrowser)
