@@ -33,7 +33,6 @@ class Header extends Component {
       <div className="HeaderWrapper">
         <div className="Inner">
           <div className="Logo">
-            {/* <img src={logo} alt="Logo" /> */}
             Reloanr
           </div>
           <div className="Header">
