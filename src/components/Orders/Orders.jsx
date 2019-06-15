@@ -1,7 +1,5 @@
 import React, { Component } from 'react'
-import axios from 'axios'
 import { Redirect } from 'react-router-dom'
-import cookie from 'react-cookies'
 import { isBrowser } from 'react-device-detect'
 
 import { Lendroid } from 'lendroid'
@@ -12,7 +10,6 @@ import FormTab from '../FormTab/FormTab'
 import Header from '../Header/Header'
 
 import CreateTables from '../../assets/Tables'
-import API from '../../assets/API'
 
 import { CONTRACT_ADDRESSES, ORDER_TOKENS } from './Contracts'
 
@@ -42,18 +39,12 @@ class Orders extends Component {
       Tables: [],
       metamaskChecking: true,
       metamaskLogged: false,
-      stepsEnabled: cookie.load('tutor_status') ? false : true,
-      initialStep: 0,
       lastSync: Date.now()
     }
-
-    this.apiPost = this.apiPost.bind(this)
   }
 
   componentDidMount() {
-    setTimeout(() => {
-      this.checkMetamask()
-    }, 500)
+    this.checkMetamask()
   }
 
   async checkMetamask() {
@@ -102,16 +93,12 @@ class Orders extends Component {
 
   getPositionsData() {
     const { LendroidJS } = this.state
-    if (!LendroidJS.contracts || !LendroidJS.contracts.positions)
-      return {
-        lent: [],
-        borrowed: []
-      }
+    if (!LendroidJS.contracts || !LendroidJS.contracts.positions) return {}
     const {
       contracts: { positions },
       exchangeRates
     } = LendroidJS
-    if (!positions || exchangeRates.LST === 0) return {}
+    if (!positions) return {}
 
     let isExRatesReady = true
     positions.lent.forEach(position => {
@@ -139,21 +126,6 @@ class Orders extends Component {
     return positionsData
   }
 
-  apiPost(endPoint, data, cb = null) {
-    let url = API.baseURL
-    url += API.endPoints[endPoint]
-
-    axios.post(url, data).then(res => {
-      const result = res.data
-      if (cb) cb(result)
-    })
-  }
-
-  onExit = () => {
-    cookie.save('tutor_status', true)
-    this.setState(() => ({ stepsEnabled: false }))
-  }
-
   render() {
     const {
       LendroidJS = {},
@@ -164,6 +136,7 @@ class Orders extends Component {
 
     if (!window.web3 && !window.ethereum)
       return <Redirect to="/metamask-missing" />
+
     const {
       loading = {},
       orders = { myOrders: {} },
