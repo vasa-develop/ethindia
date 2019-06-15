@@ -175,7 +175,7 @@ class List extends Component {
   onCancel(data, param) {
     const { methods } = this.props
 
-    const cancelCallback = (err, result) => {
+    const cancelCallback = (err, hash) => {
       if (err) {
         this.setState({ singleLoading: false })
         if (err.message) {
@@ -188,7 +188,7 @@ class List extends Component {
         }
         return
       } else {
-        methods.onDeleteOrder(data.id, (err, res) => {
+        methods.onDeleteOrder({ id: data.id, txHash: hash }, (err, res) => {
           if (err) {
             console.log(err)
             if (err.message) {
