@@ -74,7 +74,7 @@ class InputModal extends Component {
                     <div className="before" />
                   </div>
                 </div>
-                {props.value > props.max && (
+                {props.value > props.max && props.max > 0 && (
                   <div className="Warning">{`Input exceed max value of ${
                     props.max
                   }`}</div>

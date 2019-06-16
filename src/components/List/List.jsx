@@ -485,7 +485,7 @@ class List extends Component {
           onSubmit={this.onSubmitTopupWithCollateral.bind(this)}
           contentLabel="Topup Collateral Amount"
           value={topupCollateralAmount}
-          max={currentData.amount || 0}
+          max={0}
           suffix={currentData.collateralCurrency || ''}
           disabled={topupCollateralAmount > (currentData.amount || 0)}
         />
