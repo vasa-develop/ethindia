@@ -5,11 +5,7 @@ import Modal from 'react-modal'
 import moment from 'moment'
 
 import FormInput from '../FormInput/FormInput'
-import {
-  FormInputs,
-  FeeFormInputs,
-  WrapETHFormInputs
-} from './Forms'
+import { FormInputs, FeeFormInputs, WrapETHFormInputs } from './Forms'
 
 import './FormTab.scss'
 import './ReactTab.scss'
@@ -347,7 +343,12 @@ class FormTab extends Component {
             }
             onWarning={token => {
               const { fieldLoading } = this.state
-              if (fieldLoading[item.key] || item.warning.feature) return
+              if (
+                fieldLoading[item.key] ||
+                item.warning.feature ||
+                exchangeRates[tabIndex === 0 ? lendToken : borrowToken] === 0
+              )
+                return
               fieldLoading[item.key] = true
               this.setState({ fieldLoading }, () =>
                 this.onAllowance(token, item.key)
@@ -368,8 +369,20 @@ class FormTab extends Component {
                     tabIndex === 0 ? lendToken : borrowToken
                   ) ? (
                   <div>
-                    <div className={fieldLoading[item.key] ? 'Loading' : ''}>
-                      {fieldLoading[item.key] && <div className="Loader" />}
+                    <div
+                      className={
+                        fieldLoading[item.key] ||
+                        exchangeRates[
+                          tabIndex === 0 ? lendToken : borrowToken
+                        ] === 0
+                          ? 'Loading'
+                          : ''
+                      }
+                    >
+                      {(fieldLoading[item.key] ||
+                        exchangeRates[
+                          tabIndex === 0 ? lendToken : borrowToken
+                        ] === 0) && <div className="Loader" />}
                     </div>
                     Click <span>here</span> to unlock{' '}
                     {item.warning.message(
@@ -505,11 +518,7 @@ class FormTab extends Component {
   }
 
   render() {
-    const {
-      showFeeForm,
-      modalErrorIsOpen,
-      modalErr,
-    } = this.state
+    const { showFeeForm, modalErrorIsOpen, modalErr } = this.state
 
     const { tokens } = this.props
 

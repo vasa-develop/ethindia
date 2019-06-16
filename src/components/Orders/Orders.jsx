@@ -19,6 +19,7 @@ import './Orders.scss'
 
 const options = _this => ({
   apiEndpoint: 'https://winged-yeti-201009.appspot.com',
+  // apiEndpoint: 'http://localhost:8080',
   stateCallback: () => _this.setState({ lastSync: Date.now() }),
   CONTRACT_ADDRESSES,
   wranglers: [
