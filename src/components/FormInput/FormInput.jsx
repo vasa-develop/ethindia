@@ -1,4 +1,10 @@
 import React, { Component } from 'react'
+import {
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem
+} from 'reactstrap'
 
 import './FormInput.scss'
 
@@ -7,7 +13,8 @@ class FormInput extends Component {
     super(props)
     this.state = {
       currentInput: null,
-      currentValue: 0
+      currentValue: 0,
+      dropdownOpen: {}
     }
   }
 
@@ -104,6 +111,12 @@ class FormInput extends Component {
     return ret
   }
 
+  toggle(key) {
+    const { dropdownOpen } = this.state
+    dropdownOpen[key] = !dropdownOpen[key]
+    this.setState({ dropdownOpen })
+  }
+
   render() {
     const {
       data,
@@ -152,14 +165,31 @@ class FormInput extends Component {
                 {item.arrow || !item.suffix ? null : (
                   <div className="Suffix">
                     {typeof item.suffix === 'object' ? (
-                      <select
-                        value={item.isLend ? tokenInfo[0] : tokenInfo[1]}
-                        onChange={e => onSelect(item.isLend, e.target.value)}
-                      >
-                        {item.suffix.map((suf, index) => (
-                          <option key={index}>{suf}</option>
-                        ))}
-                      </select>
+                      <div className="SuffixDropDown">
+                        <Dropdown
+                          isOpen={this.state.dropdownOpen['list']}
+                          toggle={e => this.toggle('list')}
+                        >
+                          <DropdownToggle caret>
+                            {item.isLend ? tokenInfo[0] : tokenInfo[1]}
+                          </DropdownToggle>
+                          <DropdownMenu>
+                            {item.suffix.map((suf, index) => (
+                              <DropdownItem
+                                key={index}
+                                onClick={e => onSelect(item.isLend, suf)}
+                                active={
+                                  (item.isLend
+                                    ? tokenInfo[0]
+                                    : tokenInfo[1]) === suf
+                                }
+                              >
+                                {suf}
+                              </DropdownItem>
+                            ))}
+                          </DropdownMenu>
+                        </Dropdown>
+                      </div>
                     ) : (
                       item.suffix
                     )}
@@ -168,7 +198,12 @@ class FormInput extends Component {
                 <div className="after" onClick={this.onStep(index, true)} />
                 <div className="before" onClick={this.onStep(index, false)} />
                 {!loading && warning && (
-                  <div className="warning" onClick={e => this.props.onWarning(this.props.token)}>{warning}</div>
+                  <div
+                    className="warning"
+                    onClick={e => this.props.onWarning(this.props.token)}
+                  >
+                    {warning}
+                  </div>
                 )}
               </div>
             )
