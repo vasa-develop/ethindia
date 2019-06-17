@@ -1,12 +1,8 @@
 import React, { Component } from 'react'
-import axios from 'axios'
 import { Redirect } from 'react-router-dom'
-import { Steps, Hints } from 'intro.js-react'
-import cookie from 'react-cookies'
 import { isBrowser } from 'react-device-detect'
 
 import { Lendroid } from 'lendroid'
-import { startAsync } from './Maker'
 
 import TableGroup from '../TableGroup/TableGroup'
 import ListGroup from '../ListGroup/ListGroup'
@@ -14,7 +10,6 @@ import FormTab from '../FormTab/FormTab'
 import Header from '../Header/Header'
 
 import CreateTables from '../../assets/Tables'
-import API from '../../assets/API'
 
 import { CONTRACT_ADDRESSES, ORDER_TOKENS } from './Contracts'
 
@@ -24,7 +19,8 @@ import './Orders.scss'
 
 const options = _this => ({
   apiEndpoint: 'https://winged-yeti-201009.appspot.com',
-  stateCallback: () => _this.forceUpdate(),
+  // apiEndpoint: 'http://localhost:8080',
+  stateCallback: () => _this.setState({ lastSync: Date.now() }),
   CONTRACT_ADDRESSES,
   wranglers: [
     {
@@ -44,76 +40,12 @@ class Orders extends Component {
       Tables: [],
       metamaskChecking: true,
       metamaskLogged: false,
-      stepsEnabled: cookie.load('tutor_status') ? false : true,
-      initialStep: 0,
-      steps: [
-        {
-          element: '.Address .Value',
-          intro: "Here's your Address"
-        },
-        {
-          element: '.Info1 .Value',
-          intro: "Here's your ETH balance"
-        },
-        {
-          element: '.Info2 .Value',
-          intro: "Here's your WETH balance"
-        },
-        {
-          element: '.Info3 .Value',
-          intro: "Here's your LST balance"
-        },
-        {
-          element: '.Info4 .Value',
-          intro: "Here's your Lend/Borrow token balance"
-        },
-        {
-          element: '.TabWrapper',
-          intro: 'You can create Orders here'
-        }
-      ],
-      hintsEnabled: true,
-      hints: [
-        {
-          element: '.Address .Value',
-          hint: "Here's your Address",
-          hintPosition: 'middle-right'
-        },
-        {
-          element: '.Info1 .Value',
-          hint: "Here's your ETH balance",
-          hintPosition: 'middle-right'
-        },
-        {
-          element: '.Info2 .Value',
-          hint: "Here's your WETH balance",
-          hintPosition: 'middle-right'
-        },
-        {
-          element: '.Info3 .Value',
-          hint: "Here's your LST balance",
-          hintPosition: 'middle-right'
-        },
-        {
-          element: '.Info4 .Value',
-          hint: "Here's your Lend/Borrow token balance",
-          hintPosition: 'middle-right'
-        },
-        {
-          element: '.TabWrapper',
-          hint: 'You can create Orders here',
-          hintPosition: 'top-right'
-        }
-      ]
+      lastSync: Date.now()
     }
-
-    this.apiPost = this.apiPost.bind(this)
   }
 
   componentDidMount() {
-    setTimeout(() => {
-      this.checkMetamask()
-    }, 500)
+    this.checkMetamask()
   }
 
   async checkMetamask() {
@@ -162,16 +94,12 @@ class Orders extends Component {
 
   getPositionsData() {
     const { LendroidJS } = this.state
-    if (!LendroidJS.contracts || !LendroidJS.contracts.positions)
-      return {
-        lent: [],
-        borrowed: []
-      }
+    if (!LendroidJS.contracts || !LendroidJS.contracts.positions) return {}
     const {
       contracts: { positions },
       exchangeRates
     } = LendroidJS
-    if (!positions || exchangeRates.LST === 0) return {}
+    if (!positions) return {}
 
     let isExRatesReady = true
     positions.lent.forEach(position => {
@@ -199,39 +127,6 @@ class Orders extends Component {
     return positionsData
   }
 
-  apiPost(endPoint, data, cb = null) {
-    let url = API.baseURL
-    url += API.endPoints[endPoint]
-
-    axios.post(url, data).then(res => {
-      const result = res.data
-      if (cb) cb(result)
-    })
-  }
-
-  onExit = () => {
-    cookie.save('tutor_status', true)
-    this.setState(() => ({ stepsEnabled: false }))
-  }
-
-  renderIntro() {
-    const {
-      /*stepsEnabled, steps, initialStep, */ hintsEnabled,
-      hints
-    } = this.state
-    return (
-      <div>
-        {/* <Steps
-          enabled={stepsEnabled}
-          steps={steps}
-          initialStep={initialStep}
-          onExit={this.onExit}
-        /> */}
-        <Hints enabled={hintsEnabled} hints={hints} />
-      </div>
-    )
-  }
-
   render() {
     const {
       LendroidJS = {},
@@ -242,6 +137,7 @@ class Orders extends Component {
 
     if (!window.web3 && !window.ethereum)
       return <Redirect to="/metamask-missing" />
+
     const {
       loading = {},
       orders = { myOrders: {} },
@@ -269,8 +165,7 @@ class Orders extends Component {
       onLiquidatePosition: LendroidJS.onLiquidatePosition,
       onFillOrderServer: LendroidJS.onFillOrderServer,
       onDeleteOrder: LendroidJS.onDeleteOrder,
-      onCancelOrder: LendroidJS.onCancelOrder,
-      startAsync
+      onCancelOrder: LendroidJS.onCancelOrder
     }
 
     if (!(network && address) && !metamaskChecking && isBrowser)
@@ -278,7 +173,6 @@ class Orders extends Component {
 
     return network && address ? (
       <div className="OrdersWrapper">
-        {this.renderIntro()}
         <Header
           address={address}
           contracts={contracts}

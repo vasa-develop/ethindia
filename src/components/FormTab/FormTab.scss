@@ -19,58 +19,6 @@
     line-height: 29px;
   }
 
-  .Toggle {
-    background-color: #f4f4f4;
-    height: 89px;
-    width: 357px;
-    margin: 0 auto;
-    border-radius: 44px;
-    border: 1px solid rgba(0, 0, 0, 0.11);
-    margin-top: 47px;
-    position: relative;
-    cursor: pointer;
-
-    .Handle {
-      text-transform: uppercase;
-      position: absolute;
-      top: -2px;
-      font-family: "SFProText-Medium", Helvetica, Arial, serif;
-      font-size: 18px;
-      text-align: center;
-      letter-spacing: 0.12px;
-      line-height: 91px;
-      width: 200px;
-      border-radius: 50px;
-      right: -2px;
-      color: rgba(0, 0, 0, 0.39);
-      transition: all 0.2s;
-
-      &.Bar {
-        background: -moz-linear-gradient(0deg, #8458ea 0%, #a57af2 100%);
-        background: -webkit-gradient(linear, left top, right top, color-stop(0%, #8458ea), color-stop(100%, #a57af2));
-        background: -webkit-linear-gradient(0deg, #8458ea 0%, #a57af2 100%);
-        background: -o-linear-gradient(0deg, #8458ea 0%, #a57af2 100%);
-        background: -ms-linear-gradient(0deg, #8458ea 0%, #a57af2 100%);
-        background: linear-gradient(90deg, #8458ea 0%, #a57af2 100%);
-        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=  '#8458ea', endColorstr='#a57af2',GradientType=1 );
-        left: -2px;
-        box-shadow: 0 5px 15px rgba(166, 126, 240, 0.39);
-        color: white;
-        font-family: "SFProText-Bold", Helvetica, Arial, serif;
-      }
-    }
-
-    &.Borrow {
-      .Handle {
-        right: calc(100% - 198px);
-
-        &.Bar {
-          left: calc(100% - 198px);
-        }
-      }
-    }
-  }
-
   .Wrangler {
     .Label {
       font-size: 12px;

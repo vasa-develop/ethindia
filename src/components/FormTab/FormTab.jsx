@@ -3,17 +3,15 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import FadeIn from 'react-fade-in'
 import Modal from 'react-modal'
 import moment from 'moment'
+import {
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem
+} from 'reactstrap'
 
 import FormInput from '../FormInput/FormInput'
-import {
-  FormInputs,
-  FeeFormInputs,
-  WrapETHFormInputs
-  // AllowanceFormInputs
-  // MakerDAIFormInputs
-} from './Forms'
-
-import InputModal from '../common/InputModal/InputModal'
+import { FormInputs, FeeFormInputs, WrapETHFormInputs } from './Forms'
 
 import './FormTab.scss'
 import './ReactTab.scss'
@@ -44,6 +42,7 @@ class FormTab extends Component {
     this.state = {
       modalErrorIsOpen: false,
       modalErr: 'Unknown',
+      dropdownOpen: {},
 
       lendToken: props.tokens.lend[0],
       borrowToken: props.tokens.lend[0],
@@ -54,7 +53,7 @@ class FormTab extends Component {
       interestRatePerDay: 5,
       loanDuration: 30 * 24 * 3600,
       offerExpiry: 12,
-      wrangler: props.wranglers ? props.wranglers[0].address : '',
+      wrangler: props.wranglers ? props.wranglers[0] : '',
       allowance: 0,
       fieldLoading: {},
 
@@ -73,16 +72,10 @@ class FormTab extends Component {
 
       // Allowance Form Inputs
       token: 'WETH',
-      tokenBalance: 0,
-      tokenAllowance: 0,
-      newAllowance: 10.0,
-      tokenContractInstance: null,
 
       tabIndex: 0,
       showFeeForm: true,
       making: false,
-      privateKey: null,
-      modalIsOpen: false,
 
       flagOnSubmit: false,
       flagOnWrapETH: false,
@@ -94,22 +87,12 @@ class FormTab extends Component {
     this.renderFeeForm = this.renderFeeForm.bind(this)
     this.onWrapETH = this.onWrapETH.bind(this)
     this.onAllowance = this.onAllowance.bind(this)
-    this.onMakerDAI = this.onMakerDAI.bind(this)
+    this.toggle = this.toggle.bind(this)
   }
 
-  getTokenName(token) {
-    return token.substr(0, 1).toUpperCase() + token.substr(1).toLowerCase()
-  }
-
-  onChange(key, value, affection = null) {
+  onChange(key, value) {
     const formData = this.state
     formData[key] = value
-
-    // if (key === 'lockETH') {
-    //   formData['amountInDAI'] = value * currentDAIExchangeRate
-    // } else if (key === 'amountInDAI') {
-    //   formData['lockETH'] = value / currentDAIExchangeRate
-    // }
     this.setState(formData)
   }
 
@@ -199,7 +182,7 @@ class FormTab extends Component {
           ? item.output(formData[item.key])
           : formData[item.key]
       })
-      postData.wrangler = formData.wrangler
+      postData.wrangler = formData.wrangler.address
       postData.lender = isLend ? address : ''
       postData.borrower = !isLend ? address : ''
 
@@ -285,24 +268,6 @@ class FormTab extends Component {
     })
   }
 
-  onMakerDAI() {
-    const { amountInDAI, lockETH, privateKey } = this.state
-    const {
-      methods: { startAsync }
-    } = this.props
-
-    this.closeModal('modalIsOpen')
-    this.setState({ making: true })
-    startAsync(lockETH, amountInDAI, `0x${privateKey}`, () => {
-      setTimeout(() => this.setState({ making: false }), 5000)
-    })
-  }
-
-  onMakerDAIRequest() {
-    this.setState({ privateKey: null })
-    this.openModal('modalIsOpen')
-  }
-
   onTabChange(tabIndex) {
     this.setState({ tabIndex })
 
@@ -326,51 +291,74 @@ class FormTab extends Component {
     const { tabIndex, lendToken, borrowToken, fieldLoading } = formData
     contracts.token = formData.token
     const loadings = Object.assign({}, loading, { making: formData.making })
+    const loanPeriod = formData.loanDuration / (30 * 24 * 3600)
 
     return formInputs.map((item, index) => (
       <td style={item.style} key={index}>
         {item.key === 'operation' ? (
           <div className="FormInputWrapper">
             <div className="InputLabel">{item.label}</div>
-            <select
-              value={formData.operation}
-              onChange={this.onChangeSync(item)}
+            <Dropdown
+              isOpen={this.state.dropdownOpen['operation']}
+              toggle={e => this.toggle('operation')}
             >
-              <option disabled>Select Operation</option>
-              <option>Wrap</option>
-              <option>Unwrap</option>
-            </select>
-          </div>
-        ) : item.key === 'token' ? (
-          <div className="FormInputWrapper">
-            <div className="InputLabel">{item.label}</div>
-            <select value={formData.token} onChange={this.onChangeSync(item)}>
-              <option disabled>Select Token</option>
-              <option>WETH</option>
-              <option>LST</option>
-              {this.props.pTokens.map(token => (
-                <option key={token}>{token}</option>
-              ))}
-            </select>
+              <DropdownToggle caret>{formData.operation}</DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem header>Select Operation</DropdownItem>
+                <DropdownItem
+                  onClick={e =>
+                    this.onChangeSync(item)({ target: { value: 'Wrap' } })
+                  }
+                  active={formData.operation === 'Wrap'}
+                >
+                  Wrap
+                </DropdownItem>
+                <DropdownItem
+                  onClick={e =>
+                    this.onChangeSync(item)({ target: { value: 'Unwrap' } })
+                  }
+                  active={formData.operation === 'Unwrap'}
+                >
+                  Unwrap
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
           </div>
         ) : item.key === 'loanDuration' ? (
           <div className="FormInputWrapper">
             <div className="InputLabel">{item.label}</div>
-            <select
-              value={formData.loanDuration}
-              onChange={this.onChangeSync(item)}
+            <Dropdown
+              isOpen={this.state.dropdownOpen['loanDuration']}
+              toggle={e => this.toggle('loanDuration')}
             >
-              <option disabled>Select Period</option>
-              {[1, 3, 6].map((period, index) => (
-                <option value={period * 30 * 24 * 3600} key={index}>
-                  {period === 1
-                    ? `${period} month`
-                    : period < 12
-                    ? `${period} months`
-                    : `${period / 12} years`}
-                </option>
-              ))}
-            </select>
+              <DropdownToggle caret>
+                {loanPeriod === 1
+                  ? `${loanPeriod} month`
+                  : loanPeriod < 12
+                  ? `${loanPeriod} months`
+                  : `${loanPeriod / 12} years`}
+              </DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem header>Select Period</DropdownItem>
+                {[1, 3, 6].map((period, index) => (
+                  <DropdownItem
+                    key={index}
+                    onClick={e =>
+                      this.onChangeSync(item)({
+                        target: { value: period * 30 * 24 * 3600 }
+                      })
+                    }
+                    active={formData.loanDuration === period * 30 * 24 * 3600}
+                  >
+                    {period === 1
+                      ? `${period} month`
+                      : period < 12
+                      ? `${period} months`
+                      : `${period / 12} years`}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
           </div>
         ) : (
           <FormInput
@@ -386,7 +374,12 @@ class FormTab extends Component {
             }
             onWarning={token => {
               const { fieldLoading } = this.state
-              if (fieldLoading[item.key] || item.warning.feature) return
+              if (
+                fieldLoading[item.key] ||
+                item.warning.feature ||
+                exchangeRates[tabIndex === 0 ? lendToken : borrowToken] === 0
+              )
+                return
               fieldLoading[item.key] = true
               this.setState({ fieldLoading }, () =>
                 this.onAllowance(token, item.key)
@@ -407,8 +400,20 @@ class FormTab extends Component {
                     tabIndex === 0 ? lendToken : borrowToken
                   ) ? (
                   <div>
-                    <div className={fieldLoading[item.key] ? 'Loading' : ''}>
-                      {fieldLoading[item.key] && <div className="Loader" />}
+                    <div
+                      className={
+                        fieldLoading[item.key] ||
+                        exchangeRates[
+                          tabIndex === 0 ? lendToken : borrowToken
+                        ] === 0
+                          ? 'Loading'
+                          : ''
+                      }
+                    >
+                      {(fieldLoading[item.key] ||
+                        exchangeRates[
+                          tabIndex === 0 ? lendToken : borrowToken
+                        ] === 0) && <div className="Loader" />}
                     </div>
                     Click <span>here</span> to unlock{' '}
                     {item.warning.message(
@@ -450,19 +455,32 @@ class FormTab extends Component {
     return (
       <div className="FormInputWrapper">
         <div className="InputLabel">Wrangler</div>
-        <select
-          value={wrangler}
-          onChange={e => this.setState({ wrangler: e.target.value })}
+        <Dropdown
+          isOpen={this.state.dropdownOpen['wrangler']}
+          toggle={e => this.toggle('wrangler')}
         >
-          <option disabled>Wrangler Name</option>
-          {(wranglers || []).map(({ address, label }, wIndex) => (
-            <option key={wIndex} value={address}>
-              {label}
-            </option>
-          ))}
-        </select>
+          <DropdownToggle caret>{wrangler.label}</DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem header>Select Wrangler</DropdownItem>
+            {(wranglers || []).map(({ address, label }, wIndex) => (
+              <DropdownItem
+                key={wIndex}
+                onClick={e => this.setState({ wrangler: { address, label } })}
+                active={wrangler.address === address}
+              >
+                {label}
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        </Dropdown>
       </div>
     )
+  }
+
+  toggle(key) {
+    const { dropdownOpen } = this.state
+    dropdownOpen[key] = !dropdownOpen[key]
+    this.setState({ dropdownOpen })
   }
 
   renderCollateral(isLend = true) {
@@ -478,14 +496,24 @@ class FormTab extends Component {
         <div className="InputLabel">Collateral</div>
         <div className="FormInputs">
           <div className="FormInput" style={{ border: 0, marginBottom: 10 }}>
-            <select
-              value={collateralToken}
-              onChange={e => this.setState({ collateralToken: e.target.value })}
+            <Dropdown
+              isOpen={this.state.dropdownOpen['collateral']}
+              toggle={e => this.toggle('collateral')}
             >
-              {tokens.borrow.map(token => (
-                <option key={token}>{token}</option>
-              ))}
-            </select>
+              <DropdownToggle caret>{collateralToken}</DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem header>Select Tokens</DropdownItem>
+                {tokens.borrow.map(token => (
+                  <DropdownItem
+                    key={token}
+                    onClick={e => this.setState({ collateralToken: token })}
+                    active={token === collateralToken}
+                  >
+                    {token}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
             {isWarning && (
               <div
                 className="warning"
@@ -540,17 +568,11 @@ class FormTab extends Component {
   }
 
   closeModal(key) {
-    this.setState({ [key]: false, privateKey: null })
+    this.setState({ [key]: false })
   }
 
   render() {
-    const {
-      showFeeForm,
-      modalIsOpen,
-      modalErrorIsOpen,
-      modalErr,
-      privateKey
-    } = this.state
+    const { showFeeForm, modalErrorIsOpen, modalErr } = this.state
 
     const { tokens } = this.props
 
@@ -565,8 +587,6 @@ class FormTab extends Component {
             <Tab>Lend</Tab>
             <Tab>Borrow</Tab>
             <Tab>Wrap/Unwrap ETH</Tab>
-            {/* <Tab>Set Allowance</Tab> */}
-            {/* <Tab>Maker DAI</Tab> */}
           </TabList>
 
           <TabPanel>
@@ -641,52 +661,7 @@ class FormTab extends Component {
               </table>
             </FadeIn>
           </TabPanel>
-          {/* <TabPanel>
-            <FadeIn>
-              <table cellSpacing="15" className="AllowanceTable">
-                <tbody>
-                  <tr>
-                    {this.renderInputs(AllowanceFormInputs)}
-                    {this.renderButton(
-                      'Submit',
-                      this.state.flagOnAllowance
-                        ? 2
-                        : this.isValidForm(AllowanceFormInputs)
-                        ? 1
-                        : 0,
-                      e => this.onAllowance(null)
-                    )}
-                  </tr>
-                </tbody>
-              </table>
-            </FadeIn>
-          </TabPanel> */}
-          {/* <TabPanel>
-            <FadeIn>
-              <table cellSpacing="15" className="MakerDAITAble">
-                <tbody>
-                  <tr>
-                    {this.renderInputs(MakerDAIFormInputs)}
-                    {this.renderButton('Submit', this.isValidForm(MakerDAIFormInputs), this.onMakerDAIRequest.bind(this))}
-                  </tr>
-                </tbody>
-              </table>
-            </FadeIn>
-          </TabPanel> */}
         </Tabs>
-        <InputModal
-          isOpen={modalIsOpen}
-          title="Input You Private Key"
-          description="Important! We don't use your private key for any other access. It's just for lock ETH while Making DAI. Thanks."
-          // onRequestClose={() => this.closeModal('modalIsOpen')}
-          onChange={e => this.setState({ privateKey: e.target.value })}
-          onSubmit={this.onMakerDAI.bind(this)}
-          contentLabel="Private Key"
-          value={privateKey}
-          prefix={'0x'}
-          type={'text'}
-          disabled={!privateKey}
-        />
         <Modal
           isOpen={modalErrorIsOpen}
           style={customStyles}

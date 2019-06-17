@@ -1,4 +1,10 @@
 import React, { Component } from 'react'
+import {
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem
+} from 'reactstrap'
 
 import './Header.scss'
 
@@ -7,7 +13,8 @@ class Header extends Component {
     super(props)
 
     this.state = {
-      token: props.tokens[0]
+      token: props.tokens[0],
+      dropdownOpen: {}
     }
   }
 
@@ -25,6 +32,12 @@ class Header extends Component {
     return `0x${value.substr(2).toUpperCase()}`
   }
 
+  toggle(key) {
+    const { dropdownOpen } = this.state
+    dropdownOpen[key] = !dropdownOpen[key]
+    this.setState({ dropdownOpen })
+  }
+
   render() {
     const { token } = this.state
     const { address, contracts, tokens } = this.props
@@ -32,10 +45,7 @@ class Header extends Component {
     return (
       <div className="HeaderWrapper">
         <div className="Inner">
-          <div className="Logo">
-            {/* <img src={logo} alt="Logo" /> */}
-            Reloanr
-          </div>
+          <div className="Logo">Reloanr</div>
           <div className="Header">
             <div className="Info Address">
               <div className="Label">Address</div>
@@ -74,20 +84,35 @@ class Header extends Component {
               </div>
               <div className="SubInfo Info4">
                 <div className="Label" />
-                <div className="Value">
+                <div
+                  className="Value"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
+                >
                   {this.setPrecision(
                     contracts.balances ? contracts.balances[token] : 0,
                     3
                   )}{' '}
-                  <span>
-                    <select
-                      value={token}
-                      onChange={e => this.setState({ token: e.target.value })}
+                  <span className="SuffixDropDown">
+                    <Dropdown
+                      isOpen={this.state.dropdownOpen['list']}
+                      toggle={e => this.toggle('list')}
                     >
-                      {tokens.map((token, index) => (
-                        <option key={index}>{token}</option>
-                      ))}
-                    </select>
+                      <DropdownToggle caret>{token}</DropdownToggle>
+                      <DropdownMenu>
+                        {tokens.map((tok, index) => (
+                          <DropdownItem
+                            key={index}
+                            onClick={e => this.setState({ token: tok })}
+                            active={tok === token}
+                          >
+                            {tok}
+                          </DropdownItem>
+                        ))}
+                      </DropdownMenu>
+                    </Dropdown>
                   </span>
                 </div>
               </div>

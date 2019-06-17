@@ -139,12 +139,16 @@ class Table extends Component {
         isLoading: true
       },
       () => {
-        methods.onFillLoan(approval, (err, res) => {
-          console.log('Fill Loan', err, res)
-          if (res) {
+        methods.onFillLoan(approval, (err, { hash, address }) => {
+          console.log('Fill Loan', err, hash)
+          if (hash) {
             methods.onFillOrderServer(
-              currentData.id,
-              web3Utils.toWei(result.loanAmountFilled),
+              {
+                id: currentData.id,
+                fillerAddress: address,
+                value: web3Utils.toWei(result.loanAmountFilled),
+                txHash: hash
+              },
               (err, res) => {
                 if (err) {
                   console.log(err)
