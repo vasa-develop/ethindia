@@ -202,8 +202,8 @@ class Table extends Component {
           )
 
           methods.onPostLoans(postData, (err, res) => {
-            console.log(res)
             if (err) {
+              console.log(err)
               return _this.setState(
                 {
                   postError: err,
@@ -216,6 +216,7 @@ class Table extends Component {
               )
             }
             if (res) {
+              console.log(res)
               const approval = res.approval
               const result = res.data
               Object.keys(result).forEach(key => {
@@ -473,7 +474,9 @@ class Table extends Component {
               )}
               {postError ? (
                 <div className="Error">
-                  {postError.response.status === 400 ? (
+                  {!postError.response ? (
+                    'Something Went Wrong!'
+                  ) : postError.response.status === 400 ? (
                     <ul>
                       {postError.response.data.message.error.map(
                         (err, index) => (
