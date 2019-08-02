@@ -7,6 +7,10 @@ Portal UI for allowances, creating, and viewing loan offers
 
 > `yarn` (If you are using [yarn](https://yarnpkg.com/en/))
 
+## setup .env
+
+> `cp .env.example .env`
+
 ## scripts
 
 > `start`: `react-scripts start`
