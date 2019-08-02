@@ -9,17 +9,17 @@ Portal UI for allowances, creating, and viewing loan offers
 
 ## scripts
 
-> `start`: `webpack-dev-server`
+> `start`: `react-scripts start`
 
-> `dist`: `webpack`
+> `build`: `react-scripts build`
 
-> `watch`: `webpack --progress --watch`
+> `test`: `react-scripts test --env=jsdom`
 
-> `dev`: `webpack-dev-server --open`
+> `eject`: `react-scripts eject`
 
 ## how to run?
 
-> `npm start` (`yarn start`) : [http://localhost:8080](http://localhost:8080)
+> `npm start` (`yarn start`) : [http://localhost:3000](http://localhost:3000)
 
 ## how to build dist?
 
