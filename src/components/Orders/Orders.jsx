@@ -196,8 +196,7 @@ class Orders extends Component {
             address={address}
             contracts={contracts}
             data={{
-              left: Tables[0],
-              right: Tables[1],
+              right: Tables[0],
               classes: 'first',
               data: { offers: JSON.parse(JSON.stringify(offers)) }
             }}
@@ -213,8 +212,7 @@ class Orders extends Component {
           contracts={contracts}
           currentWETHExchangeRate={currentWETHExchangeRate}
           data={{
-            left: Tables[2],
-            right: Tables[3],
+            right: Tables[1],
             data: { myLendOffers, myBorrowOffers }
           }}
           web3Utils={web3Utils}
@@ -228,8 +226,7 @@ class Orders extends Component {
           contracts={contracts}
           currentWETHExchangeRate={currentWETHExchangeRate}
           data={{
-            left: Tables[4],
-            right: Tables[5],
+            right: Tables[2],
             data: positions,
             classes: 'Positions'
           }}
@@ -242,8 +239,8 @@ class Orders extends Component {
         {metamaskChecking ? 'Metamask Checking...' : 'Loading...'}
       </div>
     ) : (
-      <Redirect to="/metamask-not-logged-in" />
-    )
+          <Redirect to="/metamask-not-logged-in" />
+        )
   }
 }
 

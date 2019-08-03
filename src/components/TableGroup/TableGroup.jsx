@@ -19,11 +19,7 @@ class TableGroup extends Component {
     } = this.props
     const offers = JSON.parse(JSON.stringify(data.data.offers || []))
 
-    const left = Object.assign(
-      data.left,
-      { offers },
-      { loading, lastFetchTime }
-    )
+
     const right = Object.assign(
       data.right,
       { offers },
@@ -35,15 +31,7 @@ class TableGroup extends Component {
 
     return (
       <div className="TableGroup" style={style}>
-        <Table
-          data={left}
-          classes={data.classes ? data.classes : ''}
-          address={address}
-          contracts={contracts}
-          methods={methods}
-          web3Utils={web3Utils}
-          terms={terms}
-        />
+
         <Table
           data={right}
           classes={data.classes ? data.classes : ''}

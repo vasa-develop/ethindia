@@ -186,6 +186,8 @@ class FormTab extends Component {
       postData.lender = isLend ? address : ''
       postData.borrower = !isLend ? address : ''
 
+      console.log("HAHAH: ", contracts)
+
       postData.creatorSalt = '0x' + this.randHex(40)
       postData.collateralToken =
         contracts.contracts && contracts.contracts[collateralToken]
@@ -335,8 +337,8 @@ class FormTab extends Component {
                 {loanPeriod === 1
                   ? `${loanPeriod} month`
                   : loanPeriod < 12
-                  ? `${loanPeriod} months`
-                  : `${loanPeriod / 12} years`}
+                    ? `${loanPeriod} months`
+                    : `${loanPeriod / 12} years`}
               </DropdownToggle>
               <DropdownMenu>
                 <DropdownItem header>Select Period</DropdownItem>
@@ -353,79 +355,79 @@ class FormTab extends Component {
                     {period === 1
                       ? `${period} month`
                       : period < 12
-                      ? `${period} months`
-                      : `${period / 12} years`}
+                        ? `${period} months`
+                        : `${period / 12} years`}
                   </DropdownItem>
                 ))}
               </DropdownMenu>
             </Dropdown>
           </div>
         ) : (
-          <FormInput
-            data={item}
-            onChange={this.onChange.bind(this)}
-            onSelect={this.onSelect.bind(this)}
-            token={
-              item.key.indexOf('LST') === -1
-                ? tabIndex === 0
-                  ? lendToken
-                  : borrowToken
-                : 'LST'
-            }
-            onWarning={token => {
-              const { fieldLoading } = this.state
-              if (
-                fieldLoading[item.key] ||
-                item.warning.feature ||
-                exchangeRates[tabIndex === 0 ? lendToken : borrowToken] === 0
-              )
-                return
-              fieldLoading[item.key] = true
-              this.setState({ fieldLoading }, () =>
-                this.onAllowance(token, item.key)
-              )
-            }}
-            tokenInfo={[formData.lendToken, formData.borrowToken]}
-            val={item.value ? item.value(contracts) : formData[item.key]}
-            loading={item.loading ? loadings[item.loading] : false}
-            className={item.warning && item.warning.feature ? 'feature' : ''}
-            warning={
-              item.warning ? (
-                item.warning.feature ? (
-                  item.warning.message
-                ) : item.warning.check(
-                    contracts,
-                    formData[item.key],
-                    exchangeRates[tabIndex === 0 ? lendToken : borrowToken],
-                    tabIndex === 0 ? lendToken : borrowToken
-                  ) ? (
-                  <div>
-                    <div
-                      className={
-                        fieldLoading[item.key] ||
-                        exchangeRates[
-                          tabIndex === 0 ? lendToken : borrowToken
-                        ] === 0
-                          ? 'Loading'
-                          : ''
-                      }
-                    >
-                      {(fieldLoading[item.key] ||
-                        exchangeRates[
-                          tabIndex === 0 ? lendToken : borrowToken
-                        ] === 0) && <div className="Loader" />}
-                    </div>
-                    Click <span>here</span> to unlock{' '}
-                    {item.warning.message(
-                      tabIndex === 0 ? lendToken : borrowToken,
-                      formData[item.key]
-                    )}
-                  </div>
-                ) : null
-              ) : null
-            }
-          />
-        )}
+              <FormInput
+                data={item}
+                onChange={this.onChange.bind(this)}
+                onSelect={this.onSelect.bind(this)}
+                token={
+                  item.key.indexOf('LST') === -1
+                    ? tabIndex === 0
+                      ? lendToken
+                      : borrowToken
+                    : 'LST'
+                }
+                onWarning={token => {
+                  const { fieldLoading } = this.state
+                  if (
+                    fieldLoading[item.key] ||
+                    item.warning.feature ||
+                    exchangeRates[tabIndex === 0 ? lendToken : borrowToken] === 0
+                  )
+                    return
+                  fieldLoading[item.key] = true
+                  this.setState({ fieldLoading }, () =>
+                    this.onAllowance(token, item.key)
+                  )
+                }}
+                tokenInfo={[formData.lendToken, formData.borrowToken]}
+                val={item.value ? item.value(contracts) : formData[item.key]}
+                loading={item.loading ? loadings[item.loading] : false}
+                className={item.warning && item.warning.feature ? 'feature' : ''}
+                warning={
+                  item.warning ? (
+                    item.warning.feature ? (
+                      item.warning.message
+                    ) : item.warning.check(
+                      contracts,
+                      formData[item.key],
+                      exchangeRates[tabIndex === 0 ? lendToken : borrowToken],
+                      tabIndex === 0 ? lendToken : borrowToken
+                    ) ? (
+                          <div>
+                            <div
+                              className={
+                                fieldLoading[item.key] ||
+                                  exchangeRates[
+                                  tabIndex === 0 ? lendToken : borrowToken
+                                  ] === 0
+                                  ? 'Loading'
+                                  : ''
+                              }
+                            >
+                              {(fieldLoading[item.key] ||
+                                exchangeRates[
+                                tabIndex === 0 ? lendToken : borrowToken
+                                ] === 0) && <div className="Loader" />}
+                            </div>
+                            Click <span>here</span> to unlock{' '}
+                            {item.warning.message(
+                              tabIndex === 0 ? lendToken : borrowToken,
+                              formData[item.key]
+                            )}
+                          </div>
+                        ) : null
+                  ) : null
+                }
+              />
+            )}
       </td>
     ))
   }
@@ -549,7 +551,7 @@ class FormTab extends Component {
         <div
           className={`FormInput Button ${valid ? '' : 'Disabled'} ${
             valid === 2 ? 'Loading' : ''
-          }`}
+            }`}
           onClick={valid === 1 ? onClick : null}
         >
           {valid === 2 && (
@@ -585,8 +587,8 @@ class FormTab extends Component {
         >
           <TabList>
             <Tab>Lend</Tab>
-            <Tab>Borrow</Tab>
-            <Tab>Wrap/Unwrap ETH</Tab>
+            {/* <Tab>Borrow</Tab>
+            <Tab>Wrap/Unwrap ETH</Tab> */}
           </TabList>
 
           <TabPanel>
@@ -652,8 +654,8 @@ class FormTab extends Component {
                       this.state.flagOnWrapETH
                         ? 2
                         : this.isValidForm(WrapETHFormInputs)
-                        ? 1
-                        : 0,
+                          ? 1
+                          : 0,
                       this.onWrapETH
                     )}
                   </tr>

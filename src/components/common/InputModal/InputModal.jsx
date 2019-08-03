@@ -55,10 +55,10 @@ class InputModal extends Component {
                     className={`FormInput ${
                       props.suffix
                         ? `Suffix ${props.suffix || ''} L${
-                            (props.suffix || '').length
-                          }`
+                        (props.suffix || '').length
+                        }`
                         : ''
-                    } ${props.prefix ? 'Prefix' : ''}`}
+                      } ${props.prefix ? 'Prefix' : ''}`}
                   >
                     <div className="Prefix">{props.prefix}</div>
                     <input
@@ -77,14 +77,14 @@ class InputModal extends Component {
                 {props.value > props.max && props.max > 0 && (
                   <div className="Warning">{`Input exceed max value of ${
                     props.max
-                  }`}</div>
+                    }`}</div>
                 )}
               </div>
               <div className="Buttons">
                 <div
                   className={`Confirm ${
                     props.disabled || props.value <= 0 ? 'Disabled' : ''
-                  }`}
+                    }`}
                   disabled={props.disabled || props.value <= 0 ? true : false}
                   onClick={
                     props.disabled || props.value <= 0 ? null : props.onSubmit

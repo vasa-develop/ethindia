@@ -90,12 +90,12 @@ class Table extends Component {
     month = month % 12
     return terms
       ? `${year > 0 ? year + ' Years ' : ''}${
-          month > 0 ? month + (month === 1 ? ' Month' : ' Months ') : ''
-        }`
+      month > 0 ? month + (month === 1 ? ' Month' : ' Months ') : ''
+      }`
       : `${parseInt(value / 3600 / 24, 10)}d` +
-          ((value / 3600) % 24 !== 0
-            ? ` ${parseInt((value / 3600) % 24, 10)}h`
-            : '')
+      ((value / 3600) % 24 !== 0
+        ? ` ${parseInt((value / 3600) % 24, 10)}h`
+        : '')
   }
 
   setPrecision(value, prec) {
@@ -335,8 +335,8 @@ class Table extends Component {
               {terms === 1
                 ? `(${terms} Month)`
                 : terms < 12
-                ? `(${terms} Months)`
-                : `(${terms / 12} Years)`}
+                  ? `(${terms} Months)`
+                  : `(${terms / 12} Years)`}
             </i>
           </div>
           <span>
@@ -360,7 +360,7 @@ class Table extends Component {
         <div
           className={`tbl-content ${classes} ${
             filteredData.length === 0 ? 'NoData' : ''
-          }`}
+            }`}
         >
           <div>
             <table cellPadding="0" cellSpacing="0" border="0">
@@ -388,42 +388,42 @@ class Table extends Component {
                             <div className="dot" />
                           </button>
                         ) : (
-                          <button
-                            style={data.action.style}
-                            onClick={() => {
-                              if (
-                                data.action.slot === 'onOrder' &&
-                                allowances[token] < 1000000
-                              ) {
-                                const { fieldLoading } = this.state
-                                if (fieldLoading[token]) return
-                                fieldLoading[token] = true
-                                this.setState({ fieldLoading }, () =>
-                                  this.onAllowance(token, token)
-                                )
-                              } else {
-                                this.onAction(data.action, d)
-                              }
-                            }}
-                          >
-                            <div
-                              className={fieldLoading[token] ? 'Loading' : ''}
+                            <button
+                              style={data.action.style}
+                              onClick={() => {
+                                if (
+                                  data.action.slot === 'onOrder' &&
+                                  allowances[token] < 1000000
+                                ) {
+                                  const { fieldLoading } = this.state
+                                  if (fieldLoading[token]) return
+                                  fieldLoading[token] = true
+                                  this.setState({ fieldLoading }, () =>
+                                    this.onAllowance(token, token)
+                                  )
+                                } else {
+                                  this.onAction(data.action, d)
+                                }
+                              }}
                             >
-                              {fieldLoading[token] && (
-                                <div className="Loader" />
-                              )}
-                            </div>
-                            {data.action.slot === 'onOrder' &&
-                            allowances[token] < 1000000 ? (
-                              <div>
-                                <span>Unlock </span>
-                                {token}
+                              <div
+                                className={fieldLoading[token] ? 'Loading' : ''}
+                              >
+                                {fieldLoading[token] && (
+                                  <div className="Loader" />
+                                )}
                               </div>
-                            ) : (
-                              data.action.label
-                            )}
-                          </button>
-                        )}
+                              {data.action.slot === 'onOrder' &&
+                                allowances[token] < 1000000 ? (
+                                  <div>
+                                    <span>Unlock </span>
+                                    {token}
+                                  </div>
+                                ) : (
+                                  data.action.label
+                                )}
+                            </button>
+                          )}
                       </td>
                     </tr>
                   )
@@ -452,8 +452,8 @@ class Table extends Component {
             {postError
               ? 'MESSAGE FROM WRANGLER'
               : expireInSecond > 0
-              ? `APPROVAL FROM WRANGLER. EXPIRES IN ${expireInSecond}s`
-              : 'WRANGLER APPROVAL HAS EXPIRED.'}
+                ? `APPROVAL FROM WRANGLER. EXPIRES IN ${expireInSecond}s`
+                : 'WRANGLER APPROVAL HAS EXPIRED.'}
           </h2>
           {/* <button onClick={() => this.closeModal('modalIsOpen')} /> */}
           <div className="ModalBody">
@@ -485,23 +485,23 @@ class Table extends Component {
                       )}
                     </ul>
                   ) : (
-                    postError.response.data.message
-                  )}
+                        postError.response.data.message
+                      )}
                 </div>
               ) : (
-                <div className="Info">
-                  <table>
-                    <tbody>
-                      {Object.keys(result).map((key, kIndex) => (
-                        <tr key={kIndex}>
-                          <td>{key}</td>
-                          <td>{result[key].toString()}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+                  <div className="Info">
+                    <table>
+                      <tbody>
+                        {Object.keys(result).map((key, kIndex) => (
+                          <tr key={kIndex}>
+                            <td>{key}</td>
+                            <td>{result[key].toString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               <div className="Buttons">
                 {!postError && expireInSecond > 0 && (
                   <div className="Confirm" onClick={this.onConfirm.bind(this)}>
